@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { api } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import Loading from '../components/Loading.jsx'
@@ -14,6 +14,7 @@ export default function Admin() {
     { id: 'grant', label: 'Grant', minLevel: 2 },
     { id: 'houses', label: 'Houses', minLevel: 1 },
     { id: 'economy', label: 'Economy', minLevel: 1 },
+    { id: 'creatures', label: 'Creatures', minLevel: 1 },
     { id: 'requests', label: 'Requests', minLevel: 1 },
     { id: 'audit', label: 'Audit Logs', minLevel: 1 },
     { id: 'broadcast', label: 'Broadcast', minLevel: 2 }
@@ -56,6 +57,7 @@ export default function Admin() {
         {tab === 'grant' && <GrantTab setError={setError} />}
         {tab === 'houses' && <HousesTab setError={setError} />}
         {tab === 'economy' && <EconomyTab />}
+        {tab === 'creatures' && <CreaturesTab adminLevel={adminLevel} setError={setError} />}
         {tab === 'requests' && <RequestsTab adminLevel={adminLevel} setError={setError} />}
         {tab === 'audit' && <AuditTab />}
         {tab === 'broadcast' && <BroadcastTab setError={setError} />}
@@ -674,6 +676,200 @@ function RequestsTab({ adminLevel, setError }) {
                     <span className="text-muted" style={{ fontSize: '.8rem' }}>View only (need L2+)</span>
                   )}
                 </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+function CreaturesTab({ adminLevel, setError }) {
+  const [creatures, setCreatures] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+  const [showForm, setShowForm] = useState(false)
+  const [editing, setEditing] = useState(null)
+  const [form, setForm] = useState({
+    name: '', description: '', type: 'beast', hp: 20, damage: 5, armor: 0,
+    might: 3, agility: 3, endurance: 3, difficulty: 3, region: '',
+    rewards_xp: 10, rewards_gold: 0, rewards_stars: 20, is_boss: 0, min_level: 1
+  })
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    try {
+      const data = await api.creatureList(search)
+      setCreatures(data.creatures || [])
+    } catch (err) {
+      setError(err.message)
+    }
+    setLoading(false)
+  }, [search])
+
+  useEffect(() => { load() }, [load])
+
+  const resetForm = () => {
+    setForm({ name: '', description: '', type: 'beast', hp: 20, damage: 5, armor: 0, might: 3, agility: 3, endurance: 3, difficulty: 3, region: '', rewards_xp: 10, rewards_gold: 0, rewards_stars: 20, is_boss: 0, min_level: 1 })
+    setEditing(null)
+    setShowForm(false)
+  }
+
+  const startEdit = (c) => {
+    setEditing(c)
+    setForm({ name: c.name, description: c.description || '', type: c.type, hp: c.hp, damage: c.damage, armor: c.armor, might: c.might, agility: c.agility, endurance: c.endurance, difficulty: c.difficulty, region: c.region || '', rewards_xp: c.rewards_xp, rewards_gold: c.rewards_gold, rewards_stars: c.rewards_stars, is_boss: c.is_boss, min_level: c.min_level })
+    setShowForm(true)
+  }
+
+  const submit = async () => {
+    try {
+      if (editing) {
+        await api.creatureUpdate(editing.id, form)
+      } else {
+        await api.creatureCreate(form)
+      }
+      resetForm()
+      load()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  const del = async (id) => {
+    if (!confirm('Delete this creature? This cannot be undone.')) return
+    try {
+      await api.creatureDelete(id)
+      load()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  return (
+    <div>
+      <div className="filter-bar mb-2">
+        <input className="filter-input" placeholder="Search creatures..." value={search} onChange={e => setSearch(e.target.value)} />
+        {adminLevel >= 2 && (
+          <button className="btn btn-primary btn-sm" onClick={() => editing ? resetForm() : setShowForm(!showForm)}>
+            {showForm ? 'Cancel' : editing ? 'Cancel Edit' : 'New Creature'}
+          </button>
+        )}
+      </div>
+
+      {showForm && adminLevel >= 2 && (
+        <div className="card mb-3">
+          <div className="card-header">{editing ? `Edit: ${editing.name}` : 'New Creature'}</div>
+          <div className="card-body">
+            <div className="grid grid-2">
+              <div className="form-group">
+                <label className="form-label">Name</label>
+                <input className="form-input" value={form.name} onChange={e => setForm({...form, name: e.target.value})} disabled={!!editing} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Type</label>
+                <select className="form-select" value={form.type} onChange={e => setForm({...form, type: e.target.value})}>
+                  <option value="beast">Beast</option>
+                  <option value="humanoid">Humanoid</option>
+                  <option value="undead">Undead</option>
+                  <option value="dragon">Dragon</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <input className="form-input" value={form.description} onChange={e => setForm({...form, description: e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Region (blank = any)</label>
+                <input className="form-input" value={form.region} onChange={e => setForm({...form, region: e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">HP</label>
+                <input className="form-input" type="number" value={form.hp} onChange={e => setForm({...form, hp: +e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Damage</label>
+                <input className="form-input" type="number" value={form.damage} onChange={e => setForm({...form, damage: +e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Armor</label>
+                <input className="form-input" type="number" value={form.armor} onChange={e => setForm({...form, armor: +e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Difficulty (1-10)</label>
+                <input className="form-input" type="number" min="1" max="10" value={form.difficulty} onChange={e => setForm({...form, difficulty: +e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Might</label>
+                <input className="form-input" type="number" value={form.might} onChange={e => setForm({...form, might: +e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Agility</label>
+                <input className="form-input" type="number" value={form.agility} onChange={e => setForm({...form, agility: +e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Endurance</label>
+                <input className="form-input" type="number" value={form.endurance} onChange={e => setForm({...form, endurance: +e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Min Level</label>
+                <input className="form-input" type="number" value={form.min_level} onChange={e => setForm({...form, min_level: +e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">XP Reward</label>
+                <input className="form-input" type="number" value={form.rewards_xp} onChange={e => setForm({...form, rewards_xp: +e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Gold Reward (stags)</label>
+                <input className="form-input" type="number" value={form.rewards_gold} onChange={e => setForm({...form, rewards_gold: +e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Stars Reward</label>
+                <input className="form-input" type="number" value={form.rewards_stars} onChange={e => setForm({...form, rewards_stars: +e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Is Boss?</label>
+                <select className="form-select" value={form.is_boss} onChange={e => setForm({...form, is_boss: +e.target.value})}>
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+            </div>
+            <button className="btn btn-primary btn-sm mt-2" onClick={submit}>{editing ? 'Update' : 'Create'}</button>
+          </div>
+        </div>
+      )}
+
+      {loading ? <Loading /> : creatures.length === 0 ? (
+        <p className="text-muted">No creatures found</p>
+      ) : (
+        <table className="stats-table">
+          <thead>
+            <tr>
+              <th>ID</th><th>Name</th><th>Type</th><th>HP</th><th>DMG</th>
+              <th>Arm</th><th>Diff</th><th>Region</th><th>Boss</th>
+              {adminLevel >= 2 && <th>Actions</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {creatures.map(c => (
+              <tr key={c.id}>
+                <td>{c.id}</td>
+                <td><strong>{c.name}</strong></td>
+                <td style={{ textTransform: 'capitalize' }}>{c.type}</td>
+                <td>{c.hp}</td>
+                <td>{c.damage}</td>
+                <td>{c.armor}</td>
+                <td>{c.difficulty}/10</td>
+                <td>{c.region || 'Any'}</td>
+                <td>{c.is_boss ? 'YES' : ''}</td>
+                {adminLevel >= 2 && (
+                  <td>
+                    <button className="btn btn-outline btn-sm" onClick={() => startEdit(c)}>Edit</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => del(c.id)}>Del</button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

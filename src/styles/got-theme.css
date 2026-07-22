@@ -352,3 +352,85 @@ textarea.form-input{resize:vertical;font-family:var(--font-body)}
 
 /* ---- Card equipped ---- */
 .card.equipped{box-shadow:0 0 0 2px var(--gold)}
+
+/* ---- Mobile responsive ---- */
+@media (max-width:768px){
+  .page-header{padding:4rem 0 1.5rem}
+  .page-content{padding:1.5rem 1rem 3rem}
+  .page-header h1{font-size:1.4rem;letter-spacing:.1em}
+  .page-header p{font-size:.85rem}
+  .card-body{padding:1rem}
+  .card-header{padding:.75rem 1rem;font-size:.8rem}
+
+  /* Tables become scrollable */
+  .stats-table{font-size:.75rem;display:block;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
+  .stats-table th,.stats-table td{padding:.35rem .5rem}
+
+  /* Grids collapse to single column */
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+  .admin-grid{grid-template-columns:1fr}
+
+  /* Login card */
+  .login-wrap{margin:1rem auto;padding:1rem}
+  .login-card{padding:1.5rem}
+
+  /* Hero text smaller */
+  .hero-content{padding:4rem 1rem 2rem}
+  .hero-title{font-size:1rem;letter-spacing:.08em}
+
+  /* Intro cards stack */
+  .intro-section{padding:3rem 0 2rem}
+  .intro-grid{grid-template-columns:1fr;gap:1rem}
+
+  /* Tabs scroll horizontally */
+  .tab-nav{gap:0}
+  .tab-btn{padding:.6rem .75rem;font-size:.7rem;white-space:nowrap}
+  .tab-panel{padding:1rem 0}
+
+  /* Forms */
+  .form-input,.form-select,.form-textarea{font-size:.85rem;padding:.5rem .65rem}
+  .filter-input,.filter-select{font-size:.8rem}
+  .filter-bar{gap:.35rem}
+
+  /* Buttons */
+  .btn{padding:.6rem 1.2rem;font-size:.75rem}
+  .btn-sm{padding:.4rem .8rem;font-size:.7rem}
+
+  /* CTA box */
+  .cta-box{padding:2rem 1rem}
+  .cta-box h2{font-size:1.1rem}
+  .cta-box p{font-size:.85rem}
+
+  /* Wiki layout */
+  .wiki-layout{grid-template-columns:1fr;gap:0}
+  .wiki-nav{position:static;margin-bottom:1rem}
+  .wiki-nav-item{padding:.4rem .5rem;font-size:.8rem}
+
+  /* Parchment */
+  .parchment{padding:1rem;font-size:.85rem;line-height:1.6}
+
+  /* Rules section */
+  .rules-section h3{font-size:.95rem}
+  .rules-section h4{font-size:.85rem}
+  .rules-section p,.rules-section li{font-size:.82rem}
+  .rules-section ul{padding-left:1.2rem}
+
+  /* Row */
+  .row{flex-direction:column}
+  .row>*{width:100%}
+
+  /* Realm chips */
+  .realm-chip{padding:.4rem .8rem;font-size:.72rem}
+}
+
+@media (max-width:480px){
+  .hero-title{font-size:.85rem;letter-spacing:.05em}
+  .hero-cta{flex-direction:column;gap:.5rem}
+  .hero-cta .btn{width:100%}
+  .login-title{font-size:1.1rem}
+  .intro-card{padding:1.25rem}
+  .intro-card h3{font-size:.9rem}
+  .intro-card p{font-size:.82rem}
+  .stats-table{font-size:.7rem}
+  .stats-table th,.stats-table td{padding:.3rem .4rem}
+}

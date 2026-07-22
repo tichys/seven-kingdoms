@@ -680,5 +680,11 @@ export const api = {
 
   // World - Feast Buffs
   feastMy: () => request('web_world.php', { method: 'POST', body: JSON.stringify({ action: 'feast_my' }) }),
-  feastGrant: (avatarKey, buffType, statBonus, bonusValue, hpBonus, xpBonus, durationMinutes) => request('web_world.php', { method: 'POST', body: JSON.stringify({ action: 'feast_grant', avatar_key: avatarKey, buff_type: buffType, stat_bonus: statBonus, bonus_value: bonusValue, hp_bonus: hpBonus, xp_bonus_pct: xpBonus, duration_minutes: durationMinutes }) })
+  feastGrant: (avatarKey, buffType, statBonus, bonusValue, hpBonus, xpBonus, durationMinutes) => request('web_world.php', { method: 'POST', body: JSON.stringify({ action: 'feast_grant', avatar_key: avatarKey, buff_type: buffType, stat_bonus: statBonus, bonus_value: bonusValue, hp_bonus: hpBonus, xp_bonus_pct: xpBonus, duration_minutes: durationMinutes }) }),
+
+  // Admin - Creatures
+  creatureList: (search = '') => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_list', search }) }),
+  creatureCreate: (data) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_create', ...data }) }),
+  creatureUpdate: (id, data) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_update', creature_id: id, ...data }) }),
+  creatureDelete: (id) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_delete', creature_id: id }) })
 }
