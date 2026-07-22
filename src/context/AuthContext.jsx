@@ -38,10 +38,10 @@ export function AuthProvider({ children }) {
     validateSession()
   }, [validateSession])
 
-  const login = useCallback(async (avatarKey, avatarName) => {
+  const login = useCallback(async (avatarKey, loginCode) => {
     setError(null)
     try {
-      const data = await api.login(avatarKey, avatarName)
+      const data = await api.login(avatarKey, loginCode)
       if (data.status === 'ok' && data.session) {
         api.setToken(data.session)
         setUser(data.player)

@@ -48,10 +48,10 @@ async function request(endpoint, options = {}) {
 
 export const api = {
   // Auth
-  login: (avatarKey, avatarName) =>
+  login: (avatarKey, loginCode) =>
     request('web_login.php', {
       method: 'POST',
-      body: JSON.stringify({ action: 'login', avatar_key: avatarKey, avatar_name: avatarName })
+      body: JSON.stringify({ action: 'login', avatar_key: avatarKey, login_code: loginCode })
     }),
 
   logout: () =>

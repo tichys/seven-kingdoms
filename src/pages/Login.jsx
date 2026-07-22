@@ -7,7 +7,7 @@ export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   const [avatarKey, setAvatarKey] = useState('')
-  const [avatarName, setAvatarName] = useState('')
+  const [loginCode, setLoginCode] = useState('')
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -31,11 +31,17 @@ export default function Login() {
       return
     }
 
-    const result = await login(avatarKey.trim(), avatarName.trim() || 'Unknown')
+    if (!loginCode.trim()) {
+      setError('Please enter your one-time login code from the HUD')
+      setSubmitting(false)
+      return
+    }
+
+    const result = await login(avatarKey.trim(), loginCode.trim())
     if (result.success) {
       navigate(from, { replace: true })
     } else {
-      setError(result.error || 'Login failed. Make sure you have registered in-world first.')
+      setError(result.error || 'Login failed. Check your code and try again.')
     }
     setSubmitting(false)
   }
@@ -45,8 +51,7 @@ export default function Login() {
       <div className="login-card">
         <h1 className="login-title">Login to Your Character</h1>
         <p className="text-muted text-center mb-4" style={{ fontSize: '.9rem' }}>
-          Enter your Second Life avatar key to access your character.
-          You must have worn the HUD in-world at least once to register.
+          Enter your avatar key and a one-time login code generated from the HUD in-world.
         </p>
 
         {error && <div className="alert alert-danger">{error}</div>}
@@ -64,15 +69,20 @@ export default function Login() {
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Avatar Name (optional)</label>
+            <label className="form-label">Login Code</label>
             <input
               type="text"
               className="form-input"
-              placeholder="John Stark"
-              value={avatarName}
-              onChange={(e) => setAvatarName(e.target.value)}
+              placeholder="6-digit code from HUD"
+              maxLength="6"
+              value={loginCode}
+              onChange={(e) => setLoginCode(e.target.value.replace(/\D/g, ''))}
               disabled={submitting}
             />
+            <small className="text-muted" style={{ fontSize: '.8rem', display: 'block', marginTop: '.25rem' }}>
+              Wear the HUD in-world and say <strong>/7 web</strong> to generate a code.
+              Codes expire after 5 minutes.
+            </small>
           </div>
           <button type="submit" className="btn btn-primary btn-block" disabled={submitting}>
             {submitting ? 'Logging in...' : 'Login'}
