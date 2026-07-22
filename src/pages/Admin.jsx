@@ -1,0 +1,684 @@
+import { useEffect, useState } from 'react'
+import { api } from '../api/client.js'
+import { useAuth } from '../context/AuthContext.jsx'
+import Loading from '../components/Loading.jsx'
+
+export default function Admin() {
+  const { adminLevel } = useAuth()
+  const [tab, setTab] = useState('overview')
+  const [error, setError] = useState(null)
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', minLevel: 1 },
+    { id: 'players', label: 'Players', minLevel: 1 },
+    { id: 'grant', label: 'Grant', minLevel: 2 },
+    { id: 'houses', label: 'Houses', minLevel: 1 },
+    { id: 'economy', label: 'Economy', minLevel: 1 },
+    { id: 'requests', label: 'Requests', minLevel: 1 },
+    { id: 'audit', label: 'Audit Logs', minLevel: 1 },
+    { id: 'broadcast', label: 'Broadcast', minLevel: 2 }
+  ].filter(t => adminLevel >= t.minLevel)
+
+  return (
+    <div>
+      <div className="page-header">
+        <h1>Admin Dashboard</h1>
+        <p>Level {adminLevel} {adminLevel >= 3 ? '(Admin)' : adminLevel >= 2 ? '(GM)' : '(Mod)'}</p>
+      </div>
+
+      <div className="page-content">
+        {error && <div className="alert alert-danger" onClick={() => setError(null)}>{error}</div>}
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.25rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)' }}>
+          {tabs.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className="btn btn-sm"
+              style={{
+                background: tab === t.id ? 'var(--gold)' : 'transparent',
+                color: tab === t.id ? 'var(--bg-dark)' : 'var(--text)',
+                border: '1px solid var(--border)',
+                borderRadius: '4px 4px 0 0',
+                borderBottom: 'none',
+                padding: '.5rem 1rem',
+                cursor: 'pointer',
+                fontSize: '.85rem'
+              }}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'overview' && <OverviewTab adminLevel={adminLevel} />}
+        {tab === 'players' && <PlayersTab adminLevel={adminLevel} setError={setError} />}
+        {tab === 'grant' && <GrantTab setError={setError} />}
+        {tab === 'houses' && <HousesTab setError={setError} />}
+        {tab === 'economy' && <EconomyTab />}
+        {tab === 'requests' && <RequestsTab adminLevel={adminLevel} setError={setError} />}
+        {tab === 'audit' && <AuditTab />}
+        {tab === 'broadcast' && <BroadcastTab setError={setError} />}
+      </div>
+    </div>
+  )
+}
+
+// =====================================================
+function OverviewTab() {
+  const [stats, setStats] = useState(null)
+  const [online, setOnline] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => { load() }, [])
+
+  const load = async () => {
+    setLoading(true)
+    try {
+      const [s, o] = await Promise.all([api.adminServerStats(), api.getOnlinePlayers()])
+      setStats(s)
+      setOnline(o.players || [])
+    } catch (err) { console.error(err) }
+    setLoading(false)
+  }
+
+  if (loading) return <Loading />
+  if (!stats) return <p className="text-muted">Failed to load stats</p>
+
+  return (
+    <div>
+      <div className="grid grid-3" style={{ marginBottom: '1rem' }}>
+        <StatCard label="Total Players" value={stats.players.total} sub={`${stats.players.online} online`} color="var(--text)" />
+        <StatCard label="Houses" value={stats.houses.total} sub={`${stats.houses.great} great houses`} color="var(--gold)" />
+        <StatCard label="Admins" value={stats.admins} sub="active" color="var(--danger)" />
+        <StatCard label="Combat (24h)" value={stats.combat_24h} sub="encounters" color="var(--danger)" />
+        <StatCard label="Economy (24h)" value={stats.economy_24h.transactions} sub={`${stats.economy_24h.total_amount} moved`} color="var(--gold)" />
+        <StatCard label="Ravens" value={stats.ravens.total} sub={`${stats.ravens.unread} unread`} color="var(--text-muted)" />
+      </div>
+
+      <div className="card">
+        <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span>Online Players ({online.length})</span>
+          <button className="btn btn-sm btn-outline" onClick={load}>Refresh</button>
+        </div>
+        <div className="card-body">
+          {online.length === 0 ? <p className="text-muted">No players online</p> : (
+            <table style={{ width: '100%', fontSize: '.85rem' }}>
+              <thead><tr style={{ borderBottom: '1px solid var(--gold)' }}>
+                <th style={{ textAlign: 'left', padding: '.5rem' }}>Name</th>
+                <th style={{ textAlign: 'left', padding: '.5rem' }}>House</th>
+                <th style={{ textAlign: 'left', padding: '.5rem' }}>IC Status</th>
+              </tr></thead>
+              <tbody>
+                {online.map(p => (
+                  <tr key={p.avatar_key} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '.5rem' }}>{p.avatar_name}</td>
+                    <td style={{ padding: '.5rem', color: 'var(--text-muted)' }}>{p.house_name || '-'}</td>
+                    <td style={{ padding: '.5rem' }}>{p.ic_status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function StatCard({ label, value, sub, color }) {
+  return (
+    <div className="card">
+      <div className="card-body" style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: '.8rem', color: 'var(--text-muted)', marginBottom: '.25rem' }}>{label}</div>
+        <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color }}>{value}</div>
+        <div style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{sub}</div>
+      </div>
+    </div>
+  )
+}
+
+// =====================================================
+function PlayersTab({ adminLevel, setError }) {
+  const [search, setSearch] = useState('')
+  const [results, setResults] = useState([])
+  const [selected, setSelected] = useState(null)
+  const [detail, setDetail] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const doSearch = async () => {
+    if (search.length < 2) return
+    setLoading(true)
+    try {
+      const data = await api.adminPlayerSearch(search)
+      setResults(data.players || [])
+    } catch (err) { setError(err.message) }
+    setLoading(false)
+  }
+
+  const viewDetail = async (key) => {
+    setSelected(key)
+    setDetail(null)
+    try {
+      const d = await api.adminPlayerDetail(key)
+      setDetail(d)
+    } catch (err) { setError(err.message) }
+  }
+
+  const handleBan = async (key, banned) => {
+    try {
+      await api.adminPlayerBan(key, banned ? 1 : 0)
+      viewDetail(key)
+    } catch (err) { setError(err.message) }
+  }
+
+  const handleSetAdmin = async (key, level) => {
+    try {
+      await api.adminSetAdmin(key, level)
+      viewDetail(key)
+    } catch (err) { setError(err.message) }
+  }
+
+  const handleHeal = async (key) => {
+    try {
+      await api.adminHeal(key)
+      viewDetail(key)
+    } catch (err) { setError(err.message) }
+  }
+
+  return (
+    <div className="grid grid-2">
+      <div>
+        <div className="card">
+          <div className="card-header">Player Search</div>
+          <div className="card-body">
+            <div style={{ display: 'flex', gap: '.5rem', marginBottom: '1rem' }}>
+              <input type="text" className="filter-input" placeholder="Name or UUID..." value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && doSearch()} />
+              <button className="btn btn-primary btn-sm" onClick={doSearch}>Search</button>
+            </div>
+            {loading && <Loading />}
+            {!loading && results.length === 0 && search.length >= 2 && <p className="text-muted">No results</p>}
+            {!loading && results.map(p => (
+              <div key={p.avatar_key} onClick={() => viewDetail(p.avatar_key)} style={{
+                cursor: 'pointer', padding: '.5rem', marginBottom: '.25rem',
+                background: selected === p.avatar_key ? 'rgba(218,165,32,0.1)' : 'transparent',
+                border: '1px solid var(--border)', borderRadius: '4px'
+              }}>
+                <div style={{ fontWeight: selected === p.avatar_key ? 'bold' : 'normal' }}>
+                  {p.avatar_name}
+                  {p.admin_level > 0 && <span style={{ color: 'var(--danger)', fontSize: '.75rem', marginLeft: '.5rem' }}>Admin L{p.admin_level}</span>}
+                  {p.is_banned && <span style={{ color: 'var(--danger)', fontSize: '.75rem', marginLeft: '.5rem' }}>BANNED</span>}
+                </div>
+                <div style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>
+                  {p.house_name || 'No house'} | {p.status} | RP: {p.rp_score}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        {selected ? (
+          detail ? (
+            <div className="card">
+              <div className="card-header">{detail.avatar_name}</div>
+              <div className="card-body" style={{ fontSize: '.85rem' }}>
+                <InfoRow label="UUID" value={detail.avatar_key} />
+                <InfoRow label="House" value={detail.house_name || 'None'} />
+                <InfoRow label="Archetype" value={detail.archetype || 'Not assigned'} />
+                <InfoRow label="Title" value={detail.title || 'None'} />
+                <InfoRow label="HP" value={`${detail.hp_current} / ${detail.hp_max}`} color={detail.hp_current < detail.hp_max / 2 ? 'var(--danger)' : 'var(--green)'} />
+                <InfoRow label="Currency" value={`${detail.gold_dragons}g / ${detail.silver_stags}s / ${detail.copper_stars}c`} color="var(--gold)" />
+                <InfoRow label="RP Score" value={detail.rp_score} />
+                <InfoRow label="Wounds" value={detail.wound_count} color={detail.wound_count > 0 ? 'var(--danger)' : 'var(--green)'} />
+                <InfoRow label="Inventory" value={`${detail.inventory_count} items (${detail.inventory_total_qty} qty)`} />
+                <InfoRow label="Skills" value={detail.skill_count} />
+                <InfoRow label="Admin Level" value={detail.admin_level || 'None'} color={detail.admin_level > 0 ? 'var(--danger)' : 'var(--text-muted)'} />
+                <InfoRow label="Status" value={detail.status} color={detail.status === 'online' ? 'var(--green)' : 'var(--text-muted)'} />
+                <InfoRow label="Banned" value={detail.is_banned ? 'Yes' : 'No'} color={detail.is_banned ? 'var(--danger)' : 'var(--green)'} />
+                <InfoRow label="Joined" value={new Date(detail.created_at).toLocaleDateString()} />
+                {detail.stats && (
+                  <div style={{ marginTop: '.5rem', padding: '.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '4px' }}>
+                    <div style={{ color: 'var(--gold)', marginBottom: '.25rem' }}>Stats (unspent: {detail.stats.unspent_points})</div>
+                    M:{detail.stats.might} A:{detail.stats.agility} E:{detail.stats.endurance} W:{detail.stats.wits} I:{detail.stats.will} P:{detail.stats.presence}
+                  </div>
+                )}
+
+                <div style={{ marginTop: '1rem', display: 'flex', flexWrap: 'wrap', gap: '.5rem' }}>
+                  <button className="btn btn-primary btn-sm" onClick={() => handleHeal(selected)}>Heal</button>
+                  {detail.is_banned ? (
+                    <button className="btn btn-sm" style={{ background: 'var(--green)', color: 'var(--bg-dark)' }} onClick={() => handleBan(selected, 0)}>Unban</button>
+                  ) : (
+                    <button className="btn btn-danger btn-sm" onClick={() => handleBan(selected, 1)}>Ban</button>
+                  )}
+                  {adminLevel >= 3 && (
+                    <>
+                      <select className="filter-select" defaultValue="" onChange={e => e.target.value && handleSetAdmin(selected, parseInt(e.target.value))}>
+                        <option value="">Set Admin...</option>
+                        <option value="0">Revoke Admin</option>
+                        <option value="1">Mod (L1)</option>
+                        <option value="2">GM (L2)</option>
+                        <option value="3">Admin (L3)</option>
+                      </select>
+                    </>
+                  )}
+                  {adminLevel >= 2 && (
+                    <button className="btn btn-outline btn-sm" onClick={() => { navigator.clipboard.writeText(selected); setError('UUID copied to clipboard') }}>Copy UUID</button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : <Loading />) : (
+          <div className="card"><div className="card-body"><p className="text-muted">Select a player to view details</p></div></div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function InfoRow({ label, value, color }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '.3rem 0', borderBottom: '1px solid var(--border-light)' }}>
+      <span style={{ color: 'var(--text-muted)' }}>{label}</span>
+      <span style={{ color: color || 'var(--text)', fontWeight: 'bold' }}>{value}</span>
+    </div>
+  )
+}
+
+// =====================================================
+function GrantTab({ setError }) {
+  const [targetKey, setTargetKey] = useState('')
+  const [grantType, setGrantType] = useState('gold')
+  const [value, setValue] = useState('')
+  const [currency, setCurrency] = useState('dragon')
+  const [result, setResult] = useState(null)
+
+  const handleGrant = async (e) => {
+    e.preventDefault()
+    setResult(null)
+    try {
+      await api.adminGrant(targetKey, grantType, value, currency)
+      setResult({ success: true, message: 'Grant successful' })
+      setTargetKey(''); setValue('')
+    } catch (err) { setResult({ success: false, message: err.message }) }
+  }
+
+  return (
+    <div className="card" style={{ maxWidth: '500px' }}>
+      <div className="card-header">Grant Reward</div>
+      <div className="card-body">
+        <form onSubmit={handleGrant}>
+          <div className="form-group">
+            <input className="form-input" placeholder="Target avatar key (UUID)" value={targetKey} onChange={e => setTargetKey(e.target.value)} required style={{ width: '100%' }} />
+          </div>
+          <div style={{ display: 'flex', gap: '.5rem', marginBottom: '.5rem' }}>
+            <select className="filter-select" value={grantType} onChange={e => setGrantType(e.target.value)} style={{ flex: 1 }}>
+              <option value="gold">Currency</option>
+              <option value="item">Item (by ID)</option>
+              <option value="xp">XP (to skill)</option>
+              <option value="stat">Stat Points</option>
+            </select>
+            <input className="form-input" placeholder="Amount / Item ID" value={value} onChange={e => setValue(e.target.value)} required style={{ flex: 1 }} />
+          </div>
+          {grantType === 'gold' && (
+            <select className="filter-select" value={currency} onChange={e => setCurrency(e.target.value)} style={{ marginBottom: '.5rem' }}>
+              <option value="dragon">Gold Dragons</option>
+              <option value="stag">Silver Stags</option>
+              <option value="star">Copper Stars</option>
+            </select>
+          )}
+          <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Grant</button>
+        </form>
+        {result && (
+          <div className={`alert ${result.success ? 'alert-success' : 'alert-danger'}`} style={{ marginTop: '.5rem', fontSize: '.85rem' }}>
+            {result.message}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// =====================================================
+function HousesTab({ setError }) {
+  const [houseSearch, setHouseSearch] = useState('')
+  const [houses, setHouses] = useState([])
+  const [selectedHouse, setSelectedHouse] = useState(null)
+  const [members, setMembers] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  const searchHouses = async () => {
+    try {
+      const data = await api.getHouses(houseSearch || null, null)
+      setHouses(data.houses || [])
+    } catch (err) { setError(err.message) }
+  }
+
+  const viewMembers = async (houseId, houseName) => {
+    setSelectedHouse({ id: houseId, name: houseName })
+    setLoading(true)
+    try {
+      const data = await api.adminHouseMembers(houseId)
+      setMembers(data.members || [])
+    } catch (err) { setError(err.message) }
+    setLoading(false)
+  }
+
+  const handleSetLord = async (avatarKey) => {
+    if (!confirm(`Make this player the Lord of ${selectedHouse.name}?`)) return
+    try {
+      await api.adminSetLord(selectedHouse.id, avatarKey)
+      viewMembers(selectedHouse.id, selectedHouse.name)
+    } catch (err) { setError(err.message) }
+  }
+
+  useEffect(() => { searchHouses() }, [])
+
+  return (
+    <div className="grid grid-2">
+      <div className="card">
+        <div className="card-header">Find House</div>
+        <div className="card-body">
+          <div style={{ display: 'flex', gap: '.5rem', marginBottom: '1rem' }}>
+            <input type="text" className="filter-input" placeholder="House name..." value={houseSearch} onChange={e => setHouseSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && searchHouses()} />
+            <button className="btn btn-primary btn-sm" onClick={searchHouses}>Search</button>
+          </div>
+          {houses.slice(0, 20).map(h => (
+            <div key={h.id} onClick={() => viewMembers(h.id, h.name)} style={{
+              cursor: 'pointer', padding: '.5rem', marginBottom: '.25rem',
+              background: selectedHouse?.id === h.id ? 'rgba(218,165,32,0.1)' : 'transparent',
+              border: '1px solid var(--border)', borderRadius: '4px'
+            }}>
+              <div style={{ fontWeight: 'bold' }}>{h.name}</div>
+              <div style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{h.region} | {h.type}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        {selectedHouse ? (
+          <div className="card">
+            <div className="card-header">{selectedHouse.name} — Members</div>
+            <div className="card-body">
+              {loading ? <Loading /> : members.length === 0 ? <p className="text-muted">No members</p> : (
+                <table style={{ width: '100%', fontSize: '.85rem' }}>
+                  <thead><tr style={{ borderBottom: '1px solid var(--gold)' }}>
+                    <th style={{ textAlign: 'left', padding: '.5rem' }}>Name</th>
+                    <th style={{ textAlign: 'left', padding: '.5rem' }}>Rank</th>
+                    <th style={{ textAlign: 'left', padding: '.5rem' }}>Status</th>
+                    <th style={{ textAlign: 'right', padding: '.5rem' }}>Actions</th>
+                  </tr></thead>
+                  <tbody>
+                    {members.map(m => (
+                      <tr key={m.avatar_key} style={{ borderBottom: '1px solid var(--border)' }}>
+                        <td style={{ padding: '.5rem' }}>
+                          {m.avatar_name}
+                          {m.is_lord && <span style={{ color: 'var(--gold)', fontSize: '.75rem', marginLeft: '.5rem' }}>★ Lord</span>}
+                          {m.is_banned && <span style={{ color: 'var(--danger)', fontSize: '.75rem', marginLeft: '.5rem' }}>BANNED</span>}
+                        </td>
+                        <td style={{ padding: '.5rem', color: 'var(--text-muted)' }}>{m.rank}</td>
+                        <td style={{ padding: '.5rem' }}>{m.status}</td>
+                        <td style={{ padding: '.5rem', textAlign: 'right' }}>
+                          {!m.is_lord && <button className="btn btn-sm btn-outline" onClick={() => handleSetLord(m.avatar_key)}>Make Lord</button>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        ) : <div className="card"><div className="card-body"><p className="text-muted">Select a house to manage members</p></div></div>}
+      </div>
+    </div>
+  )
+}
+
+// =====================================================
+function EconomyTab() {
+  const [stats, setStats] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => { load() }, [])
+
+  const load = async () => {
+    setLoading(true)
+    try { setStats(await api.adminEconomyStats()) } catch (err) { console.error(err) }
+    setLoading(false)
+  }
+
+  if (loading) return <Loading />
+  if (!stats) return <p className="text-muted">Failed to load economy stats</p>
+
+  return (
+    <div>
+      <div className="grid grid-3" style={{ marginBottom: '1rem' }}>
+        <StatCard label="Gold Dragons" value={stats.total_dragons} sub="in circulation" color="var(--gold)" />
+        <StatCard label="Silver Stags" value={stats.total_stags} sub="in circulation" color="var(--text-muted)" />
+        <StatCard label="Copper Stars" value={stats.total_stars} sub="in circulation" color="var(--text-muted)" />
+      </div>
+
+      <div className="grid grid-2">
+        <div className="card">
+          <div className="card-header">Wealthiest Players</div>
+          <div className="card-body">
+            <table style={{ width: '100%', fontSize: '.85rem' }}>
+              <thead><tr style={{ borderBottom: '1px solid var(--gold)' }}>
+                <th style={{ textAlign: 'left', padding: '.5rem' }}>Player</th>
+                <th style={{ textAlign: 'right', padding: '.5rem' }}>Total (stars equiv.)</th>
+              </tr></thead>
+              <tbody>
+                {(stats.wealthiest || []).map((w, i) => (
+                  <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '.5rem' }}>{w.avatar_name}</td>
+                    <td style={{ padding: '.5rem', textAlign: 'right', color: 'var(--gold)' }}>{parseInt(w.total_stars).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-header">Recent Transactions</div>
+          <div className="card-body">
+            {(stats.recent_transactions || []).length === 0 ? <p className="text-muted">No recent transactions</p> : (
+              <table style={{ width: '100%', fontSize: '.8rem' }}>
+                <thead><tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  <th style={{ textAlign: 'left', padding: '.25rem' }}>Type</th>
+                  <th style={{ textAlign: 'right', padding: '.25rem' }}>Amount</th>
+                  <th style={{ textAlign: 'left', padding: '.25rem' }}>Currency</th>
+                  <th style={{ textAlign: 'left', padding: '.25rem' }}>Reason</th>
+                </tr></thead>
+                <tbody>
+                  {(stats.recent_transactions || []).slice(0, 15).map((t, i) => (
+                    <tr key={i} style={{ borderBottom: '1px solid var(--border-light)' }}>
+                      <td style={{ padding: '.25rem' }}>{t.entry_type}</td>
+                      <td style={{ padding: '.25rem', textAlign: 'right', color: 'var(--gold)' }}>{t.amount}</td>
+                      <td style={{ padding: '.25rem', color: 'var(--text-muted)' }}>{t.currency}</td>
+                      <td style={{ padding: '.25rem', color: 'var(--text-muted)', fontSize: '.75rem' }}>{t.reason}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// =====================================================
+function AuditTab() {
+  const [logType, setLogType] = useState('admin')
+  const [target, setTarget] = useState('')
+  const [logs, setLogs] = useState([])
+  const [loaded, setLoaded] = useState(false)
+
+  const viewLogs = async () => {
+    try {
+      const data = await api.adminAudit(logType, target || null, 50)
+      setLogs(data.logs || [])
+      setLoaded(true)
+    } catch (err) { console.error(err) }
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '.5rem', marginBottom: '1rem' }}>
+        <select className="filter-select" value={logType} onChange={e => setLogType(e.target.value)}>
+          <option value="admin">Admin Actions</option>
+          <option value="combat">Combat Log</option>
+          <option value="economy">Economy Log</option>
+        </select>
+        <input className="filter-input" placeholder="Target UUID (optional)" value={target} onChange={e => setTarget(e.target.value)} style={{ flex: 1 }} />
+        <button className="btn btn-primary btn-sm" onClick={viewLogs}>View</button>
+      </div>
+
+      {!loaded ? <p className="text-muted">Select a log type and click View</p> : logs.length === 0 ? <p className="text-muted">No logs found</p> : (
+        <table style={{ width: '100%', fontSize: '.85rem' }}>
+          <thead><tr style={{ borderBottom: '2px solid var(--gold)' }}>
+            <th style={{ textAlign: 'left', padding: '.5rem' }}>Date</th>
+            <th style={{ textAlign: 'left', padding: '.5rem' }}>Admin/Actor</th>
+            <th style={{ textAlign: 'left', padding: '.5rem' }}>Action</th>
+            <th style={{ textAlign: 'left', padding: '.5rem' }}>Target</th>
+            <th style={{ textAlign: 'left', padding: '.5rem' }}>Details</th>
+          </tr></thead>
+          <tbody>
+            {logs.map((l, i) => (
+              <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}>
+                <td style={{ padding: '.5rem', fontSize: '.8rem' }}>{new Date(l.created_at || l.timestamp).toLocaleString()}</td>
+                <td style={{ padding: '.5rem' }}>{l.admin_name || l.attacker_name || l.admin_key?.slice(0, 8) || '-'}</td>
+                <td style={{ padding: '.5rem' }}>{l.action || l.entry_type}</td>
+                <td style={{ padding: '.5rem', fontSize: '.8rem' }}>{l.target_key?.slice(0, 8) || l.defender_name || '-'}</td>
+                <td style={{ padding: '.5rem', fontSize: '.8rem', color: 'var(--text-muted)' }}>{l.details || l.reason || ''}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+function BroadcastTab({ setError }) {
+  const [message, setMessage] = useState('')
+  const [result, setResult] = useState(null)
+
+  const handleBroadcast = async () => {
+    if (!message.trim()) return
+    setResult(null)
+    try {
+      await api.adminBroadcast(message)
+      setResult({ success: true, message: 'Broadcast sent' })
+      setMessage('')
+    } catch (err) { setResult({ success: false, message: err.message }) }
+  }
+
+  return (
+    <div className="card" style={{ maxWidth: '500px' }}>
+      <div className="card-header">Broadcast Message</div>
+      <div className="card-body">
+        <p style={{ fontSize: '.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+          Send a message to all online players via the HUD. (Requires in-world relay)
+        </p>
+        <textarea
+          className="form-input"
+          placeholder="Enter broadcast message..."
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          rows="4"
+          style={{ width: '100%', marginBottom: '.5rem' }}
+        />
+        <button className="btn btn-primary" onClick={handleBroadcast} style={{ width: '100%' }}>Broadcast</button>
+        {result && (
+          <div className={`alert ${result.success ? 'alert-success' : 'alert-danger'}`} style={{ marginTop: '.5rem', fontSize: '.85rem' }}>
+            {result.message}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// =====================================================
+function RequestsTab({ adminLevel, setError }) {
+  const [requests, setRequests] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [note, setNote] = useState({})
+
+  const load = async () => {
+    setLoading(true)
+    try {
+      const r = await api.adminPendingRequests()
+      setRequests(r.requests || [])
+    } catch (err) { setError(err.message) }
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [])
+
+  const handleApprove = async (id) => {
+    try {
+      await api.adminApproveRequest(id, note[id] || '')
+      await load()
+    } catch (err) { setError(err.message) }
+  }
+
+  const handleDeny = async (id) => {
+    try {
+      await api.adminDenyRequest(id, note[id] || '')
+      await load()
+    } catch (err) { setError(err.message) }
+  }
+
+  if (loading) return <Loading />
+
+  return (
+    <div>
+      <h3>Pending Approval Requests ({requests.length})</h3>
+      {requests.length === 0 ? (
+        <p className="text-muted">No pending requests</p>
+      ) : (
+        <table className="stats-table">
+          <thead>
+            <tr><th>Player</th><th>Type</th><th>Reason</th><th>Submitted</th><th>Note</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            {requests.map(r => (
+              <tr key={r.id}>
+                <td><strong>{r.avatar_name}</strong></td>
+                <td style={{ textTransform: 'capitalize' }}>{r.type.replace(/_/g, ' ')}</td>
+                <td>{r.reason}</td>
+                <td>{new Date(r.created_at).toLocaleString()}</td>
+                <td>
+                  <input
+                    className="form-input"
+                    style={{ width: '150px', fontSize: '.8rem' }}
+                    placeholder="Optional note..."
+                    value={note[r.id] || ''}
+                    onChange={e => setNote({ ...note, [r.id]: e.target.value })}
+                  />
+                </td>
+                <td>
+                  {adminLevel >= 2 ? (
+                    <div className="d-flex gap-1">
+                      <button className="btn btn-primary btn-sm" onClick={() => handleApprove(r.id)}>Approve</button>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDeny(r.id)}>Deny</button>
+                    </div>
+                  ) : (
+                    <span className="text-muted" style={{ fontSize: '.8rem' }}>View only (need L2+)</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  )
+}
