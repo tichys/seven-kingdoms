@@ -27,6 +27,10 @@ async function request(endpoint, options = {}) {
 
   try {
     const response = await fetch(`${API_BASE}/${endpoint}`, config)
+    const contentType = response.headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      throw new Error('Cannot connect to server. Is the backend running?')
+    }
     const data = await response.json()
 
     if (!response.ok) {
@@ -35,7 +39,7 @@ async function request(endpoint, options = {}) {
 
     return data
   } catch (err) {
-    if (err.message === 'Failed to fetch') {
+    if (err.message === 'Failed to fetch' || err.name === 'SyntaxError') {
       throw new Error('Cannot connect to server. Is the backend running?')
     }
     throw err
