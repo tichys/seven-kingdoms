@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
 import ScrollProgress from './components/ScrollProgress.jsx'
@@ -25,56 +26,58 @@ import NotFound from './pages/NotFound.jsx'
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ScrollProgress />
-      <Navbar />
-      <div className="page-fade">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/houses" element={<Houses />} />
-          <Route path="/houses/:id" element={<HouseDetail />} />
-          <Route path="/wiki" element={<Wiki />} />
-          <Route path="/compendium" element={<Compendium />} />
-          <Route path="/lore" element={<Lore />} />
-          <Route path="/tools" element={<Tools />} />
-          <Route
-            path="/profile"
-            element={<ProtectedRoute><Profile /></ProtectedRoute>}
-          />
-          <Route
-            path="/character"
-            element={<ProtectedRoute><Character /></ProtectedRoute>}
-          />
-          <Route
-            path="/setup"
-            element={<ProtectedRoute><CharacterSetup /></ProtectedRoute>}
-          />
-          <Route
-            path="/logs"
-            element={<ProtectedRoute><Logs /></ProtectedRoute>}
-          />
-          <Route
-            path="/war"
-            element={<ProtectedRoute><War /></ProtectedRoute>}
-          />
-          <Route
-            path="/pve"
-            element={<ProtectedRoute><PvE /></ProtectedRoute>}
-          />
-          <Route
-            path="/community"
-            element={<ProtectedRoute><Community /></ProtectedRoute>}
-          />
-          <Route
-            path="/admin"
-            element={<ProtectedRoute adminOnly><Admin /></ProtectedRoute>}
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
-      <BackToTop />
-      <Footer />
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ScrollProgress />
+        <Navbar />
+        <div className="page-fade">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/houses" element={<Houses />} />
+            <Route path="/houses/:id" element={<HouseDetail />} />
+            <Route path="/wiki" element={<Wiki />} />
+            <Route path="/compendium" element={<Compendium />} />
+            <Route path="/lore" element={<Lore />} />
+            <Route path="/tools" element={<Tools />} />
+            <Route
+              path="/profile"
+              element={<ProtectedRoute><Profile /></ProtectedRoute>}
+            />
+            <Route
+              path="/character"
+              element={<ProtectedRoute><Character /></ProtectedRoute>}
+            />
+            <Route
+              path="/setup"
+              element={<ProtectedRoute><CharacterSetup /></ProtectedRoute>}
+            />
+            <Route
+              path="/logs"
+              element={<ProtectedRoute><Logs /></ProtectedRoute>}
+            />
+            <Route
+              path="/war"
+              element={<ProtectedRoute><War /></ProtectedRoute>}
+            />
+            <Route
+              path="/pve"
+              element={<ProtectedRoute><PvE /></ProtectedRoute>}
+            />
+            <Route
+              path="/community"
+              element={<ProtectedRoute><Community /></ProtectedRoute>}
+            />
+            <Route
+              path="/admin"
+              element={<ProtectedRoute adminOnly><Admin /></ProtectedRoute>}
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+        <BackToTop />
+        <Footer />
+      </AuthProvider>
+    </ErrorBoundary>
   )
 }
