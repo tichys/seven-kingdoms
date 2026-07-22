@@ -80,7 +80,7 @@ export default function Login() {
               disabled={submitting}
             />
             <small className="text-muted" style={{ fontSize: '.8rem', display: 'block', marginTop: '.25rem' }}>
-              Wear the HUD in-world and say <strong>/7 web</strong> to generate a code.
+              Wear the HUD in-world and say <strong>/hud web</strong> to generate a code.
               Codes expire after 5 minutes.
             </small>
           </div>
