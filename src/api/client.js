@@ -688,6 +688,14 @@ export const api = {
   creatureUpdate: (id, data) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_update', creature_id: id, ...data }) }),
   creatureDelete: (id) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_delete', creature_id: id }) }),
 
+  // Admin - Advanced
+  spawnCreature: (creatureTypeId, region, count) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'spawn_creature', creature_type_id: creatureTypeId, region, count }) }),
+  grantTitle: (avatarKey, titleId) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'grant_title', avatar_key: avatarKey, title_id: titleId }) }),
+  setWeather: (region, weatherType, severity, duration) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'set_weather', region, weather_type: weatherType, severity, duration_minutes: duration }) }),
+  forceQuestComplete: (avatarKey, questId) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'force_quest_complete', avatar_key: avatarKey, quest_id: questId }) }),
+  infectPlayer: (avatarKey, diseaseId) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'infect_player', avatar_key: avatarKey, disease_id: diseaseId }) }),
+  setSeason: (season, intensity) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'set_season', season, intensity }) }),
+
   // Recent events (notice board)
   recentEvents: () => request('web_wiki.php', { method: 'POST', body: JSON.stringify({ action: 'recent_events' }) }),
 

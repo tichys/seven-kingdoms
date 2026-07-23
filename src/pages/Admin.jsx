@@ -15,6 +15,7 @@ export default function Admin() {
     { id: 'houses', label: 'Houses', minLevel: 1 },
     { id: 'economy', label: 'Economy', minLevel: 1 },
     { id: 'creatures', label: 'Creatures', minLevel: 1 },
+    { id: 'tools', label: 'Tools', minLevel: 2 },
     { id: 'requests', label: 'Requests', minLevel: 1 },
     { id: 'audit', label: 'Audit Logs', minLevel: 1 },
     { id: 'broadcast', label: 'Broadcast', minLevel: 2 }
@@ -58,6 +59,7 @@ export default function Admin() {
         {tab === 'houses' && <HousesTab setError={setError} />}
         {tab === 'economy' && <EconomyTab />}
         {tab === 'creatures' && <CreaturesTab adminLevel={adminLevel} setError={setError} />}
+        {tab === 'tools' && <ToolsTab setError={setError} />}
         {tab === 'requests' && <RequestsTab adminLevel={adminLevel} setError={setError} />}
         {tab === 'audit' && <AuditTab />}
         {tab === 'broadcast' && <BroadcastTab setError={setError} />}
@@ -874,6 +876,112 @@ function CreaturesTab({ adminLevel, setError }) {
             ))}
           </tbody>
         </table>
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+// Tools Tab - spawn, weather, season, titles, infect, quest force-complete
+// =====================================================
+function ToolsTab({ setError }) {
+  const [success, setSuccess] = useState(null)
+  const [subTab, setSubTab] = useState('spawn')
+  const [spawnForm, setSpawnForm] = useState({ creature_type_id: '', region: '', count: 1 })
+  const [weatherForm, setWeatherForm] = useState({ region: 'North', weather_type: 'rain', severity: 1, duration: 60 })
+  const [seasonForm, setSeasonForm] = useState({ season: 'winter', intensity: 3 })
+  const [titleForm, setTitleForm] = useState({ avatar_key: '', title_id: '' })
+  const [infectForm, setInfectForm] = useState({ avatar_key: '', disease_id: '' })
+  const [questForm, setQuestForm] = useState({ avatar_key: '', quest_id: '' })
+
+  const doAction = async (fn, label) => {
+    setError(null)
+    setSuccess(null)
+    try {
+      const res = await fn()
+      setSuccess(res.message || label || 'Done')
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  const regions = ['North', 'Riverlands', 'Westerlands', 'Reach', 'Stormlands', 'Dorne', 'Vale', 'Iron Islands', 'Crownlands']
+  const weatherTypes = ['clear', 'rain', 'storm', 'snow', 'blizzard', 'fog', 'heatwave', 'drought', 'sandstorm']
+  const seasons = ['spring', 'summer', 'autumn', 'winter']
+
+  return (
+    <div>
+      {success && <div className="alert alert-success mb-2">{success}</div>}
+      <div className="tab-nav mb-3">
+        <button className={`tab-btn${subTab === 'spawn' ? ' active' : ''}`} onClick={() => setSubTab('spawn')}>Spawn</button>
+        <button className={`tab-btn${subTab === 'weather' ? ' active' : ''}`} onClick={() => setSubTab('weather')}>Weather</button>
+        <button className={`tab-btn${subTab === 'season' ? ' active' : ''}`} onClick={() => setSubTab('season')}>Season</button>
+        <button className={`tab-btn${subTab === 'title' ? ' active' : ''}`} onClick={() => setSubTab('title')}>Title</button>
+        <button className={`tab-btn${subTab === 'infect' ? ' active' : ''}`} onClick={() => setSubTab('infect')}>Disease</button>
+        <button className={`tab-btn${subTab === 'quest' ? ' active' : ''}`} onClick={() => setSubTab('quest')}>Force Quest</button>
+      </div>
+
+      {subTab === 'spawn' && (
+        <div className="card"><div className="card-header">Spawn Creature Encounter</div><div className="card-body">
+          <div className="grid grid-3">
+            <div className="form-group"><label className="form-label">Creature Type ID</label><input className="form-input" type="number" value={spawnForm.creature_type_id} onChange={e => setSpawnForm({...spawnForm, creature_type_id: e.target.value})} /></div>
+            <div className="form-group"><label className="form-label">Region</label><select className="form-select" value={spawnForm.region} onChange={e => setSpawnForm({...spawnForm, region: e.target.value})}><option value="">Any</option>{regions.map(r => <option key={r} value={r}>{r}</option>)}</select></div>
+            <div className="form-group"><label className="form-label">Count</label><input className="form-input" type="number" min="1" max="50" value={spawnForm.count} onChange={e => setSpawnForm({...spawnForm, count: e.target.value})} /></div>
+          </div>
+          <button className="btn btn-primary btn-sm mt-2" onClick={() => doAction(() => api.spawnCreature(+spawnForm.creature_type_id, spawnForm.region, +spawnForm.count), 'Creature spawned')}>Spawn</button>
+        </div></div>
+      )}
+
+      {subTab === 'weather' && (
+        <div className="card"><div className="card-header">Set Weather</div><div className="card-body">
+          <div className="grid grid-3">
+            <div className="form-group"><label className="form-label">Region</label><select className="form-select" value={weatherForm.region} onChange={e => setWeatherForm({...weatherForm, region: e.target.value})}>{regions.map(r => <option key={r} value={r}>{r}</option>)}</select></div>
+            <div className="form-group"><label className="form-label">Weather Type</label><select className="form-select" value={weatherForm.weather_type} onChange={e => setWeatherForm({...weatherForm, weather_type: e.target.value})}>{weatherTypes.map(w => <option key={w} value={w}>{w}</option>)}</select></div>
+            <div className="form-group"><label className="form-label">Severity (1-5)</label><input className="form-input" type="number" min="1" max="5" value={weatherForm.severity} onChange={e => setWeatherForm({...weatherForm, severity: e.target.value})} /></div>
+            <div className="form-group"><label className="form-label">Duration (min)</label><input className="form-input" type="number" value={weatherForm.duration} onChange={e => setWeatherForm({...weatherForm, duration: e.target.value})} /></div>
+          </div>
+          <button className="btn btn-primary btn-sm mt-2" onClick={() => doAction(() => api.setWeather(weatherForm.region, weatherForm.weather_type, +weatherForm.severity, +weatherForm.duration), 'Weather set')}>Set Weather</button>
+        </div></div>
+      )}
+
+      {subTab === 'season' && (
+        <div className="card"><div className="card-header">Change Season</div><div className="card-body">
+          <div className="grid grid-2">
+            <div className="form-group"><label className="form-label">Season</label><select className="form-select" value={seasonForm.season} onChange={e => setSeasonForm({...seasonForm, season: e.target.value})}>{seasons.map(s => <option key={s} value={s}>{s}</option>)}</select></div>
+            <div className="form-group"><label className="form-label">Intensity (1-5)</label><input className="form-input" type="number" min="1" max="5" value={seasonForm.intensity} onChange={e => setSeasonForm({...seasonForm, intensity: e.target.value})} /></div>
+          </div>
+          <button className="btn btn-primary btn-sm mt-2" onClick={() => doAction(() => api.setSeason(seasonForm.season, +seasonForm.intensity), 'Season changed')}>Change Season</button>
+        </div></div>
+      )}
+
+      {subTab === 'title' && (
+        <div className="card"><div className="card-header">Grant Title</div><div className="card-body">
+          <div className="grid grid-2">
+            <div className="form-group"><label className="form-label">Avatar Key</label><input className="form-input" value={titleForm.avatar_key} onChange={e => setTitleForm({...titleForm, avatar_key: e.target.value})} placeholder="UUID" /></div>
+            <div className="form-group"><label className="form-label">Title ID</label><input className="form-input" type="number" value={titleForm.title_id} onChange={e => setTitleForm({...titleForm, title_id: e.target.value})} /></div>
+          </div>
+          <button className="btn btn-primary btn-sm mt-2" onClick={() => doAction(() => api.grantTitle(titleForm.avatar_key, +titleForm.title_id), 'Title granted')}>Grant Title</button>
+        </div></div>
+      )}
+
+      {subTab === 'infect' && (
+        <div className="card"><div className="card-header">Infect Player</div><div className="card-body">
+          <div className="grid grid-2">
+            <div className="form-group"><label className="form-label">Avatar Key</label><input className="form-input" value={infectForm.avatar_key} onChange={e => setInfectForm({...infectForm, avatar_key: e.target.value})} placeholder="UUID" /></div>
+            <div className="form-group"><label className="form-label">Disease ID</label><input className="form-input" type="number" value={infectForm.disease_id} onChange={e => setInfectForm({...infectForm, disease_id: e.target.value})} /></div>
+          </div>
+          <button className="btn btn-danger btn-sm mt-2" onClick={() => doAction(() => api.infectPlayer(infectForm.avatar_key, +infectForm.disease_id), 'Player infected')}>Infect</button>
+        </div></div>
+      )}
+
+      {subTab === 'quest' && (
+        <div className="card"><div className="card-header">Force-Complete Quest</div><div className="card-body">
+          <div className="grid grid-2">
+            <div className="form-group"><label className="form-label">Avatar Key</label><input className="form-input" value={questForm.avatar_key} onChange={e => setQuestForm({...questForm, avatar_key: e.target.value})} placeholder="UUID" /></div>
+            <div className="form-group"><label className="form-label">Quest ID</label><input className="form-input" type="number" value={questForm.quest_id} onChange={e => setQuestForm({...questForm, quest_id: e.target.value})} /></div>
+          </div>
+          <button className="btn btn-primary btn-sm mt-2" onClick={() => doAction(() => api.forceQuestComplete(questForm.avatar_key, +questForm.quest_id), 'Quest completed')}>Force Complete</button>
+        </div></div>
       )}
     </div>
   )
