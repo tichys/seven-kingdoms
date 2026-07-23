@@ -44,9 +44,9 @@ export default function Logs() {
               {data.map((r, i) => (
                 <tr key={i}>
                   <td>{new Date(r.timestamp).toLocaleString()}</td>
-                  <td>{r.attacker_name || r.attacker_key}</td>
-                  <td>{r.defender_name || r.defender_key}</td>
-                  <td style={{ textTransform: 'capitalize' }}>{r.outcome}</td>
+                  <td>{r.attacker || r.attacker_key}</td>
+                  <td>{r.defender || r.defender_key}</td>
+                  <td style={{ textTransform: 'capitalize' }}>{r.result}</td>
                   <td>{r.damage}</td>
                 </tr>
               ))}
@@ -95,7 +95,7 @@ export default function Logs() {
                 <tr key={i}>
                   <td>{r.title || r.quest_id}</td>
                   <td style={{ textTransform: 'capitalize' }}>{r.status}</td>
-                  <td>{r.current_objective || 0}</td>
+                  <td>{r.current_objective || r.progress || 0}</td>
                   <td>{new Date(r.accepted_date).toLocaleDateString()}</td>
                 </tr>
               ))}

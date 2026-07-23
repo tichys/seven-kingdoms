@@ -65,6 +65,7 @@ export default function Houses() {
                     <p style={{ fontSize: '.85rem' }} className="text-muted">Seat: {h.seat || 'Unknown'}</p>
                     <p style={{ fontSize: '.85rem' }} className="text-muted">Region: {h.region}</p>
                     <p style={{ fontSize: '.85rem' }} className="text-muted">Type: {h.type}</p>
+                    <p style={{ fontSize: '.85rem' }} className="text-muted">Members: {h.member_count || 0}</p>
                   </div>
                 </div>
               </Link>
