@@ -21,7 +21,7 @@ export default function ProtectedRoute({ children, adminOnly = false, allowUnapp
     )
   }
 
-  if (!allowUnapproved && (!characterApproved || !hasArchetype) && location.pathname !== '/character-creator') {
+  if (!allowUnapproved && !isAdmin && (!characterApproved || !hasArchetype) && location.pathname !== '/character-creator') {
     return <Navigate to="/character-creator" replace />
   }
 
