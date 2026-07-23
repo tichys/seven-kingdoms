@@ -42,6 +42,7 @@ export default function CharacterCreator() {
   })
 
   const [houseSearch, setHouseSearch] = useState('')
+  const [editing, setEditing] = useState(false)
   const [houseRegion, setHouseRegion] = useState('')
 
   const totalSteps = 7
@@ -127,7 +128,7 @@ export default function CharacterCreator() {
   const pendingApp = status?.applications?.find(a => a.status === 'pending')
   const deniedApps = status?.applications?.filter(a => a.status === 'denied') || []
 
-  if (pendingApp && !submitting) {
+  if (pendingApp && !submitting && !editing) {
     return (
       <div className="page-content">
         <div className="card" style={{ maxWidth: '600px', margin: '2rem auto' }}>
@@ -150,7 +151,25 @@ export default function CharacterCreator() {
               Submitted: {new Date(pendingApp.submitted_at).toLocaleString()}
             </p>
             <p style={{ marginTop: '1rem' }}>
-              <button className="btn btn-primary" onClick={() => { setStep(0); setResult(null) }}>
+      <button className="btn btn-primary" onClick={() => {
+        setStep(0); setResult(null); setEditing(true)
+        if (pendingApp) {
+          setForm({
+            character_name: pendingApp.character_name || '',
+            gender: pendingApp.gender || '',
+            age: pendingApp.age || 18,
+            appearance: pendingApp.appearance || '',
+            background: pendingApp.background || '',
+            personality: pendingApp.personality || '',
+            house_id: pendingApp.house_id || null,
+            house_rank: pendingApp.house_rank || 'Smallfolk',
+            archetype_id: pendingApp.archetype_id || null,
+            religion_id: pendingApp.religion_id || null,
+            might: pendingApp.might || 3, agility: pendingApp.agility || 3, endurance: pendingApp.endurance || 3,
+            wits: pendingApp.wits || 3, will: pendingApp.will || 3, presence: pendingApp.presence || 3
+          })
+        }
+      }}>
                 Edit & Resubmit
               </button>
             </p>
