@@ -686,5 +686,8 @@ export const api = {
   creatureList: (search = '') => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_list', search }) }),
   creatureCreate: (data) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_create', ...data }) }),
   creatureUpdate: (id, data) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_update', creature_id: id, ...data }) }),
-  creatureDelete: (id) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_delete', creature_id: id }) })
+  creatureDelete: (id) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_delete', creature_id: id }) }),
+
+  // Recent events (notice board)
+  recentEvents: () => request('web_wiki.php', { method: 'POST', body: JSON.stringify({ action: 'recent_events' }) })
 }
