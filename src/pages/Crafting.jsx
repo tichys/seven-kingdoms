@@ -45,7 +45,7 @@ export default function Crafting() {
     }
   }
 
-  const stationTypes = [...new Set(recipes.map(r => r.station_type))].sort()
+  const stationTypes = [...new Set(recipes.map(r => r.station))].sort()
 
   return (
     <div>
@@ -84,12 +84,12 @@ export default function Crafting() {
                       {recipes.map(r => (
                         <tr key={r.id}>
                           <td><strong>{r.name}</strong></td>
-                          <td style={{ textTransform: 'capitalize' }}>{r.station_type}</td>
-                          <td>{r.skill_required}</td>
+                          <td style={{ textTransform: 'capitalize' }}>{r.station}</td>
+                          <td>{r.skill}</td>
                           <td>{r.skill_level}</td>
-                          <td>{r.time_minutes}m</td>
+                          <td>{r.time_mins}m</td>
                           <td style={{ fontSize: '.8rem' }}>
-                            {(r.materials || []).map(m => `${m.quantity}x item#${m.item_id}`).join(', ') || 'None'}
+                            {(r.materials || []).map(m => `${m.qty}x ${m.name}`).join(', ') || 'None'}
                           </td>
                           <td>
                             <select
@@ -101,7 +101,7 @@ export default function Crafting() {
                               }}
                             >
                               <option value="" disabled>Select station...</option>
-                              {stations.filter(s => s.station_type === r.station_type).map(s => (
+                              {stations.filter(s => s.type === r.station).map(s => (
                                 <option key={s.id} value={s.id}>{s.name}</option>
                               ))}
                             </select>
@@ -117,12 +117,10 @@ export default function Crafting() {
                 <div className="grid grid-2">
                   {activeCrafts.map(c => (
                     <div key={c.id} className="card">
-                      <div className="card-header">{c.recipe_name}</div>
+                      <div className="card-header">{c.recipe}</div>
                       <div className="card-body">
                         <table className="stats-table">
                           <tbody>
-                            <tr><th>Station</th><td>{c.station_name || 'Unknown'}</td></tr>
-                            <tr><th>Started</th><td>{new Date(c.started_at).toLocaleString()}</td></tr>
                             <tr><th>Completes</th><td>{new Date(c.completes_at).toLocaleString()}</td></tr>
                             <tr><th>Status</th><td>{c.ready ? <span className="text-gold">Ready!</span> : `${c.seconds_left}s left`}</td></tr>
                           </tbody>
@@ -152,7 +150,7 @@ export default function Crafting() {
                     {stations.map(s => (
                       <tr key={s.id}>
                         <td><strong>{s.name}</strong></td>
-                        <td style={{ textTransform: 'capitalize' }}>{s.station_type}</td>
+                        <td style={{ textTransform: 'capitalize' }}>{s.type}</td>
                         <td>{s.territory_id || 'None'}</td>
                       </tr>
                     ))}
