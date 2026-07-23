@@ -724,5 +724,19 @@ export const api = {
   houseProposeMarriage: (targetKey) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'propose_marriage', target_key: targetKey }) }),
   houseMarry: (marriageId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'marry', marriage_id: marriageId }) }),
   houseAnnul: (marriageId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'annul', marriage_id: marriageId }) }),
-  houseSwear: (minorId, majorId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'swear', minor_id: minorId, major_id: majorId }) })
+  houseSwear: (minorId, majorId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'swear', minor_id: minorId, major_id: majorId }) }),
+
+  // Factions
+  factionList: () => request('web_faction.php', { method: 'POST', body: JSON.stringify({ action: 'list' }) }),
+  factionMyRep: () => request('web_faction.php', { method: 'POST', body: JSON.stringify({ action: 'my_rep' }) }),
+  factionJoin: (factionId) => request('web_faction.php', { method: 'POST', body: JSON.stringify({ action: 'join', faction_id: factionId }) }),
+  factionRewards: () => request('web_faction.php', { method: 'POST', body: JSON.stringify({ action: 'rewards' }) }),
+  factionClaim: (rewardId) => request('web_faction.php', { method: 'POST', body: JSON.stringify({ action: 'claim', reward_id: rewardId }) }),
+
+  // Religion
+  religionGet: () => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'get' }) }),
+  religionList: () => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'list' }) }),
+  religionSet: (religionId) => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'set', religion_id: religionId }) }),
+  religionPray: () => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'pray' }) }),
+  religionPowers: () => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'powers' }) })
 }

@@ -13,6 +13,8 @@ export default function Character() {
   const [wounds, setWounds] = useState(null)
   const [survival, setSurvival] = useState(null)
   const [diseases, setDiseases] = useState(null)
+  const [factions, setFactions] = useState(null)
+  const [religion, setReligion] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -24,8 +26,10 @@ export default function Character() {
       api.getSkills().catch(e => ({ error: e.message })),
       api.getWounds().catch(e => ({ error: e.message })),
       api.getSurvival().catch(e => ({ error: e.message })),
-      api.getDiseases().catch(e => ({ error: e.message }))
-    ]).then(([char, st, inv, sk, wd, sv, dis]) => {
+      api.getDiseases().catch(e => ({ error: e.message })),
+      api.factionMyRep().catch(e => ({ error: e.message })),
+      api.religionGet().catch(e => ({ error: e.message }))
+    ]).then(([char, st, inv, sk, wd, sv, dis, fac, rel]) => {
       if (char.error) { setError(char.error); setLoading(false); return }
       setCharacter(char)
       if (!st.error) setStats(st)
@@ -34,6 +38,8 @@ export default function Character() {
       if (!wd.error) setWounds(wd)
       if (!sv.error) setSurvival(sv)
       if (!dis.error) setDiseases(dis)
+      if (!fac.error) setFactions(fac)
+      if (!rel.error) setReligion(rel)
       setLoading(false)
     })
   }, [])
@@ -191,6 +197,43 @@ export default function Character() {
           </div>
         </div>
       )}
+
+      {/* Factions & Religion */}
+      <div className="grid grid-2">
+        {factions && (factions.reputations || factions.factions) && (
+          <div className="card mb-4">
+            <div className="card-header">Factions</div>
+            <div className="card-body">
+              {(factions.reputations || []).length === 0 && (!factions.factions || factions.factions.length === 0) ? (
+                <p className="text-muted">No faction memberships.</p>
+              ) : (
+                <table className="stats-table">
+                  <tbody>
+                    {(factions.reputations || []).map((f, i) => (
+                      <tr key={i}>
+                        <td><strong>{f.faction_name || f.name}</strong></td>
+                        <td style={{ textTransform: 'capitalize' }}>{f.faction_type || ''}</td>
+                        <td>Rep: <span className="text-gold">{f.reputation}</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        )}
+
+        {religion && religion.religion_name && (
+          <div className="card mb-4">
+            <div className="card-header">Religion</div>
+            <div className="card-body">
+              <p>Deity: <span className="text-gold">{religion.religion_name}</span></p>
+              <p>Piety: <span className="text-gold">{religion.piety || 0}</span></p>
+              <p>Devotion: <span className="text-gold">{religion.devotion || 0}</span></p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
