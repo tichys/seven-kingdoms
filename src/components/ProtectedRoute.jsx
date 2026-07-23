@@ -2,8 +2,8 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import Loading from './Loading.jsx'
 
-export default function ProtectedRoute({ children, adminOnly = false }) {
-  const { isAuthenticated, isAdmin, loading } = useAuth()
+export default function ProtectedRoute({ children, adminOnly = false, allowUnapproved = false }) {
+  const { isAuthenticated, isAdmin, loading, characterApproved, hasArchetype } = useAuth()
   const location = useLocation()
 
   if (loading) return <Loading />
@@ -19,6 +19,10 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
         <p className="text-muted">You need admin privileges to view this page.</p>
       </div>
     )
+  }
+
+  if (!allowUnapproved && (!characterApproved || !hasArchetype) && location.pathname !== '/character-creator') {
+    return <Navigate to="/character-creator" replace />
   }
 
   return children

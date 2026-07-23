@@ -18,7 +18,7 @@ import Compendium from './pages/Compendium.jsx'
 import Tools from './pages/Tools.jsx'
 import Profile from './pages/Profile.jsx'
 import Lore from './pages/Lore.jsx'
-import CharacterSetup from './pages/CharacterSetup.jsx'
+import CharacterCreator from './pages/CharacterCreator.jsx'
 import War from './pages/War.jsx'
 import PvE from './pages/PvE.jsx'
 import Community from './pages/Community.jsx'
@@ -52,8 +52,8 @@ export default function App() {
               element={<ProtectedRoute><Character /></ProtectedRoute>}
             />
             <Route
-              path="/setup"
-              element={<ProtectedRoute><CharacterSetup /></ProtectedRoute>}
+              path="/character-creator"
+              element={<ProtectedRoute allowUnapproved><CharacterCreator /></ProtectedRoute>}
             />
             <Route
               path="/logs"

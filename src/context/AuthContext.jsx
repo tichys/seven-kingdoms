@@ -74,7 +74,9 @@ export function AuthProvider({ children }) {
     validateSession,
     isAuthenticated: !!user,
     isAdmin: user?.admin_level >= 1,
-    adminLevel: user?.admin_level || 0
+    adminLevel: user?.admin_level || 0,
+    characterApproved: user?.character_approved === 1,
+    hasArchetype: !!user?.has_archetype
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

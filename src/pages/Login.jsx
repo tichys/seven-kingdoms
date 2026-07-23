@@ -39,7 +39,11 @@ export default function Login() {
 
     const result = await login(avatarKey.trim(), loginCode.trim())
     if (result.success) {
-      navigate(from, { replace: true })
+      if (!result.player?.character_approved || !result.player?.has_archetype) {
+        navigate('/character-creator', { replace: true })
+      } else {
+        navigate(from, { replace: true })
+      }
     } else {
       setError(result.error || 'Login failed. Check your code and try again.')
     }

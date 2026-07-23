@@ -15,6 +15,7 @@ export default function Admin() {
     { id: 'houses', label: 'Houses', minLevel: 1 },
     { id: 'economy', label: 'Economy', minLevel: 1 },
     { id: 'creatures', label: 'Creatures', minLevel: 1 },
+    { id: 'applications', label: 'Applications', minLevel: 1 },
     { id: 'tools', label: 'Tools', minLevel: 2 },
     { id: 'requests', label: 'Requests', minLevel: 1 },
     { id: 'audit', label: 'Audit Logs', minLevel: 1 },
@@ -59,6 +60,7 @@ export default function Admin() {
         {tab === 'houses' && <HousesTab setError={setError} />}
         {tab === 'economy' && <EconomyTab />}
         {tab === 'creatures' && <CreaturesTab adminLevel={adminLevel} setError={setError} />}
+        {tab === 'applications' && <ApplicationsTab adminLevel={adminLevel} setError={setError} />}
         {tab === 'tools' && <ToolsTab setError={setError} />}
         {tab === 'requests' && <RequestsTab adminLevel={adminLevel} setError={setError} />}
         {tab === 'audit' && <AuditTab />}
@@ -982,6 +984,213 @@ function ToolsTab({ setError }) {
           </div>
           <button className="btn btn-primary btn-sm mt-2" onClick={() => doAction(() => api.forceQuestComplete(questForm.avatar_key, +questForm.quest_id), 'Quest completed')}>Force Complete</button>
         </div></div>
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+// CHARACTER APPLICATIONS TAB
+// =====================================================
+function ApplicationsTab({ adminLevel, setError }) {
+  const [applications, setApplications] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [statusFilter, setStatusFilter] = useState('pending')
+  const [selectedApp, setSelectedApp] = useState(null)
+  const [detail, setDetail] = useState(null)
+  const [note, setNote] = useState('')
+  const [actionLoading, setActionLoading] = useState(false)
+
+  const load = async () => {
+    setLoading(true)
+    try {
+      const r = await api.adminApplicationList(statusFilter)
+      setApplications(r.applications || [])
+    } catch (err) { setError(err.message) }
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [statusFilter])
+
+  const viewDetail = async (app) => {
+    setSelectedApp(app.id)
+    setNote('')
+    try {
+      const r = await api.adminApplicationDetail(app.id)
+      setDetail(r.application)
+    } catch (err) { setError(err.message) }
+  }
+
+  const handleApprove = async () => {
+    setActionLoading(true)
+    try {
+      await api.adminApplicationApprove(selectedApp, note)
+      setSelectedApp(null)
+      setDetail(null)
+      setNote('')
+      await load()
+    } catch (err) { setError(err.message) }
+    setActionLoading(false)
+  }
+
+  const handleDeny = async () => {
+    if (!note.trim()) { setError('Denial reason is required'); return }
+    setActionLoading(true)
+    try {
+      await api.adminApplicationDeny(selectedApp, note)
+      setSelectedApp(null)
+      setDetail(null)
+      setNote('')
+      await load()
+    } catch (err) { setError(err.message) }
+    setActionLoading(false)
+  }
+
+  if (loading) return <Loading />
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '.5rem', marginBottom: '1rem' }}>
+        {['pending', 'approved', 'denied', 'all'].map(s => (
+          <button key={s} className="btn btn-sm" style={{
+            background: statusFilter === s ? 'var(--gold)' : 'transparent',
+            color: statusFilter === s ? 'var(--bg-dark)' : 'var(--text)',
+            border: '1px solid var(--border)', padding: '.25rem .75rem', cursor: 'pointer',
+            textTransform: 'capitalize', fontSize: '.8rem'
+          }} onClick={() => setStatusFilter(s)}>{s}</button>
+        ))}
+      </div>
+
+      {selectedApp && detail ? (
+        <div className="card">
+          <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>Application: {detail.character_name}</span>
+            <button className="btn btn-sm" style={{ background: 'var(--border)', border: 'none' }} onClick={() => { setSelectedApp(null); setDetail(null) }}>Close</button>
+          </div>
+          <div className="card-body">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div>
+                <p><strong>SL Name:</strong> {detail.avatar_name}</p>
+                <p><strong>Character:</strong> {detail.character_name}</p>
+                <p><strong>Gender:</strong> {detail.gender}</p>
+                <p><strong>Age:</strong> {detail.age}</p>
+                <p><strong>House:</strong> {detail.house_name || 'None'} {detail.house_region ? `(${detail.house_region})` : ''} - {detail.house_rank}</p>
+                <p><strong>Archetype:</strong> {detail.archetype_name}</p>
+                <p><strong>Religion:</strong> {detail.religion_name || 'None'}</p>
+              </div>
+              <div>
+                <p><strong>Attributes ({detail.stat_points_spent}/12):</strong></p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.25rem', fontSize: '.85rem' }}>
+                  <span>Might: <strong style={{ color: '#c44' }}>{detail.might}</strong></span>
+                  <span>Agility: <strong style={{ color: '#4a9' }}>{detail.agility}</strong></span>
+                  <span>Endurance: <strong style={{ color: '#fc8' }}>{detail.endurance}</strong></span>
+                  <span>Wits: <strong style={{ color: '#8ac' }}>{detail.wits}</strong></span>
+                  <span>Will: <strong style={{ color: '#a4a' }}>{detail.will}</strong></span>
+                  <span>Presence: <strong style={{ color: '#dc8' }}>{detail.presence}</strong></span>
+                </div>
+                <p style={{ marginTop: '.5rem' }}><strong>HP:</strong> {15 + (detail.endurance * 4) + detail.might + detail.hp_bonus}</p>
+                <p><strong>Archetype Bonus:</strong> +{detail.hp_bonus} HP</p>
+                {detail.starting_skills?.length > 0 && (
+                  <div style={{ fontSize: '.8rem', marginTop: '.25rem' }}>
+                    <strong>Starting Skills:</strong> {detail.starting_skills.map(s => `${s.name} L${s.level}`).join(', ')}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {detail.appearance && (
+              <div style={{ marginBottom: '1rem' }}>
+                <strong style={{ fontSize: '.85rem', color: 'var(--text-muted)' }}>Appearance:</strong>
+                <p style={{ fontSize: '.85rem', whiteSpace: 'pre-wrap', marginTop: '.25rem' }}>{detail.appearance}</p>
+              </div>
+            )}
+            <div style={{ marginBottom: '1rem' }}>
+              <strong style={{ fontSize: '.85rem', color: 'var(--text-muted)' }}>Background:</strong>
+              <p style={{ fontSize: '.85rem', whiteSpace: 'pre-wrap', marginTop: '.25rem' }}>{detail.background}</p>
+            </div>
+            {detail.personality && (
+              <div style={{ marginBottom: '1rem' }}>
+                <strong style={{ fontSize: '.85rem', color: 'var(--text-muted)' }}>Personality:</strong>
+                <p style={{ fontSize: '.85rem', whiteSpace: 'pre-wrap', marginTop: '.25rem' }}>{detail.personality}</p>
+              </div>
+            )}
+
+            {detail.app_status === 'pending' && (
+              <>
+                <div className="form-group">
+                  <label className="form-label">Review Note (required for denial, optional for approval)</label>
+                  <textarea className="form-input" rows="2" value={note} onChange={e => setNote(e.target.value)}
+                    placeholder="Feedback for the player..." style={{ resize: 'vertical' }} />
+                </div>
+                <div style={{ display: 'flex', gap: '.5rem' }}>
+                  {adminLevel >= 2 ? (
+                    <>
+                      <button className="btn btn-primary" onClick={handleApprove} disabled={actionLoading}>
+                        {actionLoading ? 'Processing...' : 'Approve & Apply'}
+                      </button>
+                      <button className="btn btn-danger" onClick={handleDeny} disabled={actionLoading}>
+                        Deny
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-muted">View only (need L2+ to approve/deny)</span>
+                  )}
+                </div>
+              </>
+            )}
+            {detail.app_status === 'approved' && (
+              <div className="alert alert-success">
+                Approved on {detail.reviewed_at ? new Date(detail.reviewed_at).toLocaleString() : 'N/A'}
+                {detail.review_note && <br />} {detail.review_note}
+              </div>
+            )}
+            {detail.app_status === 'denied' && (
+              <div className="alert alert-danger">
+                Denied on {detail.reviewed_at ? new Date(detail.reviewed_at).toLocaleString() : 'N/A'}
+                <br />Reason: {detail.review_note}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div>
+          {applications.length === 0 ? (
+            <p className="text-muted">No {statusFilter} applications</p>
+          ) : (
+            <table className="stats-table">
+              <thead>
+                <tr>
+                  <th>Character</th>
+                  <th>SL Name</th>
+                  <th>Archetype</th>
+                  <th>House</th>
+                  <th>Age</th>
+                  <th>Status</th>
+                  <th>Submitted</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {applications.map(a => (
+                  <tr key={a.id} style={{ cursor: 'pointer' }} onClick={() => viewDetail(a)}>
+                    <td><strong>{a.character_name}</strong></td>
+                    <td>{a.avatar_name}</td>
+                    <td>{a.archetype_name}</td>
+                    <td>{a.house_name || '-'}</td>
+                    <td>{a.age}</td>
+                    <td style={{ textTransform: 'capitalize' }}>
+                      <span style={{ color: a.status === 'pending' ? 'var(--gold)' : a.status === 'approved' ? 'var(--green)' : 'var(--danger)' }}>
+                        {a.status}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: '.8rem' }}>{new Date(a.submitted_at).toLocaleDateString()}</td>
+                    <td><button className="btn btn-sm" style={{ background: 'var(--border)', border: 'none' }}>View</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       )}
     </div>
   )

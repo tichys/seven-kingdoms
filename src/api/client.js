@@ -746,5 +746,17 @@ export const api = {
   religionList: () => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'list' }) }),
   religionSet: (religionId) => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'set', religion_id: religionId }) }),
   religionPray: () => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'pray' }) }),
-  religionPowers: () => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'powers' }) })
+  religionPowers: () => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'powers' }) }),
+
+  // Character Creator
+  creatorOptions: () => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'options' }) }),
+  creatorSubmit: (data) => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'submit', ...data }) }),
+  creatorStatus: () => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'status' }) }),
+  creatorResubmit: (data) => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'resubmit', ...data }) }),
+
+  // Admin - Character Applications
+  adminApplicationList: (status = 'pending') => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'list', status }) }),
+  adminApplicationDetail: (appId) => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'detail', application_id: appId }) }),
+  adminApplicationApprove: (appId, note = '') => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'approve', application_id: appId, note }) }),
+  adminApplicationDeny: (appId, note) => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'deny', application_id: appId, note }) })
 }
