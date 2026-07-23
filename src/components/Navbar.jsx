@@ -45,6 +45,7 @@ export default function Navbar() {
       id: 'character', label: 'Character', items: [
         { path: '/character', label: 'Character Sheet' },
         { path: '/setup', label: 'Setup & Stats' },
+        { path: '/house', label: 'House Management' },
       ]
     })
     dropdowns.push({

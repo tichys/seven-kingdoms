@@ -708,5 +708,21 @@ export const api = {
   craftStart: (recipeId, stationId) => request('web_crafting.php', { method: 'POST', body: JSON.stringify({ action: 'start', recipe_id: recipeId, station_id: stationId }) }),
   craftCheck: () => request('web_crafting.php', { method: 'POST', body: JSON.stringify({ action: 'check' }) }),
   craftComplete: (craftId) => request('web_crafting.php', { method: 'POST', body: JSON.stringify({ action: 'complete', craft_id: craftId }) }),
-  craftCancel: (craftId) => request('web_crafting.php', { method: 'POST', body: JSON.stringify({ action: 'cancel', craft_id: craftId }) })
+  craftCancel: (craftId) => request('web_crafting.php', { method: 'POST', body: JSON.stringify({ action: 'cancel', craft_id: craftId }) }),
+
+  // House Management
+  myHouse: () => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'my_house' }) }),
+  houseDetail: (houseId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'detail', house_id: houseId }) }),
+  houseMembers: (houseId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'members', house_id: houseId }) }),
+  houseFound: (data) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'found', ...data }) }),
+  housePromote: (targetKey, rank) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'promote', target_key: targetKey, rank }) }),
+  houseAlliances: (houseId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'alliances', house_id: houseId }) }),
+  houseAlliancePropose: (house1Id, house2Id) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'alliance_propose', house1_id: house1Id, house2_id: house2Id }) }),
+  houseAllianceAccept: (allianceId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'alliance_accept', alliance_id: allianceId }) }),
+  houseAllianceBreak: (allianceId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'alliance_break', alliance_id: allianceId }) }),
+  houseMarriages: (houseId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'marriages', house_id: houseId }) }),
+  houseProposeMarriage: (targetKey) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'propose_marriage', target_key: targetKey }) }),
+  houseMarry: (marriageId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'marry', marriage_id: marriageId }) }),
+  houseAnnul: (marriageId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'annul', marriage_id: marriageId }) }),
+  houseSwear: (minorId, majorId) => request('web_house.php', { method: 'POST', body: JSON.stringify({ action: 'swear', minor_id: minorId, major_id: majorId }) })
 }
