@@ -468,7 +468,7 @@ export default function War() {
                 <td>{e.region}</td>
                 <td>{e.count}</td>
                 <td>{e.difficulty}/10</td>
-                <td style={{ fontSize: '.8rem' }}>{e.rewards.xp}xp, {e.rewards.gold}g, {e.rewards.stars}s</td>
+                <td style={{ fontSize: '.8rem' }}>{e.rewards ? `${e.rewards.xp || 0}xp, ${e.rewards.gold || 0}g, ${e.rewards.stars || 0}s` : '-'}</td>
                 <td>
                   <button className="btn btn-outline btn-sm" onClick={() => doAction(() => api.encounterEngage(e.id), 'Engaged')}>Solo</button>
                   {armies.length > 0 && (
@@ -500,7 +500,7 @@ export default function War() {
                 <td>{c.armor}</td>
                 <td>{c.difficulty}/10</td>
                 <td>{c.region}</td>
-                <td style={{ fontSize: '.8rem' }}>{c.rewards.xp}xp, {c.rewards.gold}g, {c.rewards.stars}s</td>
+                <td style={{ fontSize: '.8rem' }}>{c.rewards ? `${c.rewards.xp || 0}xp, ${c.rewards.gold || 0}g, ${c.rewards.stars || 0}s` : '-'}</td>
               </tr>
             ))}
           </tbody>
