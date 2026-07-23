@@ -118,7 +118,7 @@ export default function Character() {
                     <div style={{ fontSize: '.8rem', marginTop: '.25rem' }}>
                       <span className="text-muted">Severity: {d.severity}/5</span>
                       {d.hp_drain > 0 && <span className="text-muted"> | HP drain: {d.hp_drain}/hr</span>}
-                      {d.is_contagious && <span style={{ color: 'var(--danger)' }}> | Contagious!</span>}
+                      {d.is_contagious === 1 && <span style={{ color: 'var(--danger)' }}> | Contagious!</span>}
                     </div>
                   </div>
                 ))}

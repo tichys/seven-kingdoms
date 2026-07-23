@@ -213,7 +213,7 @@ function PlayersTab({ adminLevel, setError }) {
                 <div style={{ fontWeight: selected === p.avatar_key ? 'bold' : 'normal' }}>
                   {p.avatar_name}
                   {p.admin_level > 0 && <span style={{ color: 'var(--danger)', fontSize: '.75rem', marginLeft: '.5rem' }}>Admin L{p.admin_level}</span>}
-                  {p.is_banned && <span style={{ color: 'var(--danger)', fontSize: '.75rem', marginLeft: '.5rem' }}>BANNED</span>}
+                  {p.is_banned === 1 && <span style={{ color: 'var(--danger)', fontSize: '.75rem', marginLeft: '.5rem' }}>BANNED</span>}
                 </div>
                 <div style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>
                   {p.house_name || 'No house'} | {p.status} | RP: {p.rp_score}
@@ -421,13 +421,13 @@ function HousesTab({ setError }) {
                       <tr key={m.avatar_key} style={{ borderBottom: '1px solid var(--border)' }}>
                         <td style={{ padding: '.5rem' }}>
                           {m.avatar_name}
-                          {m.is_lord && <span style={{ color: 'var(--gold)', fontSize: '.75rem', marginLeft: '.5rem' }}>★ Lord</span>}
-                          {m.is_banned && <span style={{ color: 'var(--danger)', fontSize: '.75rem', marginLeft: '.5rem' }}>BANNED</span>}
+                          {m.is_lord === 1 && <span style={{ color: 'var(--gold)', fontSize: '.75rem', marginLeft: '.5rem' }}>★ Lord</span>}
+                          {m.is_banned === 1 && <span style={{ color: 'var(--danger)', fontSize: '.75rem', marginLeft: '.5rem' }}>BANNED</span>}
                         </td>
                         <td style={{ padding: '.5rem', color: 'var(--text-muted)' }}>{m.rank}</td>
                         <td style={{ padding: '.5rem' }}>{m.status}</td>
                         <td style={{ padding: '.5rem', textAlign: 'right' }}>
-                          {!m.is_lord && <button className="btn btn-sm btn-outline" onClick={() => handleSetLord(m.avatar_key)}>Make Lord</button>}
+                          {m.is_lord !== 1 && <button className="btn btn-sm btn-outline" onClick={() => handleSetLord(m.avatar_key)}>Make Lord</button>}
                         </td>
                       </tr>
                     ))}

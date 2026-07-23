@@ -346,7 +346,7 @@ function DiseasesTab({ data }) {
               <span>Incubation: {d.incubation_days}d</span>
               <span style={{ color: 'var(--danger)' }}>HP Drain: {d.hp_drain}/hr</span>
               <span>Cure DC: {d.cure_dc}</span>
-              {d.contagious && <span style={{ color: 'var(--danger)' }}>Contagious</span>}
+              {d.contagious === 1 && <span style={{ color: 'var(--danger)' }}>Contagious</span>}
             </div>
           </div>
         </div>
