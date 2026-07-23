@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import Loading from '../components/Loading.jsx'
 
 const UPGRADE_TYPES = ['walls', 'garrison', 'market', 'farm', 'mine', 'harbor', 'sept', 'weirwood', 'forge', 'stables']
+const MAX_LEVELS = { walls: 5, garrison: 5, market: 3, farm: 3, mine: 3, harbor: 2, sept: 1, weirwood: 1, forge: 2, stables: 2 }
 const UNIT_TYPES = ['infantry', 'archers', 'cavalry', 'knights', 'siege']
 const UNIT_COSTS = {
   infantry: { gold: 2, food: 5, recruits: 1 },
@@ -408,18 +409,31 @@ export default function War() {
                     <div className="d-flex gap-1" style={{ flexWrap: 'wrap' }}>
                       {UPGRADE_TYPES.map(u => {
                         const actionKey = `build-${s.id}-${u}`
+                        const currentLevel = (s.upgrades && s.upgrades[u]) || 0
+                        const maxLevel = MAX_LEVELS[u] || 3
+                        const isMaxed = currentLevel >= maxLevel
+                        const costGold = (currentLevel + 1) * 50
+                        const costFood = (currentLevel + 1) * 100
+                        const canAfford = s.stored_gold >= costGold && s.stored_food >= costFood
                         return (
                           <button key={u} className="btn btn-outline btn-sm" style={{ textTransform: 'capitalize' }}
-                            disabled={busyAction === actionKey}
+                            disabled={busyAction === actionKey || isMaxed || !canAfford}
                             onClick={() => {
-                              if (!confirm(`Build ${u} upgrade at ${s.name}? This costs gold and food from settlement storage.`)) return
+                              if (!confirm(`Build ${u} upgrade to level ${currentLevel + 1} at ${s.name}?\nCost: ${costGold} stags + ${costFood} food`)) return
                               doAction(() => api.settlementBuild(s.id, u), `Built ${u}`, actionKey)
                             }}>
-                            {busyAction === actionKey ? 'Building...' : u}
+                            {busyAction === actionKey ? 'Building...' : `${u} ${currentLevel > 0 ? `Lv${currentLevel}` : ''}`}
+                            {isMaxed && ' (MAX)'}
                           </button>
                         )
                       })}
                     </div>
+                    {s.upgrades && Object.keys(s.upgrades).length > 0 && (
+                      <div className="mt-2" style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>
+                        <strong>Current upgrades:</strong>{' '}
+                        {Object.entries(s.upgrades).map(([type, level]) => `${type} Lv${level}`).join(', ')}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
