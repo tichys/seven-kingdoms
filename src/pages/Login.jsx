@@ -84,7 +84,7 @@ export default function Login() {
               disabled={submitting}
             />
             <small className="text-muted" style={{ fontSize: '.8rem', display: 'block', marginTop: '.25rem' }}>
-              Wear the HUD in-world and say <strong>/hud web</strong> to generate a code.
+              Wear the HUD in-world and say <strong>/hud web</strong> or touch the HUD and select <strong>Web Login</strong> to generate a code.
               Codes expire after 5 minutes.
             </small>
           </div>
@@ -96,7 +96,8 @@ export default function Login() {
         <div className="login-help">
           <p><strong>How to find your avatar key:</strong></p>
           <ul>
-            <li>Check the HUD's "Status" menu in-world (it displays your key)</li>
+            <li>Touch the HUD in-world — your key is shown on the main menu dialog</li>
+            <li>Say <strong>/hud status</strong> in chat</li>
             <li>Use a key finder script in Second Life</li>
             <li>Visit my.secondlife.com and check your profile</li>
           </ul>
