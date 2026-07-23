@@ -22,6 +22,8 @@ import CharacterSetup from './pages/CharacterSetup.jsx'
 import War from './pages/War.jsx'
 import PvE from './pages/PvE.jsx'
 import Community from './pages/Community.jsx'
+import Quests from './pages/Quests.jsx'
+import Crafting from './pages/Crafting.jsx'
 import NotFound from './pages/NotFound.jsx'
 
 export default function App() {
@@ -67,6 +69,14 @@ export default function App() {
             <Route
               path="/community"
               element={<ProtectedRoute><Community /></ProtectedRoute>}
+            />
+            <Route
+              path="/quests"
+              element={<ProtectedRoute><Quests /></ProtectedRoute>}
+            />
+            <Route
+              path="/crafting"
+              element={<ProtectedRoute><Crafting /></ProtectedRoute>}
             />
             <Route
               path="/admin"

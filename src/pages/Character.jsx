@@ -11,6 +11,8 @@ export default function Character() {
   const [inventory, setInventory] = useState(null)
   const [skills, setSkills] = useState(null)
   const [wounds, setWounds] = useState(null)
+  const [survival, setSurvival] = useState(null)
+  const [diseases, setDiseases] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -20,14 +22,18 @@ export default function Character() {
       api.getStats().catch(e => ({ error: e.message })),
       api.getInventory().catch(e => ({ error: e.message })),
       api.getSkills().catch(e => ({ error: e.message })),
-      api.getWounds().catch(e => ({ error: e.message }))
-    ]).then(([char, st, inv, sk, wd]) => {
+      api.getWounds().catch(e => ({ error: e.message })),
+      api.getSurvival().catch(e => ({ error: e.message })),
+      api.getDiseases().catch(e => ({ error: e.message }))
+    ]).then(([char, st, inv, sk, wd, sv, dis]) => {
       if (char.error) { setError(char.error); setLoading(false); return }
       setCharacter(char)
       if (!st.error) setStats(st)
       if (!inv.error) setInventory(inv)
       if (!sk.error) setSkills(sk)
       if (!wd.error) setWounds(wd)
+      if (!sv.error) setSurvival(sv)
+      if (!dis.error) setDiseases(dis)
       setLoading(false)
     })
   }, [])
@@ -74,6 +80,47 @@ export default function Character() {
           </div>
         </div>
       </div>
+
+      {/* Survival & Diseases */}
+      {(survival || (diseases && diseases.count > 0)) && (
+        <div className="card mb-4">
+          <div className="card-header">Survival</div>
+          <div className="card-body">
+            {survival && (
+              <div className="grid grid-2 mb-2">
+                <StatBar label="Hunger" value={survival.hunger} max={100} />
+                <StatBar label="Thirst" value={survival.thirst} max={100} />
+              </div>
+            )}
+            {survival && survival.hunger < 25 && (
+              <div className="alert alert-warning" style={{ fontSize: '.85rem' }}>
+                {survival.hunger === 0 ? 'You are starving! Taking HP damage.' : 'You are getting hungry.'}
+              </div>
+            )}
+            {survival && survival.thirst < 25 && (
+              <div className="alert alert-warning" style={{ fontSize: '.85rem' }}>
+                {survival.thirst === 0 ? 'You are dehydrated! Taking HP damage.' : 'You are getting thirsty.'}
+              </div>
+            )}
+            {diseases && diseases.count > 0 && (
+              <div className="mt-2">
+                <h4 style={{ fontSize: '.9rem', color: 'var(--danger)', marginBottom: '.5rem' }}>Active Diseases</h4>
+                {diseases.diseases.map(d => (
+                  <div key={d.id} className="item-card" style={{ borderColor: 'var(--red)' }}>
+                    <div className="item-name">{d.name} <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>({d.stage})</span></div>
+                    <div className="item-type">{d.description}</div>
+                    <div style={{ fontSize: '.8rem', marginTop: '.25rem' }}>
+                      <span className="text-muted">Severity: {d.severity}/5</span>
+                      {d.hp_drain > 0 && <span className="text-muted"> | HP drain: {d.hp_drain}/hr</span>}
+                      {d.is_contagious && <span style={{ color: 'var(--danger)' }}> | Contagious!</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Wounds */}
       <div className="card mb-4">

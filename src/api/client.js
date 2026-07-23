@@ -689,5 +689,24 @@ export const api = {
   creatureDelete: (id) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_delete', creature_id: id }) }),
 
   // Recent events (notice board)
-  recentEvents: () => request('web_wiki.php', { method: 'POST', body: JSON.stringify({ action: 'recent_events' }) })
+  recentEvents: () => request('web_wiki.php', { method: 'POST', body: JSON.stringify({ action: 'recent_events' }) }),
+
+  // Survival & Diseases
+  getSurvival: () => request('web_character.php', { method: 'POST', body: JSON.stringify({ action: 'survival' }) }),
+  getDiseases: () => request('web_character.php', { method: 'POST', body: JSON.stringify({ action: 'diseases' }) }),
+
+  // Quests
+  questList: () => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'list' }) }),
+  questActive: () => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'active' }) }),
+  questAccept: (questId) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'accept', quest_id: questId }) }),
+  questComplete: (questId) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'complete', quest_id: questId }) }),
+  questAbandon: (questId) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'abandon', quest_id: questId }) }),
+
+  // Crafting
+  craftRecipes: (stationType) => request('web_crafting.php', { method: 'POST', body: JSON.stringify({ action: 'recipes', station_type: stationType }) }),
+  craftStations: () => request('web_crafting.php', { method: 'POST', body: JSON.stringify({ action: 'stations' }) }),
+  craftStart: (recipeId, stationId) => request('web_crafting.php', { method: 'POST', body: JSON.stringify({ action: 'start', recipe_id: recipeId, station_id: stationId }) }),
+  craftCheck: () => request('web_crafting.php', { method: 'POST', body: JSON.stringify({ action: 'check' }) }),
+  craftComplete: (craftId) => request('web_crafting.php', { method: 'POST', body: JSON.stringify({ action: 'complete', craft_id: craftId }) }),
+  craftCancel: (craftId) => request('web_crafting.php', { method: 'POST', body: JSON.stringify({ action: 'cancel', craft_id: craftId }) })
 }
