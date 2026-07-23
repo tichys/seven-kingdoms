@@ -25,6 +25,7 @@ import Community from './pages/Community.jsx'
 import Quests from './pages/Quests.jsx'
 import Crafting from './pages/Crafting.jsx'
 import HouseManagement from './pages/HouseManagement.jsx'
+import Trade from './pages/Trade.jsx'
 import NotFound from './pages/NotFound.jsx'
 
 export default function App() {
@@ -82,6 +83,10 @@ export default function App() {
             <Route
               path="/house"
               element={<ProtectedRoute><HouseManagement /></ProtectedRoute>}
+            />
+            <Route
+              path="/trade"
+              element={<ProtectedRoute><Trade /></ProtectedRoute>}
             />
             <Route
               path="/admin"

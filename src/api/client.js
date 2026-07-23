@@ -758,5 +758,15 @@ export const api = {
   adminApplicationList: (status = 'pending') => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'list', status }) }),
   adminApplicationDetail: (appId) => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'detail', application_id: appId }) }),
   adminApplicationApprove: (appId, note = '') => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'approve', application_id: appId, note }) }),
-  adminApplicationDeny: (appId, note) => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'deny', application_id: appId, note }) })
+  adminApplicationDeny: (appId, note) => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'deny', application_id: appId, note }) }),
+
+  // Trade System
+  tradeMyGoods: () => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'my_goods' }) }),
+  tradeAllGoods: () => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'all_goods' }) }),
+  tradePropose: (data) => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'propose', ...data }) }),
+  tradeMyTrades: () => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'my_trades' }) }),
+  tradeAccept: (tradeId) => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'accept', trade_id: tradeId }) }),
+  tradeReject: (tradeId) => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'reject', trade_id: tradeId }) }),
+  tradeCancel: (tradeId) => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'cancel', trade_id: tradeId }) }),
+  tradeMarket: () => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'market' }) })
 }

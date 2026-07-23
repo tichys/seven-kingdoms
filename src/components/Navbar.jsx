@@ -59,6 +59,7 @@ export default function Navbar() {
     dropdowns.push({
       id: 'community', label: 'Community', items: [
         { path: '/community', label: 'Leaderboards & Marketplace' },
+        { path: '/trade', label: 'Trade & Goods' },
       ]
     })
     dropdowns.push({
