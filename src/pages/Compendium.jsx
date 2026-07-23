@@ -155,8 +155,8 @@ function ArchetypesTab({ data }) {
               </div>
             )}
             <div style={{ marginTop: '.5rem', fontSize: '.75rem' }}>
-              {a.admin_locked && <span style={{ color: 'var(--danger)', marginRight: '.5rem' }}>Admin Locked</span>}
-              {a.house_required && <span style={{ color: 'var(--gold)', marginRight: '.5rem' }}>House Required</span>}
+              {a.admin_locked === 1 && <span style={{ color: 'var(--danger)', marginRight: '.5rem' }}>Admin Locked</span>}
+              {a.house_required === 1 && <span style={{ color: 'var(--gold)', marginRight: '.5rem' }}>House Required</span>}
               {a.faction && <span style={{ color: 'var(--text-muted)' }}>Faction: {a.faction}</span>}
             </div>
           </div>

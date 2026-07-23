@@ -236,8 +236,8 @@ function TitlesTab({ titles, onEquip }) {
               <p style={{ fontSize: '.85rem', color: 'var(--text-muted)', marginBottom: '.5rem' }}>{t.description || 'No description.'}</p>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ fontSize: '.75rem' }}>
-                  {t.house_required && <span style={{ color: 'var(--gold)', marginRight: '.5rem' }}>House Required</span>}
-                  {t.admin_granted && <span style={{ color: 'var(--danger)' }}>Admin Granted</span>}
+                  {t.house_required === 1 && <span style={{ color: 'var(--gold)', marginRight: '.5rem' }}>House Required</span>}
+                  {t.admin_granted === 1 && <span style={{ color: 'var(--danger)' }}>Admin Granted</span>}
                 </div>
                 {t.equipped ? (
                   <span style={{ fontSize: '.8rem', color: 'var(--green)', fontWeight: 'bold' }}>Equipped</span>

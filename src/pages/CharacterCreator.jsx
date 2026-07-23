@@ -343,8 +343,8 @@ export default function CharacterCreator() {
                   Your archetype defines your role and starting skills. This is a permanent choice. Admin-locked archetypes are excluded.
                 </p>
                 <div className="grid grid-2">
-                  {(options?.archetypes || []).filter(a => !a.admin_locked).map(a => {
-                    const locked = a.house_required && !form.house_id
+                  {(options?.archetypes || []).filter(a => a.admin_locked !== 1).map(a => {
+                    const locked = a.house_required === 1 && !form.house_id
                     return (
                       <div key={a.id} className="card" style={{
                         cursor: 'pointer',
