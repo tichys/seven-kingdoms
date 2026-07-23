@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
       if (data.status === 'ok' && data.session) {
         api.setToken(data.session)
         setUser(data.player)
-        return { success: true }
+        return { success: true, player: data.player }
       }
       setError(data.error || 'Login failed')
       return { success: false, error: data.error }
