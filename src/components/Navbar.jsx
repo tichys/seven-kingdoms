@@ -54,6 +54,7 @@ export default function Navbar() {
         { path: '/pve', label: 'Dungeons & Bounties' },
         { path: '/quests', label: 'Quests' },
         { path: '/crafting', label: 'Crafting' },
+        { path: '/activities', label: 'Activities' },
       ]
     })
     dropdowns.push({

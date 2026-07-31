@@ -768,5 +768,42 @@ export const api = {
   tradeAccept: (tradeId) => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'accept', trade_id: tradeId }) }),
   tradeReject: (tradeId) => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'reject', trade_id: tradeId }) }),
   tradeCancel: (tradeId) => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'cancel', trade_id: tradeId }) }),
-  tradeMarket: () => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'market' }) })
+  tradeMarket: () => request('web_trade.php', { method: 'POST', body: JSON.stringify({ action: 'market' }) }),
+
+  // RP Systems - Mounts
+  mountList: () => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'mount_list' }) }),
+  mountMy: () => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'mount_my' }) }),
+  mountBuy: (data) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'mount_buy', ...data }) }),
+  mountEquip: (mountId) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'mount_equip', mount_id: mountId }) }),
+  mountTrain: (mountId) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'mount_train', mount_id: mountId }) }),
+
+  // RP Systems - Training
+  trainers: (region) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'trainers', region }) }),
+  myTrainers: () => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'my_trainers' }) }),
+  trainSkill: (trainerId) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'train', trainer_id: trainerId }) }),
+
+  // RP Systems - Exploration
+  landmarks: (region) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'landmarks', region }) }),
+  discover: (landmarkId) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'discover', landmark_id: landmarkId }) }),
+  myDiscoveries: () => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'my_discoveries' }) }),
+  explorationStats: () => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'exploration_stats' }) }),
+
+  // RP Systems - Contracts
+  contractList: () => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'contract_list' }) }),
+  contractMy: () => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'contract_my' }) }),
+  contractCreate: (data) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'contract_create', ...data }) }),
+  contractAccept: (id) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'contract_accept', contract_id: id }) }),
+  contractComplete: (id) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'contract_complete', contract_id: id }) }),
+  contractCancel: (id) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'contract_cancel', contract_id: id }) }),
+
+  // RP Systems - Taverns
+  tavernList: (region) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'tavern_list', region }) }),
+  tavernRest: (tavernId) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'tavern_rest', tavern_id: tavernId }) }),
+  tavernMeal: (tavernId) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'tavern_meal', tavern_id: tavernId }) }),
+  tavernDrink: (tavernId) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'tavern_drink', tavern_id: tavernId }) }),
+
+  // RP Systems - Cyvasse
+  cyvassePlay: (wager, opponent) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'cyvasse_play', wager_gold: wager, opponent }) }),
+  cyvasseStats: () => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'cyvasse_stats' }) }),
+  cyvasseLeaderboard: () => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'cyvasse_leaderboard' }) })
 }
