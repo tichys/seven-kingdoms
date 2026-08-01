@@ -92,7 +92,7 @@ export default function App() {
               />
               <Route
                 path="/character"
-                element={<ProtectedRoute><Character /></ProtectedRoute>}
+                element={<ProtectedRoute><Profile /></ProtectedRoute>}
               />
               <Route
                 path="/character-creator"

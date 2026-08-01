@@ -43,7 +43,7 @@ export default function Navbar() {
   if (isAuthenticated) {
     dropdowns.push({
       id: 'character', label: 'Character', items: [
-        { path: '/character', label: 'Character Sheet' },
+        { path: '/profile', label: 'Character Sheet' },
         { path: '/character-creator', label: 'Character Creation' },
         { path: '/house', label: 'House Management' },
         { path: '/factions', label: 'Factions' },
@@ -76,7 +76,6 @@ export default function Navbar() {
     })
     dropdowns.push({
       id: 'account', label: 'Account', items: [
-        { path: '/profile', label: 'Profile' },
         { path: '/logs', label: 'History & Logs' },
       ]
     })
