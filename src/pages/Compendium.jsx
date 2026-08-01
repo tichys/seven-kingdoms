@@ -40,7 +40,7 @@ export default function Compendium() {
         case 'quests': result = await api.getQuests(); break
         case 'crafting': result = await api.getRecipes(); break
         case 'territories': result = await api.getTerritories(); break
-        case 'diseases': result = await api.getDiseases(); break
+        case 'diseases': result = await api.wikiDiseases(); break
         case 'environment': result = await api.getEnvironment(); break
         case 'shops': result = await api.getShops(); break
         case 'items': result = await api.getItems(); break

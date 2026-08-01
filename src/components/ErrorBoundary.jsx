@@ -17,18 +17,18 @@ export default class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: '2rem', maxWidth: '600px', margin: '2rem auto', color: '#e8e1d3', background: '#0d0d0d', borderRadius: '8px', border: '1px solid #222' }}>
-          <h1 style={{ fontFamily: 'Cinzel, serif', color: '#b08d57', marginBottom: '1rem' }}>Something went wrong</h1>
-          <p style={{ color: '#8a8278', marginBottom: '1rem' }}>The application encountered an error:</p>
-          <pre style={{ fontSize: '0.85rem', color: '#c44', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-            {this.state.error?.message || 'Unknown error'}
-          </pre>
-          <button
-            onClick={() => window.location.reload()}
-            style={{ marginTop: '1rem', padding: '0.5rem 1.5rem', background: '#b08d57', color: '#050505', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
-          >
-            Reload
-          </button>
+        <div className="container">
+          <div className="error-state" style={{ marginTop: '6rem' }}>
+            <div className="error-state-icon">&#9888;</div>
+            <h3>Something Went Wrong</h3>
+            <p>The application encountered an error. Try reloading the page.</p>
+            <pre style={{ fontSize: '0.8rem', color: 'var(--danger)', whiteSpace: 'pre-wrap', wordBreak: 'break-word', maxWidth: '600px', margin: '0 auto 1rem' }}>
+              {this.state.error?.message || 'Unknown error'}
+            </pre>
+            <button className="btn btn-primary" onClick={() => window.location.reload()}>
+              Reload Page
+            </button>
+          </div>
         </div>
       )
     }

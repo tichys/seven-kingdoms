@@ -4,6 +4,7 @@ import Loading from '../components/Loading.jsx'
 import StatBar from '../components/StatBar.jsx'
 import ItemCard from '../components/ItemCard.jsx'
 import WoundList from '../components/WoundList.jsx'
+import { ErrorState } from '../components/Skeleton.jsx'
 
 export default function Character() {
   const [character, setCharacter] = useState(null)
@@ -15,10 +16,16 @@ export default function Character() {
   const [diseases, setDiseases] = useState(null)
   const [factions, setFactions] = useState(null)
   const [religion, setReligion] = useState(null)
+  const [discord, setDiscord] = useState(null)
+  const [discordLoading, setDiscordLoading] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [message, setMessage] = useState(null)
+  const [allocating, setAllocating] = useState(false)
+  const [showReset, setShowReset] = useState(false)
 
-  useEffect(() => {
+  const loadCharacter = () => {
+    setLoading(true); setError(null)
     Promise.all([
       api.getCharacter().catch(e => ({ error: e.message })),
       api.getStats().catch(e => ({ error: e.message })),
@@ -28,8 +35,9 @@ export default function Character() {
       api.getSurvival().catch(e => ({ error: e.message })),
       api.getDiseases().catch(e => ({ error: e.message })),
       api.factionMyRep().catch(e => ({ error: e.message })),
-      api.religionGet().catch(e => ({ error: e.message }))
-    ]).then(([char, st, inv, sk, wd, sv, dis, fac, rel]) => {
+      api.religionGet().catch(e => ({ error: e.message })),
+      api.discordStatus().catch(e => ({ error: e.message }))
+    ]).then(([char, st, inv, sk, wd, sv, dis, fac, rel, dsc]) => {
       if (char.error) { setError(char.error); setLoading(false); return }
       setCharacter(char)
       if (!st.error) setStats(st)
@@ -40,12 +48,36 @@ export default function Character() {
       if (!dis.error) setDiseases(dis)
       if (!fac.error) setFactions(fac)
       if (!rel.error) setReligion(rel)
+      if (!dsc.error) setDiscord(dsc)
       setLoading(false)
     })
-  }, [])
+  }
+
+  useEffect(() => { loadCharacter() }, [])
+
+  const doAllocate = async (statName, points) => {
+    setAllocating(true); setMessage(null); setError(null)
+    try {
+      const r = await api.allocateStat(statName, points)
+      setMessage(`${statName} increased by ${points}`)
+      loadCharacter()
+    } catch (err) { setError(err.message) }
+    setAllocating(false)
+  }
+
+  const doReset = async () => {
+    setAllocating(true); setMessage(null); setError(null)
+    try {
+      const r = await api.resetStats()
+      setMessage('Stats reset. Attribute points refunded.')
+      setShowReset(false)
+      loadCharacter()
+    } catch (err) { setError(err.message) }
+    setAllocating(false)
+  }
 
   if (loading) return <div className="page-content"><Loading /></div>
-  if (error) return <div className="page-content"><div className="alert alert-danger">{error}</div></div>
+  if (error) return <div className="page-content"><ErrorState message={error} onRetry={loadCharacter} /></div>
   if (!character) return <div className="page-content"><div className="alert alert-warning">No character data found</div></div>
 
   const statNames = ['might', 'agility', 'endurance', 'wits', 'will', 'presence']
@@ -58,6 +90,8 @@ export default function Character() {
 
   return (
     <div className="page-content">
+      {message && <div className="alert alert-success">{message}</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
       {/* Header */}
       <div className="card mb-4">
         <div className="card-header">
@@ -142,10 +176,43 @@ export default function Character() {
           <div className="card-header">Attributes</div>
           <div className="card-body">
             {statNames.map(s => (
-              <StatBar key={s} label={statLabels[s]} value={stats[s] ?? 3} max={7} />
+              <div key={s} style={{ marginBottom: '.75rem' }}>
+                <StatBar label={statLabels[s]} value={stats[s] ?? 3} max={7} />
+                {stats.unspent_points > 0 && (stats[s] ?? 3) < 7 && (
+                  <div className="d-flex gap-1" style={{ marginTop: '.25rem' }}>
+                    {[1, 2, 3, 4].filter(p => p <= stats.unspent_points && (stats[s] ?? 3) + p <= 7).map(p => (
+                      <button
+                        key={p}
+                        className="btn btn-outline btn-sm"
+                        disabled={allocating}
+                        onClick={() => doAllocate(s, p)}
+                        style={{ fontSize: '.7rem', padding: '.2rem .5rem' }}
+                      >
+                        +{p}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
             {stats.unspent_points > 0 && (
-              <p className="text-warning mt-2">Unspent points: {stats.unspent_points}</p>
+              <div className="alert alert-warning mt-2" style={{ fontSize: '.85rem' }}>
+                Unspent attribute points: <strong>{stats.unspent_points}</strong> — Click +N buttons above to allocate.
+              </div>
+            )}
+            {stats.unspent_points === 0 && !showReset && (
+              <button className="btn btn-outline btn-sm mt-2" onClick={() => setShowReset(true)}>
+                Request Stat Reset
+              </button>
+            )}
+            {showReset && (
+              <div className="alert alert-warning mt-2">
+                <p style={{ fontSize: '.85rem', marginBottom: '.5rem' }}>Stat reset requires admin approval. Your attributes will be returned to base (3 each) and unspent points refunded.</p>
+                <div className="d-flex gap-1">
+                  <button className="btn btn-danger btn-sm" disabled={allocating} onClick={doReset}>Submit Reset Request</button>
+                  <button className="btn btn-outline btn-sm" onClick={() => setShowReset(false)}>Cancel</button>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -233,6 +300,69 @@ export default function Character() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Discord Link */}
+      <div className="card mb-4">
+        <div className="card-header">Discord Account</div>
+        <div className="card-body">
+          {discord && discord.linked ? (
+            <div>
+              <div className="d-flex" style={{ alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                {discord.discord?.discord_avatar && (
+                  <img
+                    src={discord.discord.discord_avatar}
+                    alt="Discord avatar"
+                    style={{ width: '48px', height: '48px', borderRadius: '50%' }}
+                  />
+                )}
+                <div>
+                  <p style={{ marginBottom: '.25rem' }}>
+                    Linked: <span className="text-gold">{discord.discord?.discord_username || 'Unknown'}</span>
+                  </p>
+                  <p className="text-muted" style={{ fontSize: '.8rem', marginBottom: '.5rem' }}>
+                    You can login via Discord. Linked since {discord.discord?.linked_at?.split(' ')[0] || 'unknown'}.
+                  </p>
+                </div>
+              </div>
+              <button
+                className="btn btn-outline btn-sm mt-2"
+                disabled={discordLoading}
+                onClick={async () => {
+                  setDiscordLoading(true)
+                  try {
+                    await api.discordUnlink()
+                    setDiscord({ linked: false })
+                    setMessage('Discord account unlinked.')
+                  } catch (err) { setError(err.message) }
+                  setDiscordLoading(false)
+                }}
+              >
+                {discordLoading ? 'Unlinking...' : 'Unlink Discord'}
+              </button>
+            </div>
+          ) : (
+            <div>
+              <p className="text-muted" style={{ fontSize: '.85rem', marginBottom: '.75rem' }}>
+                Link your Discord account to login via Discord without needing a HUD code.
+              </p>
+              <button
+                className="btn btn-discord btn-sm"
+                disabled={discordLoading}
+                onClick={async () => {
+                  setDiscordLoading(true)
+                  try {
+                    const data = await api.discordAuthUrl('link')
+                    if (data.url) window.location.href = data.url
+                  } catch (err) { setError(err.message) }
+                  setDiscordLoading(false)
+                }}
+              >
+                {discordLoading ? 'Redirecting...' : 'Link Discord Account'}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

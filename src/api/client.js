@@ -339,7 +339,7 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ action: 'religions' })
     }),
-  getDiseases: () =>
+  wikiDiseases: () =>
     request('web_wiki.php', {
       method: 'POST',
       body: JSON.stringify({ action: 'diseases' })
@@ -647,9 +647,9 @@ export const api = {
   // Community - Trading
   tradeCreate: (toKey, fromItems, toItems, fromGold, toGold) => request('web_community.php', { method: 'POST', body: JSON.stringify({ action: 'trade_create', to_key: toKey, from_items: fromItems, to_items: toItems, from_gold: fromGold, to_gold: toGold }) }),
   tradeList: () => request('web_community.php', { method: 'POST', body: JSON.stringify({ action: 'trade_list' }) }),
-  tradeAccept: (tradeId) => request('web_community.php', { method: 'POST', body: JSON.stringify({ action: 'trade_accept', trade_id: tradeId }) }),
-  tradeReject: (tradeId) => request('web_community.php', { method: 'POST', body: JSON.stringify({ action: 'trade_reject', trade_id: tradeId }) }),
-  tradeCancel: (tradeId) => request('web_community.php', { method: 'POST', body: JSON.stringify({ action: 'trade_cancel', trade_id: tradeId }) }),
+  communityTradeAccept: (tradeId) => request('web_community.php', { method: 'POST', body: JSON.stringify({ action: 'trade_accept', trade_id: tradeId }) }),
+  communityTradeReject: (tradeId) => request('web_community.php', { method: 'POST', body: JSON.stringify({ action: 'trade_reject', trade_id: tradeId }) }),
+  communityTradeCancel: (tradeId) => request('web_community.php', { method: 'POST', body: JSON.stringify({ action: 'trade_cancel', trade_id: tradeId }) }),
 
   // Community - Marketplace
   marketList: (category = null, search = null) => request('web_community.php', { method: 'POST', body: JSON.stringify({ action: 'market_list', category, search }) }),
@@ -683,7 +683,7 @@ export const api = {
   feastGrant: (avatarKey, buffType, statBonus, bonusValue, hpBonus, xpBonus, durationMinutes) => request('web_world.php', { method: 'POST', body: JSON.stringify({ action: 'feast_grant', avatar_key: avatarKey, buff_type: buffType, stat_bonus: statBonus, bonus_value: bonusValue, hp_bonus: hpBonus, xp_bonus_pct: xpBonus, duration_minutes: durationMinutes }) }),
 
   // Admin - Creatures
-  creatureList: (search = '') => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_list', search }) }),
+  adminCreatureList: (search = '') => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_list', search }) }),
   creatureCreate: (data) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_create', ...data }) }),
   creatureUpdate: (id, data) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_update', creature_id: id, ...data }) }),
   creatureDelete: (id) => request('web_admin.php', { method: 'POST', body: JSON.stringify({ action: 'creature_delete', creature_id: id }) }),
@@ -709,6 +709,67 @@ export const api = {
   questAccept: (questId) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'accept', quest_id: questId }) }),
   questComplete: (questId) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'complete', quest_id: questId }) }),
   questAbandon: (questId) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'abandon', quest_id: questId }) }),
+
+  // Quest Graph Editor (admin)
+  questGraphList: () => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'list_admin' }) }),
+  questGraphGet: (questId) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'get_graph', quest_id: questId }) }),
+  questGraphAddNode: (questId, x, y, nodeType, triggerType) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'add_node', quest_id: questId, x, y, node_type: nodeType, trigger_type: triggerType }) }),
+  questGraphUpdateNode: (questId, nodeKey, data) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'update_node', quest_id: questId, node_key: nodeKey, ...data }) }),
+  questGraphDeleteNode: (questId, nodeKey) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'delete_node', quest_id: questId, node_key: nodeKey }) }),
+  questGraphAddEdge: (questId, fromKey, toKey) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'add_edge', quest_id: questId, from_node_key: fromKey, to_node_key: toKey }) }),
+  questGraphDeleteEdge: (edgeId) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'delete_edge', edge_id: edgeId }) }),
+  questGraphSaveGate: (questId, nodeKey, combinator, conditions) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'save_gate', quest_id: questId, node_key: nodeKey, combinator, conditions }) }),
+  questGraphSaveRewards: (questId, nodeKey, rewards) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'save_rewards', quest_id: questId, node_key: nodeKey, rewards }) }),
+  questGraphGenerateLsl: (questId) => request('web_quest.php', { method: 'POST', body: JSON.stringify({ action: 'generate_lsl', quest_id: questId }) }),
+
+  // Props/Document Renderer
+  propListTemplates: (type) => request('web_props.php', { method: 'POST', body: JSON.stringify({ action: 'list_templates', type }) }),
+  propGetTemplate: (templateId) => request('web_props.php', { method: 'POST', body: JSON.stringify({ action: 'get_template', template_id: templateId }) }),
+  propSaveTemplate: (templateId, name, description, templateType, width, height, bgColor, layers, variables) => request('web_props.php', { method: 'POST', body: JSON.stringify({ action: 'save_template', template_id: templateId, name, description, template_type: templateType, width, height, background_color: bgColor, layers, variables }) }),
+  propDeleteTemplate: (templateId) => request('web_props.php', { method: 'POST', body: JSON.stringify({ action: 'delete_template', template_id: templateId }) }),
+  propListInstances: (templateId) => request('web_props.php', { method: 'POST', body: JSON.stringify({ action: 'list_instances', template_id: templateId }) }),
+  propCreateInstance: (templateId, name, variableData) => request('web_props.php', { method: 'POST', body: JSON.stringify({ action: 'create_instance', template_id: templateId, name, variable_data: variableData }) }),
+  propGetInstance: (instanceId) => request('web_props.php', { method: 'POST', body: JSON.stringify({ action: 'get_instance', instance_id: instanceId }) }),
+  propSaveRender: (instanceId, renderBase64) => request('web_props.php', { method: 'POST', body: JSON.stringify({ action: 'save_render', instance_id: instanceId, render_base64: renderBase64 }) }),
+  propUploadToSl: (instanceId) => request('web_props.php', { method: 'POST', body: JSON.stringify({ action: 'upload_to_sl', instance_id: instanceId }) }),
+  propListFonts: () => request('web_props.php', { method: 'POST', body: JSON.stringify({ action: 'list_fonts' }) }),
+
+  // House Crests & Uniforms + Roster
+  crestGet: (houseId) => request('web_crests.php', { method: 'POST', body: JSON.stringify({ action: 'get_crest', house_id: houseId }) }),
+  crestSave: (houseId, crest) => request('web_crests.php', { method: 'POST', body: JSON.stringify({ action: 'save_crest', house_id: houseId, ...crest }) }),
+  uniformGet: (houseId) => request('web_crests.php', { method: 'POST', body: JSON.stringify({ action: 'get_uniform', house_id: houseId }) }),
+  uniformSave: (houseId, description, colors, items) => request('web_crests.php', { method: 'POST', body: JSON.stringify({ action: 'save_uniform', house_id: houseId, description, colors, items }) }),
+  groupLinkGet: (houseId) => request('web_crests.php', { method: 'POST', body: JSON.stringify({ action: 'get_group_link', house_id: houseId }) }),
+  groupLinkSave: (houseId, groupUuid, groupName) => request('web_crests.php', { method: 'POST', body: JSON.stringify({ action: 'save_group_link', house_id: houseId, group_uuid: groupUuid, group_name: groupName }) }),
+  rosterGet: (houseId) => request('web_crests.php', { method: 'POST', body: JSON.stringify({ action: 'get_roster', house_id: houseId }) }),
+  rosterSync: (houseId) => request('web_crests.php', { method: 'POST', body: JSON.stringify({ action: 'sync_roster', house_id: houseId }) }),
+
+  // Events Calendar
+  eventList: (month, year, type) => request('web_events.php', { method: 'POST', body: JSON.stringify({ action: 'list', month, year, type }) }),
+  eventGet: (eventId) => request('web_events.php', { method: 'POST', body: JSON.stringify({ action: 'get', event_id: eventId }) }),
+  eventCreate: (data) => request('web_events.php', { method: 'POST', body: JSON.stringify({ action: 'create', ...data }) }),
+  eventUpdate: (eventId, data) => request('web_events.php', { method: 'POST', body: JSON.stringify({ action: 'update', event_id: eventId, ...data }) }),
+  eventCancel: (eventId) => request('web_events.php', { method: 'POST', body: JSON.stringify({ action: 'cancel', event_id: eventId }) }),
+  eventNotify: (eventId) => request('web_events.php', { method: 'POST', body: JSON.stringify({ action: 'notify', event_id: eventId }) }),
+
+  // Housing/Rentals
+  housingListPlots: (territoryId) => request('web_housing.php', { method: 'POST', body: JSON.stringify({ action: 'list_plots', territory_id: territoryId }) }),
+  housingMyPlots: () => request('web_housing.php', { method: 'POST', body: JSON.stringify({ action: 'my_plots' }) }),
+  housingPayRent: (plotId, periodDays) => request('web_housing.php', { method: 'POST', body: JSON.stringify({ action: 'pay_rent', plot_id: plotId, period_days: periodDays }) }),
+  housingAssignPlot: (plotId, avatarKey) => request('web_housing.php', { method: 'POST', body: JSON.stringify({ action: 'assign_plot', plot_id: plotId, avatar_key: avatarKey }) }),
+  housingReleasePlot: (plotId) => request('web_housing.php', { method: 'POST', body: JSON.stringify({ action: 'release_plot', plot_id: plotId }) }),
+  housingCreatePlot: (data) => request('web_housing.php', { method: 'POST', body: JSON.stringify({ action: 'create_plot', ...data }) }),
+  housingListTerritories: () => request('web_housing.php', { method: 'POST', body: JSON.stringify({ action: 'list_territories' }) }),
+  housingPaymentHistory: (plotId) => request('web_housing.php', { method: 'POST', body: JSON.stringify({ action: 'payment_history', plot_id: plotId }) }),
+
+  // Castle Ledger (Incident/Moderation)
+  ledgerList: (status, category) => request('web_ledger.php', { method: 'POST', body: JSON.stringify({ action: 'list', status, category }) }),
+  ledgerMyIncidents: () => request('web_ledger.php', { method: 'POST', body: JSON.stringify({ action: 'my_incidents' }) }),
+  ledgerGet: (incidentId) => request('web_ledger.php', { method: 'POST', body: JSON.stringify({ action: 'get', incident_id: incidentId }) }),
+  ledgerFile: (data) => request('web_ledger.php', { method: 'POST', body: JSON.stringify({ action: 'file', ...data }) }),
+  ledgerAddNote: (incidentId, note, isInternal) => request('web_ledger.php', { method: 'POST', body: JSON.stringify({ action: 'add_note', incident_id: incidentId, note, is_internal: isInternal }) }),
+  ledgerAddEvidence: (incidentId, url) => request('web_ledger.php', { method: 'POST', body: JSON.stringify({ action: 'add_evidence', incident_id: incidentId, url }) }),
+  ledgerUpdateStatus: (incidentId, status) => request('web_ledger.php', { method: 'POST', body: JSON.stringify({ action: 'update_status', incident_id: incidentId, status }) }),
 
   // Crafting
   craftRecipes: (stationType) => request('web_crafting.php', { method: 'POST', body: JSON.stringify({ action: 'recipes', station_type: stationType }) }),
@@ -746,7 +807,9 @@ export const api = {
   religionList: () => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'list' }) }),
   religionSet: (religionId) => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'set', religion_id: religionId }) }),
   religionPray: () => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'pray' }) }),
+  religionSacrifice: (type) => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'sacrifice', type }) }),
   religionPowers: () => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'powers' }) }),
+  religionUsePower: (power) => request('web_religion.php', { method: 'POST', body: JSON.stringify({ action: 'use_piety', power }) }),
 
   // Character Creator
   creatorOptions: () => request('web_character_creator.php', { method: 'POST', body: JSON.stringify({ action: 'options' }) }),
@@ -805,5 +868,108 @@ export const api = {
   // RP Systems - Cyvasse
   cyvassePlay: (wager, opponent) => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'cyvasse_play', wager_gold: wager, opponent }) }),
   cyvasseStats: () => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'cyvasse_stats' }) }),
-  cyvasseLeaderboard: () => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'cyvasse_leaderboard' }) })
+  cyvasseLeaderboard: () => request('web_rp.php', { method: 'POST', body: JSON.stringify({ action: 'cyvasse_leaderboard' }) }),
+
+  // Object UI - Banking
+  convertCurrency: (direction, amount) => request('web_character.php', { method: 'POST', body: JSON.stringify({ action: 'convert_currency', direction, amount }) }),
+
+  // Object UI - Healing
+  healShrine: (healAmount) => request('web_character.php', { method: 'POST', body: JSON.stringify({ action: 'heal_shrine', heal_amount: healAmount }) }),
+
+  // Object UI - Arena
+  arenaDuel: (targetKey) => request('web_pve.php', { method: 'POST', body: JSON.stringify({ action: 'arena_duel', target_key: targetKey }) }),
+
+  // Object UI - Resurrection
+  resurrectRequest: (deadName) => request('web_character.php', { method: 'POST', body: JSON.stringify({ action: 'resurrect_request', dead_name: deadName }) }),
+
+  // Object UI - Shop (uses existing npc_vendor/npc_buy)
+  // npcVendor and npcBuy already defined above
+
+  // Object UI - Bounty (uses existing bounty endpoints)
+  // bountyList, bountyAccept, bountyProgress, bountyMy already defined above
+
+  // Object UI - Notice (uses existing recentEvents)
+  // recentEvents already defined above
+
+  // Object UI - Census (uses existing getServerStatus)
+  // getServerStatus already defined above
+
+  // Object UI - Crafting (uses existing craft endpoints)
+  // craftRecipes, craftStart, craftCheck, craftComplete already defined above
+
+  // Discord OAuth2
+  discordAuthUrl: (mode = 'login') => request('web_discord.php', { method: 'POST', body: JSON.stringify({ action: 'auth_url', mode }) }),
+  discordCallback: (code, state) => request('web_discord.php', { method: 'POST', body: JSON.stringify({ action: 'callback', code, state }) }),
+  discordStatus: () => request('web_discord.php', { method: 'POST', body: JSON.stringify({ action: 'status' }) }),
+  discordUnlink: () => request('web_discord.php', { method: 'POST', body: JSON.stringify({ action: 'unlink' }) }),
+
+  // GoTBot (SL Bot Service)
+  botStatus: () => request('web_bot.php', { method: 'POST', body: JSON.stringify({ action: 'status' }) }),
+  botBalance: () => request('web_bot.php', { method: 'POST', body: JSON.stringify({ action: 'balance' }) }),
+  botSendRaven: (avatarKey, message) => request('web_bot.php', { method: 'POST', body: JSON.stringify({ action: 'send_raven', avatar_key: avatarKey, message }) }),
+  botInviteHouse: (groupUuid, avatarKey, roleUuid = null) => request('web_bot.php', { method: 'POST', body: JSON.stringify({ action: 'invite_house', group_uuid: groupUuid, avatar_key: avatarKey, role_uuid: roleUuid }) }),
+  botEjectHouse: (groupUuid, avatarKey) => request('web_bot.php', { method: 'POST', body: JSON.stringify({ action: 'eject_house', group_uuid: groupUuid, avatar_key: avatarKey }) }),
+  botSyncRoster: (groupUuid) => request('web_bot.php', { method: 'POST', body: JSON.stringify({ action: 'sync_roster', group_uuid: groupUuid }) }),
+  botGetRoster: (groupUuid) => request('web_bot.php', { method: 'POST', body: JSON.stringify({ action: 'get_roster', group_uuid: groupUuid }) }),
+  botUploadTexture: (name, description, base64) => request('web_bot.php', { method: 'POST', body: JSON.stringify({ action: 'upload_texture', name, description, texture_base64: base64 }) }),
+  botDeliverItem: (avatarKey, itemUuid) => request('web_bot.php', { method: 'POST', body: JSON.stringify({ action: 'deliver_item', avatar_key: avatarKey, item_uuid: itemUuid }) }),
+
+  // Raven Network (real-time channel messaging)
+  ravenChannels: () => request('web_raven.php', { method: 'POST', body: JSON.stringify({ action: 'list_channels' }) }),
+  ravenAllChannels: () => request('web_raven.php', { method: 'POST', body: JSON.stringify({ action: 'list_all_channels' }) }),
+  ravenMessages: (channelId, sinceId) => request('web_raven.php', { method: 'POST', body: JSON.stringify({ action: 'messages', channel_id: channelId, since_id: sinceId || 0 }) }),
+  ravenSend: (channelId, body) => request('web_raven.php', { method: 'POST', body: JSON.stringify({ action: 'send', channel_id: channelId, body }) }),
+  ravenSubscribe: (channelId) => request('web_raven.php', { method: 'POST', body: JSON.stringify({ action: 'subscribe', channel_id: channelId }) }),
+  ravenUnsubscribe: (channelId) => request('web_raven.php', { method: 'POST', body: JSON.stringify({ action: 'unsubscribe', channel_id: channelId }) }),
+  ravenToggleMute: (channelId) => request('web_raven.php', { method: 'POST', body: JSON.stringify({ action: 'toggle_mute', channel_id: channelId }) }),
+  ravenCreateChannel: (data) => request('web_raven.php', { method: 'POST', body: JSON.stringify({ action: 'create_channel', ...data }) }),
+  ravenDeleteMessage: (messageId) => request('web_raven.php', { method: 'POST', body: JSON.stringify({ action: 'delete_message', message_id: messageId }) }),
+  ravenMembers: (channelId) => request('web_raven.php', { method: 'POST', body: JSON.stringify({ action: 'members', channel_id: channelId }) }),
+  ravenSetRole: (channelId, targetKey, role) => request('web_raven.php', { method: 'POST', body: JSON.stringify({ action: 'set_role', channel_id: channelId, target_key: targetKey, role }) }),
+
+  // Maester System (Academic)
+  maesterCourses: (semester, skill) => request('web_maester.php', { method: 'POST', body: JSON.stringify({ action: 'courses', semester, skill }) }),
+  maesterMyEnrollments: () => request('web_maester.php', { method: 'POST', body: JSON.stringify({ action: 'my_enrollments' }) }),
+  maesterEnroll: (courseId) => request('web_maester.php', { method: 'POST', body: JSON.stringify({ action: 'enroll', course_id: courseId }) }),
+  maesterDrop: (enrollmentId) => request('web_maester.php', { method: 'POST', body: JSON.stringify({ action: 'drop', enrollment_id: enrollmentId }) }),
+  maesterGrade: (enrollmentId, grade, notes) => request('web_maester.php', { method: 'POST', body: JSON.stringify({ action: 'grade', enrollment_id: enrollmentId, grade, notes }) }),
+  maesterAllEnrollments: (courseId, status) => request('web_maester.php', { method: 'POST', body: JSON.stringify({ action: 'all_enrollments', course_id: courseId, status }) }),
+  maesterCertifications: () => request('web_maester.php', { method: 'POST', body: JSON.stringify({ action: 'certifications' }) }),
+  maesterAwardCert: (certId, avatarKey) => request('web_maester.php', { method: 'POST', body: JSON.stringify({ action: 'award_cert', cert_id: certId, avatar_key: avatarKey }) }),
+  maesterCreateCourse: (data) => request('web_maester.php', { method: 'POST', body: JSON.stringify({ action: 'create_course', ...data }) }),
+
+  // Citizen Directory
+  directorySearch: (search, houseId, archetypeId, page) => request('web_directory.php', { method: 'POST', body: JSON.stringify({ action: 'search', search, house_id: houseId, archetype_id: archetypeId, page }) }),
+  directoryDossier: (avatarKey) => request('web_directory.php', { method: 'POST', body: JSON.stringify({ action: 'dossier', avatar_key: avatarKey }) }),
+  directoryUpdateProfile: (data) => request('web_directory.php', { method: 'POST', body: JSON.stringify({ action: 'update_profile', ...data }) }),
+  directoryMyProfile: () => request('web_directory.php', { method: 'POST', body: JSON.stringify({ action: 'my_profile' }) }),
+  directoryHouses: () => request('web_directory.php', { method: 'POST', body: JSON.stringify({ action: 'houses' }) }),
+  directoryArchetypes: () => request('web_directory.php', { method: 'POST', body: JSON.stringify({ action: 'archetypes' }) }),
+  directoryFeatured: () => request('web_directory.php', { method: 'POST', body: JSON.stringify({ action: 'featured' }) }),
+
+  // Dynamic Forms
+  formsList: (activeOnly, formType) => request('web_forms.php', { method: 'POST', body: JSON.stringify({ action: 'list', active_only: activeOnly, form_type: formType }) }),
+  formGet: (formId) => request('web_forms.php', { method: 'POST', body: JSON.stringify({ action: 'get', form_id: formId }) }),
+  formCreate: (data) => request('web_forms.php', { method: 'POST', body: JSON.stringify({ action: 'create', ...data }) }),
+  formUpdate: (formId, data) => request('web_forms.php', { method: 'POST', body: JSON.stringify({ action: 'update', form_id: formId, ...data }) }),
+  formDelete: (formId) => request('web_forms.php', { method: 'POST', body: JSON.stringify({ action: 'delete', form_id: formId }) }),
+  formSubmit: (formId, data) => request('web_forms.php', { method: 'POST', body: JSON.stringify({ action: 'submit', form_id: formId, data }) }),
+  formMySubmissions: () => request('web_forms.php', { method: 'POST', body: JSON.stringify({ action: 'my_submissions' }) }),
+  formListSubmissions: (formId, status) => request('web_forms.php', { method: 'POST', body: JSON.stringify({ action: 'list_submissions', form_id: formId, status }) }),
+  formReview: (submissionId, status, notes) => request('web_forms.php', { method: 'POST', body: JSON.stringify({ action: 'review', submission_id: submissionId, status, notes }) }),
+
+  // Health System
+  healthGet: () => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'get' }) }),
+  healthGetStanding: (avatarKey) => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'get_standing', avatar_key: avatarKey }) }),
+  healthSetStanding: (standing, notes) => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'set_standing', standing, notes }) }),
+  healthGetConsent: () => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'get_consent' }) }),
+  healthSetConsent: (data) => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'set_consent', ...data }) }),
+  healthGetTreatments: (avatarKey) => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'get_treatments', avatar_key: avatarKey }) }),
+  healthAddTreatment: (patientKey, treatmentType, description, performCheck) => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'add_treatment', patient_key: patientKey, treatment_type: treatmentType, description, perform_skill_check: performCheck }) }),
+  healthGetCycle: () => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'get_cycle' }) }),
+  healthSetCycle: (enabled, data) => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'set_cycle', enabled, data }) }),
+  healthGetPatient: (patientKey) => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'get_patient', patient_key: patientKey }) }),
+  healthQuarantine: (avatarKey, reason) => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'quarantine', avatar_key: avatarKey, reason }) }),
+  healthLiftQuarantine: (avatarKey) => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'lift_quarantine', avatar_key: avatarKey }) }),
+  healthListQuarantines: () => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'list_quarantines' }) }),
 }

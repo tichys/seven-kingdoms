@@ -46,6 +46,9 @@ export default function Navbar() {
         { path: '/character', label: 'Character Sheet' },
         { path: '/character-creator', label: 'Character Creation' },
         { path: '/house', label: 'House Management' },
+        { path: '/factions', label: 'Factions' },
+        { path: '/religion', label: 'Religion' },
+        { path: '/health', label: 'Health Record' },
       ]
     })
     dropdowns.push({
@@ -55,12 +58,20 @@ export default function Navbar() {
         { path: '/quests', label: 'Quests' },
         { path: '/crafting', label: 'Crafting' },
         { path: '/activities', label: 'Activities' },
+        { path: '/world', label: 'World Events' },
       ]
     })
     dropdowns.push({
       id: 'community', label: 'Community', items: [
         { path: '/community', label: 'Leaderboards & Marketplace' },
+        { path: '/directory', label: 'Citizen Directory' },
+        { path: '/forms', label: 'Forms & Petitions' },
         { path: '/trade', label: 'Trade & Goods' },
+        { path: '/raven', label: 'Raven Network' },
+        { path: '/maester', label: 'The Citadel' },
+        { path: '/events', label: 'Events' },
+        { path: '/housing', label: 'Housing' },
+        { path: '/ledger', label: 'Castle Ledger' },
       ]
     })
     dropdowns.push({

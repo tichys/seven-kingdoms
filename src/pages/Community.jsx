@@ -21,6 +21,12 @@ export default function Community() {
   const [myTournaments, setMyTournaments] = useState([])
   const [marketCat, setMarketCat] = useState('all')
   const [marketSearch, setMarketSearch] = useState('')
+  const [showTradeCreate, setShowTradeCreate] = useState(false)
+  const [tradeForm, setTradeForm] = useState({ to_key: '', from_items: '', to_items: '', from_gold: 0, to_gold: 0 })
+  const [showMarketCreate, setShowMarketCreate] = useState(false)
+  const [marketForm, setMarketForm] = useState({ item_id: '', quantity: 1, price_per_unit: 0, listing_type: 'sale' })
+  const [showTournamentCreate, setShowTournamentCreate] = useState(false)
+  const [tournamentForm, setTournamentForm] = useState({ name: '', tournament_type: 'melee', max_participants: 8, prize_gold: 50, prize_xp: 100, region: '', description: '' })
 
   const tabs = [
     { id: 'leaderboards', label: 'Leaderboards' },
@@ -154,6 +160,47 @@ export default function Community() {
 
   const renderTrading = () => (
     <div>
+      <div className="card mb-3">
+        <div className="card-header">Create Trade Offer</div>
+        <div className="card-body">
+          {!showTradeCreate ? (
+            <button className="btn btn-primary btn-sm" onClick={() => setShowTradeCreate(true)}>New Trade Offer</button>
+          ) : (
+            <div>
+              <div className="grid grid-2">
+                <div className="form-group">
+                  <label className="form-label">Recipient Avatar Key</label>
+                  <input className="form-input" value={tradeForm.to_key} onChange={e => setTradeForm({...tradeForm, to_key: e.target.value})} placeholder="00000000-0000-0000-0000-000000000000" />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Your Gold Offer</label>
+                  <input className="form-input" type="number" min="0" value={tradeForm.from_gold} onChange={e => setTradeForm({...tradeForm, from_gold: parseInt(e.target.value) || 0})} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Requested Gold</label>
+                  <input className="form-input" type="number" min="0" value={tradeForm.to_gold} onChange={e => setTradeForm({...tradeForm, to_gold: parseInt(e.target.value) || 0})} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Your Items (item_id:qty, comma-separated)</label>
+                  <input className="form-input" value={tradeForm.from_items} onChange={e => setTradeForm({...tradeForm, from_items: e.target.value})} placeholder="5:2,10:1" />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Requested Items</label>
+                  <input className="form-input" value={tradeForm.to_items} onChange={e => setTradeForm({...tradeForm, to_items: e.target.value})} placeholder="15:1" />
+                </div>
+              </div>
+              <div className="d-flex gap-1 mt-2">
+                <button className="btn btn-primary btn-sm" onClick={() => doAction(() => {
+                  const parseItems = (s) => s ? s.split(',').map(p => { const [id, qty] = p.split(':'); return { item_id: parseInt(id), qty: parseInt(qty) || 1 } }).filter(x => x.item_id) : []
+                  return api.tradeCreate(tradeForm.to_key, parseItems(tradeForm.from_items), parseItems(tradeForm.to_items), tradeForm.from_gold, tradeForm.to_gold)
+                }, 'Trade offered')}>Send Offer</button>
+                <button className="btn btn-outline btn-sm" onClick={() => setShowTradeCreate(false)}>Cancel</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       <h3 className="mb-2">Pending Trade Offers ({trades.length})</h3>
       {trades.length === 0 ? <p className="text-muted">No pending trades</p> : (
         <table className="stats-table">
@@ -172,11 +219,11 @@ export default function Community() {
                 <td>
                   {!t.is_sender ? (
                     <>
-                      <button className="btn btn-primary btn-sm" onClick={() => doAction(() => api.tradeAccept(t.id), 'Trade accepted')}>Accept</button>
-                      <button className="btn btn-danger btn-sm" onClick={() => doAction(() => api.tradeReject(t.id), 'Rejected')}>Reject</button>
+                      <button className="btn btn-primary btn-sm" onClick={() => doAction(() => api.communityTradeAccept(t.id), 'Trade accepted')}>Accept</button>
+                      <button className="btn btn-danger btn-sm" onClick={() => doAction(() => api.communityTradeReject(t.id), 'Rejected')}>Reject</button>
                     </>
                   ) : (
-                    <button className="btn btn-danger btn-sm" onClick={() => doAction(() => api.tradeCancel(t.id), 'Cancelled')}>Cancel</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => doAction(() => api.communityTradeCancel(t.id), 'Cancelled')}>Cancel</button>
                   )}
                 </td>
               </tr>
@@ -189,6 +236,43 @@ export default function Community() {
 
   const renderMarketplace = () => (
     <div>
+      <div className="card mb-3">
+        <div className="card-header">Create Listing</div>
+        <div className="card-body">
+          {!showMarketCreate ? (
+            <button className="btn btn-primary btn-sm" onClick={() => setShowMarketCreate(true)}>List an Item</button>
+          ) : (
+            <div>
+              <div className="grid grid-2">
+                <div className="form-group">
+                  <label className="form-label">Item ID</label>
+                  <input className="form-input" type="number" value={marketForm.item_id} onChange={e => setMarketForm({...marketForm, item_id: parseInt(e.target.value) || 0})} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Quantity</label>
+                  <input className="form-input" type="number" min="1" value={marketForm.quantity} onChange={e => setMarketForm({...marketForm, quantity: parseInt(e.target.value) || 1})} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Price Per Unit (gold)</label>
+                  <input className="form-input" type="number" min="0" value={marketForm.price_per_unit} onChange={e => setMarketForm({...marketForm, price_per_unit: parseInt(e.target.value) || 0})} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Listing Type</label>
+                  <select className="form-select" value={marketForm.listing_type} onChange={e => setMarketForm({...marketForm, listing_type: e.target.value})}>
+                    <option value="sale">Sale</option>
+                    <option value="auction">Auction</option>
+                  </select>
+                </div>
+              </div>
+              <div className="d-flex gap-1 mt-2">
+                <button className="btn btn-primary btn-sm" onClick={() => doAction(() => api.marketCreate(marketForm.item_id, marketForm.quantity, marketForm.price_per_unit, marketForm.listing_type), 'Listing created')}>List Item</button>
+                <button className="btn btn-outline btn-sm" onClick={() => setShowMarketCreate(false)}>Cancel</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="filter-bar mb-2">
         <select className="filter-select" value={marketCat} onChange={e => setMarketCat(e.target.value)}>
           <option value="all">All Categories</option>
@@ -242,6 +326,58 @@ export default function Community() {
 
   const renderTournaments = () => (
     <div>
+      {isAdmin && (
+        <div className="card mb-3">
+          <div className="card-header">Admin: Create Tournament</div>
+          <div className="card-body">
+            {!showTournamentCreate ? (
+              <button className="btn btn-primary btn-sm" onClick={() => setShowTournamentCreate(true)}>New Tournament</button>
+            ) : (
+              <div>
+                <div className="grid grid-2">
+                  <div className="form-group">
+                    <label className="form-label">Name</label>
+                    <input className="form-input" value={tournamentForm.name} onChange={e => setTournamentForm({...tournamentForm, name: e.target.value})} placeholder="Tourney of the Hand" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Type</label>
+                    <select className="form-select" value={tournamentForm.tournament_type} onChange={e => setTournamentForm({...tournamentForm, tournament_type: e.target.value})}>
+                      <option value="melee">Melee</option>
+                      <option value="joust">Joust</option>
+                      <option value="archery">Archery</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Max Participants</label>
+                    <input className="form-input" type="number" min="2" value={tournamentForm.max_participants} onChange={e => setTournamentForm({...tournamentForm, max_participants: parseInt(e.target.value) || 8})} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Prize Gold</label>
+                    <input className="form-input" type="number" min="0" value={tournamentForm.prize_gold} onChange={e => setTournamentForm({...tournamentForm, prize_gold: parseInt(e.target.value) || 0})} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Prize XP</label>
+                    <input className="form-input" type="number" min="0" value={tournamentForm.prize_xp} onChange={e => setTournamentForm({...tournamentForm, prize_xp: parseInt(e.target.value) || 0})} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Region (optional)</label>
+                    <input className="form-input" value={tournamentForm.region} onChange={e => setTournamentForm({...tournamentForm, region: e.target.value})} placeholder="Crownlands" />
+                  </div>
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <label className="form-label">Description</label>
+                    <input className="form-input" value={tournamentForm.description} onChange={e => setTournamentForm({...tournamentForm, description: e.target.value})} placeholder="A grand tournament to celebrate..." />
+                  </div>
+                </div>
+                <div className="d-flex gap-1 mt-2">
+                  <button className="btn btn-primary btn-sm" onClick={() => doAction(() => api.tournamentAdminCreate(tournamentForm.name, tournamentForm.tournament_type, tournamentForm.max_participants, tournamentForm.prize_gold, tournamentForm.prize_xp, tournamentForm.region, tournamentForm.description), 'Tournament created')}>Create</button>
+                  <button className="btn btn-outline btn-sm" onClick={() => setShowTournamentCreate(false)}>Cancel</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {myTournaments.length > 0 && (
         <div className="card mb-3">
           <div className="card-header">My Tournaments</div>

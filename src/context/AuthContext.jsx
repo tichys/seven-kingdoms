@@ -65,12 +65,19 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
+  const discordLogin = useCallback((session, player) => {
+    api.setToken(session)
+    setUser(player)
+    return { success: true, player }
+  }, [])
+
   const value = {
     user,
     loading,
     error,
     login,
     logout,
+    discordLogin,
     validateSession,
     isAuthenticated: !!user,
     isAdmin: user?.admin_level >= 1,

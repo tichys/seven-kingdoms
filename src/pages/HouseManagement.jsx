@@ -15,6 +15,13 @@ export default function HouseManagement() {
   const [marriages, setMarriages] = useState([])
   const [showFound, setShowFound] = useState(false)
   const [foundForm, setFoundForm] = useState({ name: '', words: '', seat: '', region: 'Crownlands', primary_color: '#444444', secondary_color: '#888888' })
+  const [showAlliancePropose, setShowAlliancePropose] = useState(false)
+  const [allianceForm, setAllianceForm] = useState({ house2_id: '', alliance_type: 'defensive' })
+  const [showProposeMarriage, setShowProposeMarriage] = useState(false)
+  const [marriageForm, setMarriageForm] = useState({ target_key: '' })
+  const [pendingAlliances, setPendingAlliances] = useState([])
+  const [pendingMarriages, setPendingMarriages] = useState([])
+  const [housesForAlliance, setHousesForAlliance] = useState([])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -34,6 +41,19 @@ export default function HouseManagement() {
         setMembers(mems.members || [])
         setAlliances(alls.alliances || [])
         setMarriages(marrs.marriages || [])
+        // Load pending alliances and marriages for lord
+        if (house.house.is_lord) {
+          const [houses, pAlliances, pMarriages] = await Promise.all([
+            api.getHouses().catch(e => ({ houses: [] })),
+            api.houseAlliances(hid).catch(e => ({ alliances: [] })),
+            api.houseMarriages(hid).catch(e => ({ marriages: [] }))
+          ])
+          setHousesForAlliance((houses.houses || []).filter(h => h.id !== hid))
+          // Filter pending alliances (not accepted)
+          setPendingAlliances((alls.alliances || []).filter(a => !a.accepted))
+          // Filter pending marriages (officiant null)
+          setPendingMarriages((marrs.marriages || []).filter(m => m.pending))
+        }
       }
     } catch (err) {
       setError(err.message)
@@ -188,50 +208,135 @@ export default function HouseManagement() {
               )}
 
               {tab === 'alliances' && (
-                alliances.length === 0 ? <p className="text-muted">No active alliances.</p> : (
-                  <table className="stats-table">
-                    <thead><tr><th>House 1</th><th>House 2</th><th>Status</th><th>Date</th>{(isLord || adminLevel >= 2) && <th>Actions</th>}</tr></thead>
-                    <tbody>
-                      {alliances.map(a => (
-                        <tr key={a.id}>
-                          <td>{a.house1}</td>
-                          <td>{a.house2}</td>
-                          <td style={{ textTransform: 'capitalize' }}>{a.status}</td>
-                          <td style={{ fontSize: '.8rem' }}>{new Date(a.created_at).toLocaleDateString()}</td>
-                          {(isLord || adminLevel >= 2) && (
-                            <td>
-                              <button className="btn btn-danger btn-sm" onClick={() => doAction(() => api.houseAllianceBreak(a.id), 'Alliance broken')}>Break</button>
-                            </td>
-                          )}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )
+                <div>
+                  {isLord && (
+                    <div className="card mb-3">
+                      <div className="card-header">Propose New Alliance</div>
+                      <div className="card-body">
+                        {!showAlliancePropose ? (
+                          <button className="btn btn-primary btn-sm" onClick={() => setShowAlliancePropose(true)}>Propose Alliance</button>
+                        ) : (
+                          <div>
+                            <div className="filter-bar mb-2">
+                              <select className="filter-select" value={allianceForm.house2_id} onChange={e => setAllianceForm({...allianceForm, house2_id: parseInt(e.target.value)})}>
+                                <option value="">Select House...</option>
+                                {housesForAlliance.map(h => <option key={h.id} value={h.id}>{h.name} ({h.region})</option>)}
+                              </select>
+                              <select className="filter-select" value={allianceForm.alliance_type} onChange={e => setAllianceForm({...allianceForm, alliance_type: e.target.value})}>
+                                <option value="defensive">Defensive</option>
+                                <option value="offensive">Offensive</option>
+                                <option value="trade">Trade</option>
+                                <option value="marriage">Marriage Pact</option>
+                                <option value="non_aggression">Non-Aggression</option>
+                              </select>
+                            </div>
+                            <div className="d-flex gap-1">
+                              <button className="btn btn-primary btn-sm" onClick={() => doAction(() => api.houseAlliancePropose(myHouse.id, parseInt(allianceForm.house2_id)), 'Alliance proposed')}>Propose</button>
+                              <button className="btn btn-outline btn-sm" onClick={() => setShowAlliancePropose(false)}>Cancel</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {pendingAlliances.length > 0 && (
+                    <div className="card mb-3">
+                      <div className="card-header">Pending Proposals</div>
+                      <div className="card-body">
+                        {pendingAlliances.map(a => (
+                          <div key={a.id} className="item-card">
+                            <div className="item-name">{a.type} alliance with {a.with_house || a.house1 || a.house2}</div>
+                            <div className="item-type">Awaiting acceptance</div>
+                            {isLord && a.proposed_by !== user?.avatar_key && (
+                              <button className="btn btn-primary btn-sm mt-1" onClick={() => doAction(() => api.houseAllianceAccept(a.id), 'Alliance accepted')}>Accept</button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {alliances.length === 0 ? <p className="text-muted">No active alliances.</p> : (
+                    <table className="stats-table">
+                      <thead><tr><th>House 1</th><th>House 2</th><th>Status</th><th>Date</th>{(isLord || adminLevel >= 2) && <th>Actions</th>}</tr></thead>
+                      <tbody>
+                        {alliances.map(a => (
+                          <tr key={a.id}>
+                            <td>{a.house1}</td>
+                            <td>{a.house2}</td>
+                            <td style={{ textTransform: 'capitalize' }}>{a.status}</td>
+                            <td style={{ fontSize: '.8rem' }}>{new Date(a.created_at).toLocaleDateString()}</td>
+                            {(isLord || adminLevel >= 2) && (
+                              <td>
+                                <button className="btn btn-danger btn-sm" onClick={() => doAction(() => api.houseAllianceBreak(a.id), 'Alliance broken')}>Break</button>
+                              </td>
+                            )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
               )}
 
               {tab === 'marriages' && (
-                marriages.length === 0 ? <p className="text-muted">No active marriages.</p> : (
-                  <table className="stats-table">
-                    <thead><tr><th>Spouse 1</th><th>Spouse 2</th><th>House 1</th><th>House 2</th><th>Date</th>{adminLevel >= 2 && <th>Actions</th>}</tr></thead>
-                    <tbody>
-                      {marriages.map(m => (
-                        <tr key={m.id}>
-                          <td>{m.spouse1}</td>
-                          <td>{m.spouse2}</td>
-                          <td>{m.house1}</td>
-                          <td>{m.house2}</td>
-                          <td style={{ fontSize: '.8rem' }}>{m.married_at ? new Date(m.married_at).toLocaleDateString() : '-'}</td>
-                          {adminLevel >= 2 && (
-                            <td>
-                              <button className="btn btn-danger btn-sm" onClick={() => doAction(() => api.houseAnnul(m.id), 'Marriage annulled')}>Annul</button>
-                            </td>
-                          )}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )
+                <div>
+                  {isLord && (
+                    <div className="card mb-3">
+                      <div className="card-header">Propose Marriage</div>
+                      <div className="card-body">
+                        {!showProposeMarriage ? (
+                          <button className="btn btn-primary btn-sm" onClick={() => setShowProposeMarriage(true)}>Propose Marriage</button>
+                        ) : (
+                          <div>
+                            <div className="form-group">
+                              <label className="form-label">Partner Avatar Key</label>
+                              <input className="form-input" value={marriageForm.target_key} onChange={e => setMarriageForm({...marriageForm, target_key: e.target.value})} placeholder="00000000-0000-0000-0000-000000000000" />
+                            </div>
+                            <div className="d-flex gap-1 mt-2">
+                              <button className="btn btn-primary btn-sm" onClick={() => doAction(() => api.houseProposeMarriage(marriageForm.target_key), 'Marriage proposed')}>Propose</button>
+                              <button className="btn btn-outline btn-sm" onClick={() => setShowProposeMarriage(false)}>Cancel</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {pendingMarriages.length > 0 && adminLevel >= 2 && (
+                    <div className="card mb-3">
+                      <div className="card-header">Pending Ceremonies (Admin)</div>
+                      <div className="card-body">
+                        {pendingMarriages.map(m => (
+                          <div key={m.id} className="item-card">
+                            <div className="item-name">{m.spouse1 || m.partner1_name} & {m.spouse2 || m.partner2_name}</div>
+                            <div className="item-type">Awaiting officiant</div>
+                            <button className="btn btn-primary btn-sm mt-1" onClick={() => doAction(() => api.houseMarry(m.id), 'Marriage performed')}>Perform Ceremony</button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {marriages.length === 0 ? <p className="text-muted">No active marriages.</p> : (
+                    <table className="stats-table">
+                      <thead><tr><th>Spouse 1</th><th>Spouse 2</th><th>House 1</th><th>House 2</th><th>Date</th>{adminLevel >= 2 && <th>Actions</th>}</tr></thead>
+                      <tbody>
+                        {marriages.map(m => (
+                          <tr key={m.id}>
+                            <td>{m.spouse1}</td>
+                            <td>{m.spouse2}</td>
+                            <td>{m.house1}</td>
+                            <td>{m.house2}</td>
+                            <td style={{ fontSize: '.8rem' }}>{m.married_at ? new Date(m.married_at).toLocaleDateString() : '-'}</td>
+                            {adminLevel >= 2 && (
+                              <td>
+                                <button className="btn btn-danger btn-sm" onClick={() => doAction(() => api.houseAnnul(m.id), 'Marriage annulled')}>Annul</button>
+                              </td>
+                            )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
               )}
             </div>
           </div>

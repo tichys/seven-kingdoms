@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { api } from '../api/client.js'
 
 export default function Login() {
   const { login } = useAuth()
@@ -10,6 +11,7 @@ export default function Login() {
   const [loginCode, setLoginCode] = useState('')
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const [discordLoading, setDiscordLoading] = useState(false)
 
   const from = location.state?.from?.pathname || '/character'
 
@@ -48,6 +50,22 @@ export default function Login() {
       setError(result.error || 'Login failed. Check your code and try again.')
     }
     setSubmitting(false)
+  }
+
+  const handleDiscordLogin = async () => {
+    setError(null)
+    setDiscordLoading(true)
+    try {
+      const data = await api.discordAuthUrl('login')
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        setError(data.error || 'Failed to get Discord login URL.')
+      }
+    } catch (err) {
+      setError(err.message || 'Discord login is not available.')
+    }
+    setDiscordLoading(false)
   }
 
   return (
@@ -89,9 +107,24 @@ export default function Login() {
             </small>
           </div>
           <button type="submit" className="btn btn-primary btn-block" disabled={submitting}>
-            {submitting ? 'Logging in...' : 'Login'}
+            {submitting ? 'Logging in...' : 'Login with HUD Code'}
           </button>
         </form>
+
+        <div className="login-divider">
+          <span>or</span>
+        </div>
+
+        <button
+          className="btn btn-discord btn-block"
+          onClick={handleDiscordLogin}
+          disabled={discordLoading}
+        >
+          {discordLoading ? 'Redirecting...' : 'Login with Discord'}
+        </button>
+        <small className="text-muted" style={{ fontSize: '.8rem', display: 'block', textAlign: 'center', marginTop: '.5rem' }}>
+          Login with your linked Discord account. First time? Login with HUD code above, then link Discord in Character settings.
+        </small>
 
         <div className="login-help">
           <p><strong>How to find your avatar key:</strong></p>

@@ -705,7 +705,7 @@ function CreaturesTab({ adminLevel, setError }) {
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await api.creatureList(search)
+      const data = await api.adminCreatureList(search)
       setCreatures(data.creatures || [])
     } catch (err) {
       setError(err.message)
