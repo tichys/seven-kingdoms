@@ -13,6 +13,8 @@ export default function Profile() {
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('overview')
   const [error, setError] = useState(null)
+  const [discord, setDiscord] = useState(null)
+  const [discordLoading, setDiscordLoading] = useState(false)
 
   useEffect(() => { loadAll() }, [])
 
@@ -20,14 +22,16 @@ export default function Profile() {
     setLoading(true)
     setError(null)
     try {
-      const [p, t, r] = await Promise.all([
+      const [p, t, r, dsc] = await Promise.all([
         api.getProfile(),
         api.getTitles().catch(() => null),
-        api.getRavens('inbox', 20, 0).catch(() => null)
+        api.getRavens('inbox', 20, 0).catch(() => null),
+        api.discordStatus().catch(e => ({ error: e.message }))
       ])
       setProfile(p)
       if (t) setTitles(t.titles || [])
       if (r) setRavens(r.messages || [])
+      if (!dsc.error) setDiscord(dsc)
     } catch (err) {
       setError(err.message)
     }
@@ -88,7 +92,8 @@ export default function Profile() {
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'titles', label: 'Titles' },
-    { id: 'ravens', label: `Ravens${profile.unread_ravens > 0 ? ` (${profile.unread_ravens})` : ''}` }
+    { id: 'ravens', label: `Ravens${profile.unread_ravens > 0 ? ` (${profile.unread_ravens})` : ''}` },
+    { id: 'discord', label: 'Discord' }
   ]
 
   return (
@@ -132,6 +137,28 @@ export default function Profile() {
             onDelete={handleDeleteRaven}
             selected={selectedRaven}
             onClose={() => setSelectedRaven(null)}
+          />
+        )}
+        {tab === 'discord' && (
+          <DiscordTab
+            discord={discord}
+            loading={discordLoading}
+            onLink={async () => {
+              setDiscordLoading(true)
+              try {
+                const data = await api.discordAuthUrl('link')
+                if (data.url) window.location.href = data.url
+              } catch (err) { setError(err.message) }
+              setDiscordLoading(false)
+            }}
+            onUnlink={async () => {
+              setDiscordLoading(true)
+              try {
+                await api.discordUnlink()
+                setDiscord({ linked: false })
+              } catch (err) { setError(err.message) }
+              setDiscordLoading(false)
+            }}
           />
         )}
       </div>
@@ -323,6 +350,57 @@ function RavensTab({ ravens, folder, onFolder, onRead, onDelete, selected, onClo
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+// =====================================================
+function DiscordTab({ discord, loading, onLink, onUnlink }) {
+  if (!discord) {
+    return <p className="text-muted">Loading Discord status...</p>
+  }
+
+  if (discord.linked) {
+    return (
+      <div className="card" style={{ maxWidth: '500px' }}>
+        <div className="card-header">Discord Account</div>
+        <div className="card-body">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            {discord.discord?.discord_avatar && (
+              <img
+                src={discord.discord.discord_avatar}
+                alt="Discord avatar"
+                style={{ width: '48px', height: '48px', borderRadius: '50%' }}
+              />
+            )}
+            <div>
+              <p style={{ marginBottom: '.25rem' }}>
+                Linked: <span className="text-gold">{discord.discord?.discord_username || 'Unknown'}</span>
+              </p>
+              <p className="text-muted" style={{ fontSize: '.8rem', marginBottom: '.5rem' }}>
+                You can login via Discord. Linked since {discord.discord?.linked_at?.split(' ')[0] || 'unknown'}.
+              </p>
+            </div>
+          </div>
+          <button className="btn btn-outline btn-sm" style={{ marginTop: '.75rem' }} disabled={loading} onClick={onUnlink}>
+            {loading ? 'Unlinking...' : 'Unlink Discord'}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="card" style={{ maxWidth: '500px' }}>
+      <div className="card-header">Discord Account</div>
+      <div className="card-body">
+        <p className="text-muted" style={{ fontSize: '.85rem', marginBottom: '.75rem' }}>
+          Link your Discord account to login via Discord without needing a HUD code.
+        </p>
+        <button className="btn btn-discord btn-sm" disabled={loading} onClick={onLink}>
+          {loading ? 'Redirecting...' : 'Link Discord Account'}
+        </button>
+      </div>
     </div>
   )
 }
