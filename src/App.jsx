@@ -49,6 +49,7 @@ const Maester = lazy(() => import('./pages/Maester.jsx'))
 const CitizenDirectory = lazy(() => import('./pages/CitizenDirectory.jsx'))
 const Forms = lazy(() => import('./pages/Forms.jsx'))
 const Health = lazy(() => import('./pages/Health.jsx'))
+const SettlementExpansion = lazy(() => import('./pages/SettlementExpansion.jsx'))
 
 const PageFallback = () => <div className="page-content"><Loading /></div>
 
@@ -105,6 +106,10 @@ export default function App() {
               <Route
                 path="/war"
                 element={<ProtectedRoute><War /></ProtectedRoute>}
+              />
+              <Route
+                path="/settlement"
+                element={<ProtectedRoute><SettlementExpansion /></ProtectedRoute>}
               />
               <Route
                 path="/pve"

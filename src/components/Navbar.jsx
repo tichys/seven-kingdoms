@@ -54,6 +54,7 @@ export default function Navbar() {
     dropdowns.push({
       id: 'adventure', label: 'Adventure', items: [
         { path: '/war', label: 'War Council' },
+        { path: '/settlement', label: 'Settlements' },
         { path: '/pve', label: 'Dungeons & Bounties' },
         { path: '/quests', label: 'Quests' },
         { path: '/crafting', label: 'Crafting' },

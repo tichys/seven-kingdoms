@@ -973,4 +973,55 @@ export const api = {
   healthQuarantine: (avatarKey, reason) => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'quarantine', avatar_key: avatarKey, reason }) }),
   healthLiftQuarantine: (avatarKey) => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'lift_quarantine', avatar_key: avatarKey }) }),
   healthListQuarantines: () => request('web_health.php', { method: 'POST', body: JSON.stringify({ action: 'list_quarantines' }) }),
+
+  // Settlement Expansion — 9 systems via web_settlement.php
+  // Population & Morale
+  settlementOverview: (territoryId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'overview', territory_id: territoryId }) }),
+  populationGet: (territoryId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'population_get', territory_id: territoryId }) }),
+  populationSetTax: (territoryId, taxRate) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'population_set_tax', territory_id: territoryId, tax_rate: taxRate }) }),
+  populationTick: (territoryId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'population_tick', territory_id: territoryId }) }),
+
+  // Taxation
+  taxList: (houseId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'tax_list', house_id: houseId }) }),
+  taxSet: (overlordId, vassalId, taxRate, taxType) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'tax_set', overlord_house_id: overlordId, vassal_house_id: vassalId, tax_rate: taxRate, tax_type: taxType }) }),
+  taxAccept: (taxId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'tax_accept', tax_id: taxId }) }),
+  taxRefuse: (taxId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'tax_refuse', tax_id: taxId }) }),
+  taxCollect: (overlordId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'tax_collect', overlord_house_id: overlordId }) }),
+  taxHistory: (houseId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'tax_history', house_id: houseId }) }),
+
+  // Specialization
+  specializationGet: (territoryId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'specialization_get', territory_id: territoryId }) }),
+  specializationSet: (territoryId, spec) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'specialization_set', territory_id: territoryId, specialization: spec }) }),
+
+  // Dynamic Events
+  eventList: (territoryId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'event_list', territory_id: territoryId }) }),
+  eventResolve: (eventId, choiceKey) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'event_resolve', event_id: eventId, choice_key: choiceKey }) }),
+  eventGenerate: (territoryId, eventType) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'event_generate', territory_id: territoryId, event_type: eventType || '' }) }),
+  eventHistory: (territoryId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'event_history', territory_id: territoryId }) }),
+
+  // Trade Routes
+  tradeList: (houseId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'trade_list', house_id: houseId }) }),
+  tradeCreate: (data) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'trade_create', ...data }) }),
+  tradeSuspend: (routeId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'trade_suspend', route_id: routeId }) }),
+  tradeResume: (routeId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'trade_resume', route_id: routeId }) }),
+  tradeDestroy: (routeId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'trade_destroy', route_id: routeId }) }),
+
+  // Construction Queue
+  constructionList: (territoryId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'construction_list', territory_id: territoryId }) }),
+  constructionQueue: (territoryId, upgradeType) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'construction_queue', territory_id: territoryId, upgrade_type: upgradeType }) }),
+
+  // Settlement Roles
+  rolesList: (territoryId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'roles_list', territory_id: territoryId }) }),
+  roleAssign: (territoryId, avatarKey, role) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'role_assign', territory_id: territoryId, avatar_key: avatarKey, role }) }),
+  roleRevoke: (roleId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'role_revoke', role_id: roleId }) }),
+
+  // Seasons
+  seasonGet: () => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'season_get' }) }),
+  seasonSet: (season) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'season_set', season }) }),
+
+  // Sieges
+  siegeList: (houseId, activeOnly) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'siege_list', house_id: houseId, active_only: activeOnly ? 1 : 0 }) }),
+  siegeGet: (siegeId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'siege_get', siege_id: siegeId }) }),
+  siegeStart: (territoryId, attackingHouseId, attackingArmyId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'siege_start', territory_id: territoryId, attacking_house_id: attackingHouseId, attacking_army_id: attackingArmyId }) }),
+  siegeAction: (siegeId, actionType, side, extra) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'siege_action', siege_id: siegeId, action_type: actionType, side, ...extra }) }),
 }
