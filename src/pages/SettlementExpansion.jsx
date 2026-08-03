@@ -24,7 +24,7 @@ export default function SettlementExpansion() {
 
   const loadSettlements = useCallback(async () => {
     try {
-      const me = await api.getMe()
+      const me = await api.getProfile()
       if (me.house_id) {
         setHouseId(me.house_id)
         const res = await api.settlementList(me.house_id)
