@@ -1024,4 +1024,67 @@ export const api = {
   siegeGet: (siegeId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'siege_get', siege_id: siegeId }) }),
   siegeStart: (territoryId, attackingHouseId, attackingArmyId) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'siege_start', territory_id: territoryId, attacking_house_id: attackingHouseId, attacking_army_id: attackingArmyId }) }),
   siegeAction: (siegeId, actionType, side, extra) => request('web_settlement.php', { method: 'POST', body: JSON.stringify({ action: 'siege_action', siege_id: siegeId, action_type: actionType, side, ...extra }) }),
+
+  // Settlement Expansion 2 — 10 systems via web_settlement2.php
+  // Espionage
+  spyList: () => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'spy_list' }) }),
+  spyRecruit: (spyName) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'spy_recruit', spy_name: spyName }) }),
+  spyMissionStart: (spyId, targetTerritoryId, missionType) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'spy_mission_start', spy_id: spyId, target_territory_id: targetTerritoryId, mission_type: missionType }) }),
+  spyMissionResolve: (missionId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'spy_mission_resolve', mission_id: missionId }) }),
+  spyReportsList: () => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'spy_reports_list' }) }),
+  spyReportView: (reportId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'spy_report_view', report_id: reportId }) }),
+
+  // Supply Lines
+  supplyGet: (armyId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'supply_get', army_id: armyId }) }),
+  supplyCreate: (armyId, sourceTerritoryId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'supply_create', army_id: armyId, source_territory_id: sourceTerritoryId }) }),
+  supplyCut: (supplyId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'supply_cut', supply_id: supplyId }) }),
+
+  // Court Events & Intrigue
+  courtEventList: (houseId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'court_event_list', house_id: houseId }) }),
+  courtEventHost: (data) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'court_event_host', ...data }) }),
+  courtEventComplete: (eventId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'court_event_complete', event_id: eventId }) }),
+  intrigueList: () => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'intrigue_list' }) }),
+  intrigueAction: (data) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'intrigue_action', ...data }) }),
+
+  // Underground Economy
+  blackmarketGet: (territoryId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'blackmarket_get', territory_id: territoryId }) }),
+  blackmarketCollect: (territoryId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'blackmarket_collect', territory_id: territoryId }) }),
+  blackmarketSuppress: (territoryId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'blackmarket_suppress', territory_id: territoryId }) }),
+  blackmarketEncourage: (territoryId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'blackmarket_encourage', territory_id: territoryId }) }),
+  smugglingList: (territoryId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'smuggling_list', territory_id: territoryId }) }),
+  smugglingCreate: (data) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'smuggling_create', ...data }) }),
+
+  // Crisis Cascades
+  crisisList: (territoryId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'crisis_list', territory_id: territoryId }) }),
+  crisisAdvance: (crisisId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'crisis_advance', crisis_id: crisisId }) }),
+  crisisResolve: (crisisId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'crisis_resolve', crisis_id: crisisId }) }),
+
+  // Traditions & Festivals
+  traditionList: (territoryId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'tradition_list', territory_id: territoryId }) }),
+  traditionObserve: (traditionId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'tradition_observe', tradition_id: traditionId }) }),
+  festivalList: (houseId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'festival_list', house_id: houseId }) }),
+  festivalHost: (data) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'festival_host', ...data }) }),
+  festivalComplete: (festivalId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'festival_complete', festival_id: festivalId }) }),
+
+  // Settlement Interdependence
+  supplyRouteList: (houseId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'supply_route_list', house_id: houseId }) }),
+  supplyRouteCreate: (data) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'supply_route_create', ...data }) }),
+  supplyRouteDisrupt: (routeId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'supply_route_disrupt', route_id: routeId }) }),
+
+  // Colonization
+  colonizationList: (houseId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'colonization_list', house_id: houseId }) }),
+  colonizationStart: (data) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'colonization_start', ...data }) }),
+
+  // Named NPCs
+  npcList: (territoryId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'npc_list', territory_id: territoryId }) }),
+  npcInteract: (npcId, interaction) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'npc_interact', npc_id: npcId, interaction }) }),
+  npcBribe: (npcId, amount) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'npc_bribe', npc_id: npcId, amount }) }),
+
+  // Diplomacy & Treaties
+  treatyList: (houseId, activeOnly) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'treaty_list', house_id: houseId, active_only: activeOnly ? 1 : 0 }) }),
+  treatyPropose: (data) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'treaty_propose', ...data }) }),
+  treatyAccept: (treatyId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'treaty_accept', treaty_id: treatyId }) }),
+  treatyBreak: (treatyId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'treaty_break', treaty_id: treatyId }) }),
+  treatyViolations: (treatyId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'treaty_violations', treaty_id: treatyId }) }),
+  treatyViolationReport: (data) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'treaty_violation_report', ...data }) }),
 }

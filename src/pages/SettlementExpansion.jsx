@@ -83,6 +83,16 @@ export default function SettlementExpansion() {
             <button className={tab === 'taxation' ? 'active' : ''} onClick={() => setTab('taxation')}>Taxation</button>
             <button className={tab === 'specialization' ? 'active' : ''} onClick={() => setTab('specialization')}>Specialization</button>
             <button className={tab === 'sieges' ? 'active' : ''} onClick={() => setTab('sieges')}>Sieges</button>
+            <button className={tab === 'espionage' ? 'active' : ''} onClick={() => setTab('espionage')}>Espionage</button>
+            <button className={tab === 'supply' ? 'active' : ''} onClick={() => setTab('supply')}>Supply Lines</button>
+            <button className={tab === 'court' ? 'active' : ''} onClick={() => setTab('court')}>Court & Intrigue</button>
+            <button className={tab === 'blackmarket' ? 'active' : ''} onClick={() => setTab('blackmarket')}>Black Market</button>
+            <button className={tab === 'crisis' ? 'active' : ''} onClick={() => setTab('crisis')}>Crises</button>
+            <button className={tab === 'traditions' ? 'active' : ''} onClick={() => setTab('traditions')}>Traditions</button>
+            <button className={tab === 'interdependence' ? 'active' : ''} onClick={() => setTab('interdependence')}>Supply Web</button>
+            <button className={tab === 'colonization' ? 'active' : ''} onClick={() => setTab('colonization')}>Colonization</button>
+            <button className={tab === 'npcs' ? 'active' : ''} onClick={() => setTab('npcs')}>Residents</button>
+            <button className={tab === 'diplomacy' ? 'active' : ''} onClick={() => setTab('diplomacy')}>Treaties</button>
           </div>
 
           {tab === 'overview' && <OverviewTab overview={overview} />}
@@ -94,6 +104,16 @@ export default function SettlementExpansion() {
           {tab === 'taxation' && <TaxationTab houseId={houseId} />}
           {tab === 'specialization' && <SpecializationTab territoryId={territoryId} overview={overview} onUpdated={loadOverview} />}
           {tab === 'sieges' && <SiegesTab territoryId={territoryId} houseId={houseId} />}
+          {tab === 'espionage' && <EspionageTab houseId={houseId} />}
+          {tab === 'supply' && <SupplyLinesTab houseId={houseId} />}
+          {tab === 'court' && <CourtIntrigueTab territoryId={territoryId} houseId={houseId} />}
+          {tab === 'blackmarket' && <BlackMarketTab territoryId={territoryId} />}
+          {tab === 'crisis' && <CrisisTab territoryId={territoryId} />}
+          {tab === 'traditions' && <TraditionsTab territoryId={territoryId} houseId={houseId} />}
+          {tab === 'interdependence' && <InterdependenceTab houseId={houseId} />}
+          {tab === 'colonization' && <ColonizationTab houseId={houseId} territoryId={territoryId} />}
+          {tab === 'npcs' && <NPCTab territoryId={territoryId} />}
+          {tab === 'diplomacy' && <DiplomacyTab houseId={houseId} />}
         </>
       )}
     </div>
@@ -698,6 +718,633 @@ function SiegesTab({ territoryId, houseId }) {
             ))}
           </div>
         </div>
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+// 10 NEW TABS — SETTLEMENT EXPANSION 2
+// =====================================================
+
+function EspionageTab({ houseId }) {
+  const [spies, setSpies] = useState([])
+  const [reports, setReports] = useState([])
+  const [msg, setMsg] = useState(null)
+  const [showRecruit, setShowRecruit] = useState(false)
+  const [spyName, setSpyName] = useState('')
+  const [missionTarget, setMissionTarget] = useState('')
+  const [missionType, setMissionType] = useState('recon')
+
+  const load = useCallback(async () => {
+    try {
+      const [s, r] = await Promise.all([api.spyList(), api.spyReportsList()])
+      setSpies(s.spies || [])
+      setReports(r.reports || [])
+    } catch (e) { setMsg(e.message) }
+  }, [])
+
+  useEffect(() => { load() }, [load])
+
+  const handleRecruit = async () => {
+    try { const res = await api.spyRecruit(spyName); setMsg(res.message); setShowRecruit(false); setSpyName(''); load() }
+    catch (e) { setMsg(e.message) }
+  }
+
+  const handleMission = async (spyId) => {
+    if (!missionTarget) { setMsg('Enter a target territory ID'); return }
+    try { const res = await api.spyMissionStart(spyId, parseInt(missionTarget), missionType); setMsg(res.message); load() }
+    catch (e) { setMsg(e.message) }
+  }
+
+  return (
+    <div className="settlement-section">
+      {msg && <div className="info-banner">{msg}</div>}
+      <h3>Your Spies</h3>
+      {spies.length === 0 ? <p>No spies recruited. Recruit one to gather intel or sabotage enemies.</p> : (
+        <div className="spy-list">
+          {spies.map(s => (
+            <div key={s.id} className="spy-card">
+              <span className="spy-name">{s.spy_name}</span>
+              <span className="spy-skill">Skill: {s.skill}/10</span>
+              <span className={`spy-status ${s.status}`}>{s.status}</span>
+              {s.target_name && <span className="spy-target">Target: {s.target_name}</span>}
+              {s.status === 'idle' && (
+                <div className="spy-mission-controls">
+                  <input type="number" placeholder="Target ID" onChange={(e) => setMissionTarget(e.target.value)} />
+                  <select value={missionType} onChange={(e) => setMissionType(e.target.value)}>
+                    {['recon', 'sabotage_walls', 'sabotage_food', 'poison', 'spread_dissent', 'assassinate'].map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                  <button className="btn-primary" onClick={() => handleMission(s.id)}>Send</button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+      <button className="btn-secondary" onClick={() => setShowRecruit(!showRecruit)}>+ Recruit Spy (100 stags)</button>
+      {showRecruit && (
+        <div className="role-assign-form">
+          <input type="text" placeholder="Spy codename" value={spyName} onChange={(e) => setSpyName(e.target.value)} />
+          <button className="btn-primary" onClick={handleRecruit}>Recruit</button>
+        </div>
+      )}
+
+      {reports.length > 0 && (
+        <>
+          <h3>Intel Reports</h3>
+          <div className="event-history-list">
+            {reports.map(r => (
+              <div key={r.id} className="event-history-row">
+                <span className="event-type-badge">{r.territory_name}</span>
+                <span className="event-choice">{r.report_type} (accuracy: {r.accuracy}%)</span>
+                <span className="event-date">expires: {r.expires_at?.slice(0, 16)}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+function SupplyLinesTab({ houseId }) {
+  const [msg, setMsg] = useState(null)
+  const [armies, setArmies] = useState([])
+  const [selectedArmy, setSelectedArmy] = useState('')
+  const [sourceTerritory, setSourceTerritory] = useState('')
+  const [supply, setSupply] = useState(null)
+
+  const load = useCallback(async () => {
+    try {
+      const res = await api.armyList(houseId)
+      setArmies(res.armies || [])
+    } catch (e) { setMsg(e.message) }
+  }, [houseId])
+
+  useEffect(() => { load() }, [load])
+
+  const checkSupply = async (armyId) => {
+    setSelectedArmy(armyId)
+    try { const res = await api.supplyGet(armyId); setSupply(res.supply) }
+    catch (e) { setSupply(null) }
+  }
+
+  const handleCreate = async () => {
+    if (!selectedArmy || !sourceTerritory) { setMsg('Select army and source territory'); return }
+    try { const res = await api.supplyCreate(parseInt(selectedArmy), parseInt(sourceTerritory)); setMsg(res.message); checkSupply(parseInt(selectedArmy)) }
+    catch (e) { setMsg(e.message) }
+  }
+
+  return (
+    <div className="settlement-section">
+      {msg && <div className="info-banner">{msg}</div>}
+      <h3>Army Supply Lines</h3>
+      <p>Armies need supply lines from a settlement. Cut supply = attrition and morale loss.</p>
+      {armies.length === 0 ? <p>No armies raised.</p> : (
+        <div className="trade-list">
+          {armies.map(a => (
+            <div key={a.id} className="trade-card">
+              <div className="trade-route">{a.army_name} ({a.total_units} units)</div>
+              <div className="trade-details">
+                <span>Status: {a.status}</span>
+                <span>Morale: {a.morale}</span>
+                {supply && supply.army_id === a.id && (
+                  <span className={`trade-status ${supply.status}`}>Supply: {supply.status} ({supply.efficiency}%)</span>
+                )}
+              </div>
+              <div className="trade-actions">
+                <button className="btn-secondary" onClick={() => checkSupply(a.id)}>Check Supply</button>
+              </div>
+              {selectedArmy === String(a.id) && (
+                <div className="trade-create-form">
+                  <input type="number" placeholder="Source territory ID" value={sourceTerritory} onChange={(e) => setSourceTerritory(e.target.value)} />
+                  <button className="btn-primary" onClick={handleCreate}>Establish Supply Line</button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function CourtIntrigueTab({ territoryId, houseId }) {
+  const [events, setEvents] = useState([])
+  const [actions, setActions] = useState([])
+  const [msg, setMsg] = useState(null)
+  const [showHost, setShowHost] = useState(false)
+  const [showIntrigue, setShowIntrigue] = useState(false)
+  const [newEvent, setNewEvent] = useState({ event_type: 'feast', title: '', description: '', scheduled_at: '' })
+  const [newIntrigue, setNewIntrigue] = useState({ target_house_id: '', action_type: 'rumor', description: '' })
+
+  const load = useCallback(async () => {
+    try {
+      const [e, a] = await Promise.all([
+        api.courtEventList(houseId),
+        api.intrigueList(),
+      ])
+      setEvents(e.events || [])
+      setActions(a.actions || [])
+    } catch (e) { setMsg(e.message) }
+  }, [houseId])
+
+  useEffect(() => { load() }, [load])
+
+  const handleHost = async () => {
+    try { const res = await api.courtEventHost({ territory_id: territoryId, ...newEvent }); setMsg(res.message); setShowHost(false); load() }
+    catch (e) { setMsg(e.message) }
+  }
+
+  const handleIntrigue = async () => {
+    try { const res = await api.intrigueAction({ ...newIntrigue, target_house_id: parseInt(newIntrigue.target_house_id) || 0 }); setMsg(res.message); setShowIntrigue(false); load() }
+    catch (e) { setMsg(e.message) }
+  }
+
+  return (
+    <div className="settlement-section">
+      {msg && <div className="info-banner">{msg}</div>}
+      <h3>Court Events</h3>
+      {events.length === 0 ? <p>No court events planned.</p> : (
+        <div className="event-list">
+          {events.map(e => (
+            <div key={e.id} className={`event-card severity-moderate`}>
+              <div className="event-header">
+                <span className="event-type-badge">{e.event_type}</span>
+                <span className="event-severity">{e.status}</span>
+              </div>
+              <p className="event-desc"><strong>{e.title}</strong> — {e.description || 'No description'}</p>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                {e.territory_name} | Scheduled: {e.scheduled_at?.slice(0, 16)} | Cost: {e.cost_gold} stags | Morale +{e.morale_bonus}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+      <button className="btn-secondary" onClick={() => setShowHost(!showHost)}>+ Host Court Event</button>
+      {showHost && (
+        <div className="trade-create-form">
+          <select value={newEvent.event_type} onChange={(e) => setNewEvent({ ...newEvent, event_type: e.target.value })}>
+            {['feast', 'tournament', 'wedding', 'audience', 'hunt'].map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+          <input type="text" placeholder="Event title" value={newEvent.title} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} />
+          <input type="text" placeholder="Description" value={newEvent.description} onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })} />
+          <input type="datetime-local" value={newEvent.scheduled_at} onChange={(e) => setNewEvent({ ...newEvent, scheduled_at: e.target.value })} />
+          <button className="btn-primary" onClick={handleHost}>Plan Event</button>
+        </div>
+      )}
+
+      <h3>Intrigue Actions</h3>
+      {actions.length === 0 ? <p>No intrigue actions taken.</p> : (
+        <div className="event-history-list">
+          {actions.map(a => (
+            <div key={a.id} className="event-history-row">
+              <span className="event-type-badge">{a.action_type}</span>
+              <span className="event-choice">{a.description}</span>
+              <span className={`trade-status ${a.result}`}>{a.result || 'pending'}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      <button className="btn-secondary" onClick={() => setShowIntrigue(!showIntrigue)}>+ Intrigue Action</button>
+      {showIntrigue && (
+        <div className="trade-create-form">
+          <input type="number" placeholder="Target house ID (optional)" value={newIntrigue.target_house_id} onChange={(e) => setNewIntrigue({ ...newIntrigue, target_house_id: e.target.value })} />
+          <select value={newIntrigue.action_type} onChange={(e) => setNewIntrigue({ ...newIntrigue, action_type: e.target.value })}>
+            {['rumor', 'false_evidence', 'bribe', 'seduce', 'threaten', 'manipulate'].map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+          <input type="text" placeholder="Description" value={newIntrigue.description} onChange={(e) => setNewIntrigue({ ...newIntrigue, description: e.target.value })} />
+          <button className="btn-primary" onClick={handleIntrigue}>Execute</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function BlackMarketTab({ territoryId }) {
+  const [market, setMarket] = useState(null)
+  const [smuggling, setSmuggling] = useState([])
+  const [msg, setMsg] = useState(null)
+  const [showSmuggle, setShowSmuggle] = useState(false)
+  const [newOp, setNewOp] = useState({ good_name: 'Grain', volume: 10 })
+
+  const load = useCallback(async () => {
+    try {
+      const [m, s] = await Promise.all([
+        api.blackmarketGet(territoryId),
+        api.smugglingList(territoryId),
+      ])
+      setMarket(m.market)
+      setSmuggling(s.operations || [])
+    } catch (e) { setMsg(e.message) }
+  }, [territoryId])
+
+  useEffect(() => { load() }, [load])
+
+  return (
+    <div className="settlement-section">
+      {msg && <div className="info-banner">{msg}</div>}
+      <h3>Black Market</h3>
+      {market ? (
+        <div className="overview-card">
+          <p>Activity: {market.activity_level}/100</p>
+          <p>Hidden Income: {market.hidden_income} stags/day</p>
+          <p>Risk of Discovery: {market.risk_level}%</p>
+          <p>Status: {market.is_suppressed ? 'Suppressed' : 'Active'}</p>
+          <div className="trade-actions">
+            <button className="btn-primary" onClick={async () => { try { const res = await api.blackmarketCollect(territoryId); setMsg(res.message); load() } catch (e) { setMsg(e.message) } }}>Collect Income</button>
+            <button className="btn-secondary" onClick={async () => { try { const res = await api.blackmarketSuppress(territoryId); setMsg(res.message); load() } catch (e) { setMsg(e.message) } }}>Suppress</button>
+            <button className="btn-secondary" onClick={async () => { try { const res = await api.blackmarketEncourage(territoryId); setMsg(res.message); load() } catch (e) { setMsg(e.message) } }}>Encourage</button>
+          </div>
+        </div>
+      ) : <p>No black market in this settlement.</p>}
+
+      <h3>Smuggling Operations</h3>
+      {smuggling.length === 0 ? <p>No smuggling operations.</p> : (
+        <div className="trade-list">
+          {smuggling.map(s => (
+            <div key={s.id} className="trade-card">
+              <div className="trade-route">{s.good_name} — {s.volume} units</div>
+              <div className="trade-details">
+                <span>{s.gold_per_shipment} stags/shipment</span>
+                <span>Risk: {s.risk_level}%</span>
+                <span className={`trade-status ${s.status}`}>{s.status}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <button className="btn-secondary" onClick={() => setShowSmuggle(!showSmuggle)}>+ New Operation</button>
+      {showSmuggle && (
+        <div className="trade-create-form">
+          <select value={newOp.good_name} onChange={(e) => setNewOp({ ...newOp, good_name: e.target.value })}>
+            {['Grain', 'Timber', 'Furs', 'Wine', 'Spices', 'Iron', 'Gold', 'Horses'].map(g => <option key={g} value={g}>{g}</option>)}
+          </select>
+          <label>Volume: <input type="number" min="1" max="100" value={newOp.volume} onChange={(e) => setNewOp({ ...newOp, volume: parseInt(e.target.value) })} /></label>
+          <button className="btn-primary" onClick={async () => { try { const res = await api.smugglingCreate({ territory_id: territoryId, ...newOp }); setMsg(res.message); setShowSmuggle(false); load() } catch (e) { setMsg(e.message) } }}>Establish</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function CrisisTab({ territoryId }) {
+  const [crises, setCrises] = useState([])
+  const [msg, setMsg] = useState(null)
+
+  const load = useCallback(async () => {
+    try { const res = await api.crisisList(territoryId); setCrises(res.crises || []) }
+    catch (e) { setMsg(e.message) }
+  }, [territoryId])
+
+  useEffect(() => { load() }, [load])
+
+  return (
+    <div className="settlement-section">
+      {msg && <div className="info-banner">{msg}</div>}
+      <h3>Active Crises</h3>
+      {crises.length === 0 ? (
+        <p>No active crises. Events left unresolved may cascade into larger problems.</p>
+      ) : (
+        <div className="event-list">
+          {crises.map(c => (
+            <div key={c.id} className="event-card severity-crisis">
+              <div className="event-header">
+                <span className="event-type-badge">Crisis Cascade</span>
+                <span className="event-severity">Stage {c.current_stage}</span>
+              </div>
+              <p className="event-desc">A chain of crises is unfolding. Next stage triggers: {c.next_stage_at?.slice(0, 16)}</p>
+              <div className="event-choices">
+                <button className="btn-choice" onClick={async () => { try { const res = await api.crisisAdvance(c.id); setMsg(res.message); load() } catch (e) { setMsg(e.message) } }}>Advance Stage (Admin)</button>
+                <button className="btn-choice" onClick={async () => { try { const res = await api.crisisResolve(c.id); setMsg(res.message); load() } catch (e) { setMsg(e.message) } }}>Resolve Crisis</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function TraditionsTab({ territoryId, houseId }) {
+  const [traditions, setTraditions] = useState([])
+  const [festivals, setFestivals] = useState([])
+  const [msg, setMsg] = useState(null)
+  const [showFestival, setShowFestival] = useState(false)
+  const [newFestival, setNewFestival] = useState({ festival_type: 'harvest', name: '', scheduled_at: '' })
+
+  const load = useCallback(async () => {
+    try {
+      const [t, f] = await Promise.all([
+        api.traditionList(territoryId),
+        api.festivalList(houseId),
+      ])
+      setTraditions(t.traditions || [])
+      setFestivals(f.festivals || [])
+    } catch (e) { setMsg(e.message) }
+  }, [territoryId, houseId])
+
+  useEffect(() => { load() }, [load])
+
+  return (
+    <div className="settlement-section">
+      {msg && <div className="info-banner">{msg}</div>}
+      <h3>Traditions</h3>
+      {traditions.length === 0 ? <p>No traditions for this settlement.</p> : (
+        <div className="spec-grid">
+          {traditions.map(t => (
+            <div key={t.id} className="spec-card" style={{ cursor: 'pointer' }} onClick={async () => { try { const res = await api.traditionObserve(t.id); setMsg(res.message); load() } catch (e) { setMsg(e.message) } }}>
+              <div className="spec-icon">✧</div>
+              <h4>{t.tradition_name}</h4>
+              <p>{t.description}</p>
+              <p style={{ fontSize: '0.75rem' }}>Morale +{t.morale_bonus} | Cost: {t.gold_cost} stags</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <h3>Festivals</h3>
+      {festivals.length === 0 ? <p>No festivals planned.</p> : (
+        <div className="event-history-list">
+          {festivals.map(f => (
+            <div key={f.id} className="event-history-row">
+              <span className="event-type-badge">{f.festival_type}</span>
+              <span className="event-choice">{f.name}</span>
+              <span>{f.territory_name}</span>
+              <span className="event-date">{f.scheduled_at?.slice(0, 16)}</span>
+              <span className={`trade-status ${f.status}`}>{f.status}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      <button className="btn-secondary" onClick={() => setShowFestival(!showFestival)}>+ Host Festival</button>
+      {showFestival && (
+        <div className="trade-create-form">
+          <select value={newFestival.festival_type} onChange={(e) => setNewFestival({ ...newFestival, festival_type: e.target.value })}>
+            {['harvest', 'spring', 'winter_solstice', 'name_day', 'tournament'].map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+          <input type="text" placeholder="Festival name" value={newFestival.name} onChange={(e) => setNewFestival({ ...newFestival, name: e.target.value })} />
+          <input type="datetime-local" value={newFestival.scheduled_at} onChange={(e) => setNewFestival({ ...newFestival, scheduled_at: e.target.value })} />
+          <button className="btn-primary" onClick={async () => { try { const res = await api.festivalHost({ territory_id: territoryId, ...newFestival }); setMsg(res.message); setShowFestival(false); load() } catch (e) { setMsg(e.message) } }}>Plan Festival</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function InterdependenceTab({ houseId }) {
+  const [routes, setRoutes] = useState([])
+  const [msg, setMsg] = useState(null)
+  const [showCreate, setShowCreate] = useState(false)
+  const [newRoute, setNewRoute] = useState({ from_territory_id: '', to_territory_id: '', resource_type: 'food', amount: 10, frequency_hours: 24 })
+
+  const load = useCallback(async () => {
+    try { const res = await api.supplyRouteList(houseId); setRoutes(res.routes || []) }
+    catch (e) { setMsg(e.message) }
+  }, [houseId])
+
+  useEffect(() => { load() }, [load])
+
+  return (
+    <div className="settlement-section">
+      {msg && <div className="info-banner">{msg}</div>}
+      <h3>Internal Supply Routes</h3>
+      <p>Route resources between your settlements. Farms feed castles, mines fund garrisons.</p>
+      {routes.length === 0 ? <p>No supply routes established.</p> : (
+        <div className="trade-list">
+          {routes.map(r => (
+            <div key={r.id} className="trade-card">
+              <div className="trade-route">{r.from_name} → {r.to_name}</div>
+              <div className="trade-details">
+                <span>{r.resource_type}: {r.amount}/shipment</span>
+                <span>Every {r.frequency_hours}h</span>
+                <span className={`trade-status ${r.status}`}>{r.status}</span>
+              </div>
+              <div className="trade-actions">
+                <button className="btn-danger" onClick={async () => { await api.supplyRouteDisrupt(r.id); load() }}>Disrupt</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <button className="btn-secondary" onClick={() => setShowCreate(!showCreate)}>+ New Supply Route</button>
+      {showCreate && (
+        <div className="trade-create-form">
+          <input type="number" placeholder="From territory ID" value={newRoute.from_territory_id} onChange={(e) => setNewRoute({ ...newRoute, from_territory_id: e.target.value })} />
+          <input type="number" placeholder="To territory ID" value={newRoute.to_territory_id} onChange={(e) => setNewRoute({ ...newRoute, to_territory_id: e.target.value })} />
+          <select value={newRoute.resource_type} onChange={(e) => setNewRoute({ ...newRoute, resource_type: e.target.value })}>
+            {['food', 'gold', 'troops'].map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+          <label>Amount: <input type="number" value={newRoute.amount} onChange={(e) => setNewRoute({ ...newRoute, amount: parseInt(e.target.value) })} /></label>
+          <label>Hours: <input type="number" value={newRoute.frequency_hours} onChange={(e) => setNewRoute({ ...newRoute, frequency_hours: parseInt(e.target.value) })} /></label>
+          <button className="btn-primary" onClick={async () => { try { const res = await api.supplyRouteCreate({ ...newRoute, from_territory_id: parseInt(newRoute.from_territory_id), to_territory_id: parseInt(newRoute.to_territory_id) }); setMsg(res.message); setShowCreate(false); load() } catch (e) { setMsg(e.message) } }}>Create</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ColonizationTab({ houseId, territoryId }) {
+  const [projects, setProjects] = useState([])
+  const [msg, setMsg] = useState(null)
+  const [showStart, setShowStart] = useState(false)
+  const [newProj, setNewProj] = useState({ territory_name: '', region: '', territory_type: 'village' })
+
+  const load = useCallback(async () => {
+    try { const res = await api.colonizationList(houseId); setProjects(res.projects || []) }
+    catch (e) { setMsg(e.message) }
+  }, [houseId])
+
+  useEffect(() => { load() }, [load])
+
+  return (
+    <div className="settlement-section">
+      {msg && <div className="info-banner">{msg}</div>}
+      <h3>Colonization Projects</h3>
+      <p>Found new settlements in unclaimed territory. Costs 500 gold, 300 food, 20 recruits.</p>
+      {projects.length === 0 ? <p>No colonization projects.</p> : (
+        <div className="construction-list">
+          {projects.map(p => (
+            <div key={p.id} className={`construction-card ${p.status === 'established' ? 'complete' : 'pending'}`}>
+              <span className="construction-type">{p.territory_name} ({p.region})</span>
+              <span className="construction-cost">{p.status}</span>
+              <span className="construction-time">{p.progress}% complete</span>
+              <div className="bar-container">
+                <div className="bar-fill" style={{ width: `${p.progress}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <button className="btn-secondary" onClick={() => setShowStart(!showStart)}>+ Start Colonization</button>
+      {showStart && (
+        <div className="trade-create-form">
+          <input type="text" placeholder="New settlement name" value={newProj.territory_name} onChange={(e) => setNewProj({ ...newProj, territory_name: e.target.value })} />
+          <select value={newProj.region} onChange={(e) => setNewProj({ ...newProj, region: e.target.value })}>
+            {['North', 'Crownlands', 'Westerlands', 'Reach', 'Stormlands', 'Vale', 'Riverlands', 'Iron Islands', 'Dorne'].map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+          <select value={newProj.territory_type} onChange={(e) => setNewProj({ ...newProj, territory_type: e.target.value })}>
+            {['village', 'town', 'farm', 'mine', 'trade_post'].map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+          <button className="btn-primary" onClick={async () => { try { const res = await api.colonizationStart({ ...newProj, origin_territory_id: territoryId }); setMsg(res.message); setShowStart(false); load() } catch (e) { setMsg(e.message) } }}>Begin Colonization</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function NPCTab({ territoryId }) {
+  const [npcs, setNpcs] = useState([])
+  const [msg, setMsg] = useState(null)
+
+  const load = useCallback(async () => {
+    try { const res = await api.npcList(territoryId); setNpcs(res.npcs || []) }
+    catch (e) { setMsg(e.message) }
+  }, [territoryId])
+
+  useEffect(() => { load() }, [load])
+
+  const interact = async (npcId, interaction) => {
+    try { const res = await api.npcInteract(npcId, interaction); setMsg(`${res.result} (Loyalty: ${res.loyalty})`); load() }
+    catch (e) { setMsg(e.message) }
+  }
+
+  return (
+    <div className="settlement-section">
+      {msg && <div className="info-banner">{msg}</div>}
+      <h3>Named Residents</h3>
+      {npcs.length === 0 ? <p>No notable residents found.</p> : (
+        <div className="roles-list">
+          {npcs.map(n => (
+            <div key={n.id} className="role-card">
+              <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <span className="role-name">{n.npc_name}</span>
+                <span className="role-holder">{n.role} | {n.personality} | Service: {n.provides_service}</span>
+                <div className="bar-container" style={{ width: 100, marginTop: 4 }}>
+                  <div className="bar-fill" style={{ width: `${n.loyalty}%`, background: n.loyalty >= 60 ? '#28a745' : n.loyalty >= 30 ? '#ffc107' : '#dc3545' }} />
+                </div>
+                <span className="role-permissions">Loyalty: {n.loyalty}/100 | Skill: {n.skill_level}/10</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <button className="btn-choice" onClick={() => interact(n.id, 'talk')}>Talk</button>
+                <button className="btn-choice" onClick={() => interact(n.id, 'flatter')}>Flatter</button>
+                <button className="btn-choice" onClick={() => interact(n.id, 'gift')}>Gift (50g)</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function DiplomacyTab({ houseId }) {
+  const [treaties, setTreaties] = useState([])
+  const [violations, setViolations] = useState([])
+  const [msg, setMsg] = useState(null)
+  const [showPropose, setShowPropose] = useState(false)
+  const [newTreaty, setNewTreaty] = useState({ house2_id: '', treaty_type: 'peace', terms: '', duration_days: '' })
+
+  const load = useCallback(async () => {
+    try {
+      const [t, v] = await Promise.all([
+        api.treatyList(houseId, false),
+        api.treatyViolations(),
+      ])
+      setTreaties(t.treaties || [])
+      setViolations(v.violations || [])
+    } catch (e) { setMsg(e.message) }
+  }, [houseId])
+
+  useEffect(() => { load() }, [load])
+
+  return (
+    <div className="settlement-section">
+      {msg && <div className="info-banner">{msg}</div>}
+      <h3>Treaties</h3>
+      {treaties.length === 0 ? <p>No treaties. Propose one to formalize diplomatic relations.</p> : (
+        <div className="tax-list">
+          {treaties.map(t => (
+            <div key={t.id} className="tax-card">
+              <span className="tax-parties">{t.house1_name} ↔ {t.house2_name}</span>
+              <span className="tax-rate">{t.treaty_type}</span>
+              <span className={`tax-status ${t.is_active ? 'accepted' : 'pending'}`}>
+                {t.accepted ? (t.is_active ? 'Active' : 'Broken') : 'Pending'}
+              </span>
+              {!t.accepted && <button className="btn-primary" onClick={async () => { try { const res = await api.treatyAccept(t.id); setMsg(res.message); load() } catch (e) { setMsg(e.message) } }}>Accept</button>}
+              {t.is_active && <button className="btn-danger" onClick={async () => { if (confirm('Break this treaty? This may have consequences.')) { try { const res = await api.treatyBreak(t.id); setMsg(res.message); load() } catch (e) { setMsg(e.message) } } }}>Break</button>}
+            </div>
+          ))}
+        </div>
+      )}
+      <button className="btn-secondary" onClick={() => setShowPropose(!showPropose)}>+ Propose Treaty</button>
+      {showPropose && (
+        <div className="trade-create-form">
+          <input type="number" placeholder="Target house ID" value={newTreaty.house2_id} onChange={(e) => setNewTreaty({ ...newTreaty, house2_id: e.target.value })} />
+          <select value={newTreaty.treaty_type} onChange={(e) => setNewTreaty({ ...newTreaty, treaty_type: e.target.value })}>
+            {['peace', 'trade', 'border', 'hostage', 'non_aggression', 'alliance'].map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+          <input type="text" placeholder="Treaty terms" value={newTreaty.terms} onChange={(e) => setNewTreaty({ ...newTreaty, terms: e.target.value })} />
+          <input type="number" placeholder="Duration (days, blank=permanent)" value={newTreaty.duration_days} onChange={(e) => setNewTreaty({ ...newTreaty, duration_days: e.target.value })} />
+          <button className="btn-primary" onClick={async () => { try { const res = await api.treatyPropose({ ...newTreaty, house1_id: houseId, house2_id: parseInt(newTreaty.house2_id), duration_days: newTreaty.duration_days || null }); setMsg(res.message); setShowPropose(false); load() } catch (e) { setMsg(e.message) } }}>Propose</button>
+        </div>
+      )}
+
+      {violations.length > 0 && (
+        <>
+          <h3>Treaty Violations</h3>
+          <div className="event-history-list">
+            {violations.map(v => (
+              <div key={v.id} className="event-history-row">
+                <span className="event-type-badge">{v.violation_type}</span>
+                <span className="event-choice">{v.description}</span>
+                <span className="event-severity">{v.severity}</span>
+                <span className="event-date">{v.created_at?.slice(0, 16)}</span>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   )
