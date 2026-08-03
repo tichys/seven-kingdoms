@@ -61,7 +61,6 @@ export default function War() {
     { id: 'overview', label: 'Overview' },
     { id: 'wars', label: 'Wars' },
     { id: 'armies', label: 'Armies' },
-    { id: 'settlements', label: 'Settlements' },
     { id: 'encounters', label: 'Encounters' },
   ]
 
@@ -78,9 +77,7 @@ export default function War() {
         const a = await api.armyList(houseId)
         setArmies(a.armies || [])
       } else if (tabId === 'settlements') {
-        const [s, r] = await Promise.all([api.settlementList(houseId), api.settlementResources(houseId)])
-        setSettlements(s.settlements || [])
-        setResources(r.totals || null)
+        // Settlements moved to /settlement page
       } else if (tabId === 'encounters') {
         const [e, c] = await Promise.all([api.encounterList(), api.creatureList()])
         setEncounters(e.encounters || [])
@@ -151,18 +148,11 @@ export default function War() {
         </div>
       </div>
       <div className="card">
-        <div className="card-header">Settlements</div>
+        <div className="card-header">Settlements <a href="#/settlement" style={{ fontSize: '.75rem', float: 'right' }}>Manage →</a></div>
         <div className="card-body">
           {settlements.length === 0
             ? <p className="text-muted">No settlements</p>
-            : settlements.map(s => (
-              <div key={s.id} className="mb-2">
-                <strong>{s.name}</strong> <span className="text-muted">({s.type})</span>
-                <div className="text-muted" style={{ fontSize: '.8rem' }}>
-                  Food {s.stored_food} (+{s.food_production}/day) | Gold {s.stored_gold} (+{s.gold_production}/day) | Recruits {s.available_recruits}
-                </div>
-              </div>
-            ))
+            : <p className="text-muted">{settlements.length} settlement(s) — <a href="#/settlement">View details</a></p>
           }
         </div>
       </div>
@@ -367,80 +357,9 @@ export default function War() {
   )
 
   const renderSettlements = () => (
-    <div>
-      {resources && (
-        <div className="card mb-3">
-          <div className="card-header">House Resource Summary</div>
-          <div className="card-body">
-            <div className="grid grid-3">
-              <div><span className="text-muted">Food:</span> <strong>{resources.stored_food}</strong> (+{resources.food_per_day}/day)</div>
-              <div><span className="text-muted">Gold:</span> <strong>{resources.stored_gold}</strong> (+{resources.gold_per_day}/day)</div>
-              <div><span className="text-muted">Recruits:</span> <strong>{resources.available_recruits}</strong> (+{resources.troops_per_day}/day)</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {settlements.length === 0 ? <p className="text-muted">No settlements owned</p> : (
-        <div className="grid grid-2">
-          {settlements.map(s => (
-            <div key={s.id} className="card">
-              <div className="card-header">{s.name} <span className="text-muted">({s.type})</span></div>
-              <div className="card-body">
-                <table className="stats-table">
-                  <tbody>
-                    <tr><th>Region</th><td>{s.region}</td></tr>
-                    <tr><th>Defense</th><td>{s.defense}</td></tr>
-                    <tr><th>Population</th><td>{s.population}</td></tr>
-                    <tr><th>Stored Food</th><td>{s.stored_food} (+{s.accumulated_food} pending)</td></tr>
-                    <tr><th>Stored Gold</th><td>{s.stored_gold} (+{s.accumulated_gold} pending)</td></tr>
-                    <tr><th>Recruits</th><td>{s.available_recruits} (+{s.accumulated_recruits} pending)</td></tr>
-                  </tbody>
-                </table>
-                <div className="mt-2 d-flex gap-1">
-                  <button className="btn btn-primary btn-sm" onClick={() => doAction(() => api.settlementCollect(s.id), 'Resources collected')}>Collect</button>
-                  <button className="btn btn-outline btn-sm" onClick={() => setSelectedSettlement(selectedSettlement === s.id ? null : s.id)}>
-                    {selectedSettlement === s.id ? 'Close' : 'Build'}
-                  </button>
-                </div>
-                {selectedSettlement === s.id && (
-                  <div className="mt-2" style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-                    <h4>Upgrades</h4>
-                    <div className="d-flex gap-1" style={{ flexWrap: 'wrap' }}>
-                      {UPGRADE_TYPES.map(u => {
-                        const actionKey = `build-${s.id}-${u}`
-                        const currentLevel = (s.upgrades && s.upgrades[u]) || 0
-                        const maxLevel = MAX_LEVELS[u] || 3
-                        const isMaxed = currentLevel >= maxLevel
-                        const costGold = (currentLevel + 1) * 50
-                        const costFood = (currentLevel + 1) * 100
-                        const canAfford = s.stored_gold >= costGold && s.stored_food >= costFood
-                        return (
-                          <button key={u} className="btn btn-outline btn-sm" style={{ textTransform: 'capitalize' }}
-                            disabled={busyAction === actionKey || isMaxed || !canAfford}
-                            onClick={() => {
-                              if (!confirm(`Build ${u} upgrade to level ${currentLevel + 1} at ${s.name}?\nCost: ${costGold} stags + ${costFood} food`)) return
-                              doAction(() => api.settlementBuild(s.id, u), `Built ${u}`, actionKey)
-                            }}>
-                            {busyAction === actionKey ? 'Building...' : `${u} ${currentLevel > 0 ? `Lv${currentLevel}` : ''}`}
-                            {isMaxed && ' (MAX)'}
-                          </button>
-                        )
-                      })}
-                    </div>
-                    {s.upgrades && Object.keys(s.upgrades).length > 0 && (
-                      <div className="mt-2" style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>
-                        <strong>Current upgrades:</strong>{' '}
-                        {Object.entries(s.upgrades).map(([type, level]) => `${type} Lv${level}`).join(', ')}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="text-center" style={{ padding: '2rem' }}>
+      <p className="text-muted">Settlement management has moved to a dedicated page.</p>
+      <a href="#/settlement" className="btn btn-primary">Go to Settlement Management</a>
     </div>
   )
 
