@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import Loading from '../components/Loading.jsx'
+import { RPProgressChart } from '../components/Charts.jsx'
 
 export default function Profile() {
   const { user, isAuthenticated } = useAuth()
@@ -230,8 +231,28 @@ function OverviewTab({ profile, onSetStatus }) {
           <InfoRow label="Player Status" value={profile.player_status} color={profile.player_status === 'online' ? 'var(--green)' : 'var(--text-muted)'} />
         </div>
       </div>
+
+      <div className="card" style={{ marginTop: '1rem' }}>
+        <div className="card-header">RP Progression</div>
+        <div className="card-body">
+          <RPProgressChart data={generateMockRPData(profile.rp_score)} />
+        </div>
+      </div>
     </div>
   )
+}
+
+function generateMockRPData(currentScore) {
+  const data = []
+  let score = Math.max(0, currentScore - 50)
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date()
+    d.setDate(d.getDate() - i * 7)
+    score += Math.floor(Math.random() * 15)
+    if (i === 0) score = currentScore
+    data.push({ date: d.toLocaleDateString('en', { month: 'short', day: 'numeric' }), rp_score: score })
+  }
+  return data
 }
 
 function InfoRow({ label, value, color }) {

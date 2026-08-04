@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import Loading from '../components/Loading.jsx'
+import { usePolling } from '../hooks/usePolling.js'
 
 const introCards = [
   { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>, title: 'The Realms', desc: 'Seven kingdoms, each ruled by a great house. From the frozen North to the sun-scorched sands of Dorne.', link: '/houses' },
@@ -16,12 +17,16 @@ export default function Home() {
   const [status, setStatus] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    api.getServerStatus()
-      .then(data => setStatus(data))
-      .catch(() => {})
-      .finally(() => setLoading(false))
+  const fetchStatus = useCallback(async () => {
+    try {
+      const data = await api.getServerStatus()
+      setStatus(data)
+    } catch {}
+    setLoading(false)
   }, [])
+
+  useEffect(() => { fetchStatus() }, [fetchStatus])
+  usePolling(fetchStatus, 30000)
 
   return (
     <main>

@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import { AuthProvider } from './context/AuthContext.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
@@ -50,6 +50,7 @@ const CitizenDirectory = lazy(() => import('./pages/CitizenDirectory.jsx'))
 const Forms = lazy(() => import('./pages/Forms.jsx'))
 const Health = lazy(() => import('./pages/Health.jsx'))
 const SettlementExpansion = lazy(() => import('./pages/SettlementExpansion.jsx'))
+const CommandPalette = lazy(() => import('./components/CommandPalette.jsx'))
 
 const PageFallback = () => <div className="page-content"><Loading /></div>
 
@@ -62,6 +63,7 @@ export default function App() {
       <AuthProvider>
         {!isObjectUI && <ScrollProgress />}
         {!isObjectUI && <Navbar />}
+        {!isObjectUI && <Suspense fallback={null}><CommandPalette /></Suspense>}
         <div className="page-fade">
           <Suspense fallback={<PageFallback />}>
             <Routes>
@@ -95,6 +97,7 @@ export default function App() {
                 path="/character"
                 element={<ProtectedRoute><Profile /></ProtectedRoute>}
               />
+              <Route path="/character-redirect" element={<Navigate to="/profile" replace />} />
               <Route
                 path="/character-creator"
                 element={<ProtectedRoute allowUnapproved><CharacterCreator /></ProtectedRoute>}

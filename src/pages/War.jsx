@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { api } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import Loading from '../components/Loading.jsx'
+import { WarStatsBar } from '../components/Charts.jsx'
 
 const UPGRADE_TYPES = ['walls', 'garrison', 'market', 'farm', 'mine', 'harbor', 'sept', 'weirwood', 'forge', 'stables']
 const MAX_LEVELS = { walls: 5, garrison: 5, market: 3, farm: 3, mine: 3, harbor: 2, sept: 1, weirwood: 1, forge: 2, stables: 2 }
@@ -171,6 +172,18 @@ export default function War() {
               </tbody>
             </table>
           ) : <p className="text-muted">No resource data</p>}
+        </div>
+      </div>
+      <div className="card">
+        <div className="card-header">Military Strength</div>
+        <div className="card-body">
+          <WarStatsBar data={[
+            { name: 'Armies', value: armies.length },
+            { name: 'Active Wars', value: wars.filter(w => w.status === 'active').length },
+            { name: 'Battles', value: battles.length },
+            { name: 'Settlements', value: settlements.length },
+            { name: 'Units', value: armies.reduce((s, a) => s + (a.total_units || 0), 0) },
+          ]} />
         </div>
       </div>
     </div>

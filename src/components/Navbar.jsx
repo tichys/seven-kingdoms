@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { sounds } from '../utils/sounds.js'
 
 export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth()
   const [open, setOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState(null)
   const [theme, setTheme] = useState(localStorage.getItem('asoiaf_theme') || 'dark')
+  const [soundOn, setSoundOn] = useState(sounds.isEnabled())
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -21,6 +23,7 @@ export default function Navbar() {
   }, [location.pathname])
 
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark')
+  const toggleSound = () => { const on = sounds.toggle(); setSoundOn(on); if (on) sounds.click() }
 
   const handleLogout = async () => {
     await logout()
@@ -38,6 +41,8 @@ export default function Navbar() {
     { path: '/tools', label: 'Tools' },
     { path: '/wiki', label: 'Wiki' },
   ]
+
+  const authLinks = isAuthenticated ? [{ path: '/logs', label: 'Logs' }] : []
 
   const dropdowns = []
   if (isAuthenticated) {
@@ -75,11 +80,6 @@ export default function Navbar() {
         { path: '/ledger', label: 'Castle Ledger' },
       ]
     })
-    dropdowns.push({
-      id: 'account', label: 'Account', items: [
-        { path: '/logs', label: 'History & Logs' },
-      ]
-    })
   }
   if (isAdmin) {
     dropdowns.push({
@@ -114,6 +114,11 @@ export default function Navbar() {
           <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme">
             {theme === 'dark' ? '\u2600' : '\u263E'}
           </button>
+          {isAuthenticated && (
+            <button className="theme-toggle" onClick={toggleSound} title="Toggle sound">
+              {soundOn ? '\u{1F50A}' : '\u{1F507}'}
+            </button>
+          )}
           <button className="nav-toggle" onClick={() => setOpen(!open)} aria-label="Toggle menu">
             <span /><span /><span />
           </button>
@@ -141,6 +146,11 @@ export default function Navbar() {
                   </li>
                 ))}
               </ul>
+            </li>
+          ))}
+          {authLinks.map(l => (
+            <li key={l.path} className="nav-item">
+              <Link to={l.path} className={isActive(l.path)} onClick={closeMenu}>{l.label}</Link>
             </li>
           ))}
         </ul>

@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { api } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import Loading from '../components/Loading.jsx'
+import { EconomyPieChart, HousePowerRadar } from '../components/Charts.jsx'
 
 export default function Community() {
   const { isAdmin } = useAuth()
@@ -109,6 +110,28 @@ export default function Community() {
               ))}
             </tbody>
           </table>
+        )}
+        {lbTab === 'houses' && lbData.length > 0 && (
+          <div className="grid grid-2 mt-3">
+            <div className="card">
+              <div className="card-header">House Power Distribution</div>
+              <div className="card-body">
+                <EconomyPieChart data={lbData.slice(0, 8).map(r => ({ name: r.house_name || r.name || 'Unknown', value: r.total_rp || r.rp_score || 0 }))} />
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-header">Top House Breakdown</div>
+              <div className="card-body">
+                <HousePowerRadar data={[
+                  { stat: 'Members', value: lbData[0]?.members || 0 },
+                  { stat: 'RP Score', value: lbData[0]?.total_rp || 0 },
+                  { stat: 'Battle Wins', value: lbData[0]?.battle_wins || 0 },
+                  { stat: 'Influence', value: (lbData[0]?.total_rp || 0) / 10 },
+                  { stat: 'Activity', value: (lbData[0]?.members || 0) * 5 },
+                ]} />
+              </div>
+            </div>
+          </div>
         )}
       </div>
     )
