@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api/client.js'
-import Loading from '../components/Loading.jsx'
+import { SkeletonGrid } from '../components/Skeleton.jsx'
 
 export default function Houses() {
   const [houses, setHouses] = useState([])
@@ -51,7 +51,7 @@ export default function Houses() {
           <button className="btn btn-primary btn-sm" onClick={loadHouses}>Search</button>
         </div>
 
-        {loading && <Loading />}
+        {loading && <SkeletonGrid cols={3} count={9} />}
         {error && <div className="alert alert-danger">{error}</div>}
 
         {!loading && !error && (

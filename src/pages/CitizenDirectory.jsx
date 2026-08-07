@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { api } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
-import Loading from '../components/Loading.jsx'
+import { SkeletonGrid } from '../components/Skeleton.jsx'
 
 export default function CitizenDirectory() {
   const { user } = useAuth()
@@ -66,7 +66,7 @@ export default function CitizenDirectory() {
     } catch (e) { setError(e.message) }
   }
 
-  if (loading) return <div className="page-content"><Loading /></div>
+  if (loading) return <div className="page-content"><SkeletonGrid cols={3} count={9} /></div>
 
   return (
     <div className="page-content">

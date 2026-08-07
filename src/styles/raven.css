@@ -1,0 +1,420 @@
+/* ---- Raven Network — Parchment Theme ---- */
+
+.raven-layout {
+  display: flex;
+  gap: 0;
+  height: calc(100vh - 220px);
+  min-height: 400px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Left pane — Channel/rookery list */
+.raven-sidebar {
+  width: 240px;
+  min-width: 240px;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  background: var(--bg-card);
+}
+
+.raven-sidebar-header {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  font-weight: bold;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+}
+
+.raven-channel {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-faint, var(--border));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.raven-channel:hover {
+  background: rgba(176, 141, 87, 0.05);
+}
+
+.raven-channel.active {
+  background: var(--bg-hover, rgba(176, 141, 87, 0.1));
+  border-left: 3px solid var(--gold);
+  padding-left: 9px;
+}
+
+.raven-channel-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.raven-channel-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.raven-channel-name {
+  font-size: 0.85rem;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.raven-channel-meta {
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
+.raven-unread-badge {
+  background: #702618;
+  color: #fff;
+  font-size: 0.7rem;
+  border-radius: 10px;
+  padding: 2px 6px;
+  min-width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Available channels section */
+.raven-available {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.raven-available-label {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
+
+.raven-available-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.raven-available-item span:nth-child(2) {
+  font-size: 0.8rem;
+  flex: 1;
+}
+
+/* Right pane — Message feed */
+.raven-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Channel header */
+.raven-channel-header {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+}
+
+.raven-channel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.raven-channel-title-icon {
+  font-size: 1.3rem;
+}
+
+.raven-channel-title-name {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.raven-channel-title-desc {
+  margin-left: 8px;
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+.raven-channel-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Message feed — parchment scroll style */
+.raven-feed {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--parchment-bg);
+  background-image:
+    linear-gradient(rgba(40, 35, 28, 0.3), rgba(40, 35, 28, 0.3)),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.25 0 0 0 0 0.22 0 0 0 0 0.18 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  background-size: auto, 200px 200px;
+  background-blend-mode: multiply;
+}
+
+[data-theme="light"] .raven-feed {
+  background: rgba(255, 250, 240, 0.6);
+  background-image:
+    linear-gradient(rgba(255, 250, 240, 0.4), rgba(255, 250, 240, 0.4)),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.35 0 0 0 0 0.28 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  background-size: auto, 200px 200px;
+  background-blend-mode: multiply;
+}
+
+/* Individual raven message — looks like a small parchment scroll */
+.raven-message {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: rgba(30, 26, 18, 0.5);
+  border: 1px solid rgba(176, 141, 87, 0.15);
+  border-radius: 2px;
+  border-left: 3px solid transparent;
+  position: relative;
+  font-family: var(--font-serif);
+  transition: border-color 0.2s;
+}
+
+.raven-message:hover {
+  border-color: rgba(176, 141, 87, 0.3);
+}
+
+.raven-message.own {
+  border-left-color: var(--gold);
+  background: rgba(176, 141, 87, 0.06);
+}
+
+[data-theme="light"] .raven-message {
+  background: rgba(255, 248, 235, 0.5);
+  border-color: rgba(180, 150, 80, 0.2);
+}
+
+[data-theme="light"] .raven-message.own {
+  background: rgba(176, 141, 87, 0.08);
+  border-left-color: var(--gold);
+}
+
+.raven-message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.raven-message-sender {
+  font-weight: bold;
+  font-size: 0.85rem;
+  color: var(--gold);
+  font-family: var(--font-heading);
+  letter-spacing: 0.03em;
+}
+
+.raven-message-time {
+  font-size: 0.7rem;
+  opacity: 0.5;
+  font-family: var(--font-body);
+}
+
+.raven-message-body {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text);
+}
+
+.raven-message-mentions {
+  font-size: 0.7rem;
+  margin-top: 4px;
+  opacity: 0.5;
+}
+
+.raven-message-strike {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  margin-top: 4px;
+  color: #702618;
+}
+
+/* Empty state */
+.raven-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-style: italic;
+}
+
+/* Send bar — wax-sealed parchment bottom */
+.raven-send-bar {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-card);
+  position: relative;
+}
+
+.raven-send-bar::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+
+.raven-send-row {
+  display: flex;
+  gap: 8px;
+}
+
+.raven-send-charcount {
+  font-size: 0.7rem;
+  opacity: 0.4;
+  margin-top: 4px;
+}
+
+/* No channel selected */
+.raven-no-channel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-style: italic;
+}
+
+/* Members modal */
+.raven-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 18, 12, 0.45);
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.raven-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.raven-modal-wide {
+  max-width: 420px;
+}
+
+.raven-modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+}
+
+.raven-member-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-faint, var(--border));
+}
+
+.raven-member-name {
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.raven-member-role {
+  margin-left: 6px;
+  font-size: 0.7rem;
+  color: var(--gold);
+}
+
+.raven-member-muted {
+  margin-left: 4px;
+  font-size: 0.7rem;
+  opacity: 0.5;
+}
+
+.raven-modal-close {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* Page header */
+.raven-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.raven-page-title {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  margin: 0;
+}
+
+.raven-page-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .raven-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: 500px;
+  }
+
+  .raven-sidebar {
+    width: 100%;
+    min-width: unset;
+    max-height: 200px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .raven-channel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .raven-channel-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .raven-page-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .raven-page-title {
+    font-size: 1.5rem;
+  }
+}

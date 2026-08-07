@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { api } from '../api/client.js'
-import Loading from '../components/Loading.jsx'
+import { SkeletonCard } from '../components/Skeleton.jsx'
 import PropCanvas from '../components/prop/PropCanvas.jsx'
 
 export default function PropGallery() {
@@ -46,7 +46,14 @@ export default function PropGallery() {
     } catch (err) { setError(err.message) }
   }
 
-  if (loading) return <div className="page-content"><Loading /></div>
+  if (loading) return (
+    <div className="page-content">
+      <div className="grid grid-2">
+        <SkeletonCard />
+        <SkeletonCard />
+      </div>
+    </div>
+  )
 
   return (
     <div className="page-content">

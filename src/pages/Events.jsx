@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { api } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
-import Loading from '../components/Loading.jsx'
+import { SkeletonCard } from '../components/Skeleton.jsx'
 
 const EVENT_TYPES = ['tournament', 'feast', 'war', 'council', 'seasonal', 'pve', 'custom']
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -171,7 +171,7 @@ export default function Events() {
     </div>
   )
 
-  if (loading) return <div className="page-content"><Loading /></div>
+  if (loading) return <div className="page-content"><SkeletonCard /><div style={{ height: '12px' }} /><SkeletonCard /><div style={{ height: '12px' }} /><SkeletonCard /></div>
 
   return (
     <div className="page-content">

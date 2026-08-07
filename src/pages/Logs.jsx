@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api/client.js'
-import Loading from '../components/Loading.jsx'
+import { SkeletonTable } from '../components/Skeleton.jsx'
 
 export default function Logs() {
   const [activeTab, setActiveTab] = useState('combat')
@@ -128,7 +128,7 @@ export default function Logs() {
           </div>
 
           <div className="tab-panel active">
-            {loading && <Loading />}
+            {loading && <SkeletonTable rows={8} />}
             {error && <div className="alert alert-danger">{error}</div>}
             {!loading && !error && renderTable()}
 

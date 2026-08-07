@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { api } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import Loading from '../components/Loading.jsx'
+import '../styles/raven.css'
 
 const CHANNEL_TYPE_ICONS = {
   house: '\u269B', region: '\u2691', maester: '\u269A', public: '\u2709', admin: '\u269C',
@@ -68,12 +69,10 @@ export default function RavenNetwork() {
     }
   }, [])
 
-  // Initial load
   useEffect(() => {
     loadChannels()
   }, [])
 
-  // Load messages when active channel changes
   useEffect(() => {
     if (activeChannel) {
       setMessages([])
@@ -82,7 +81,6 @@ export default function RavenNetwork() {
     }
   }, [activeChannel?.id])
 
-  // Poll for new messages every 5 seconds
   useEffect(() => {
     if (!activeChannel) return
     if (pollRef.current) clearInterval(pollRef.current)
@@ -94,14 +92,12 @@ export default function RavenNetwork() {
     }
   }, [activeChannel?.id, lastMsgId])
 
-  // Auto-scroll to bottom on new messages
   useEffect(() => {
     if (feedEndRef.current) {
       feedEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
   }, [messages])
 
-  // Refresh channel list every 30 seconds for unread counts
   useEffect(() => {
     const interval = setInterval(loadChannels, 30000)
     return () => clearInterval(interval)
@@ -220,9 +216,9 @@ export default function RavenNetwork() {
 
   return (
     <div className="page-content">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', margin: 0 }}>Raven Network</h1>
-        <div style={{ display: 'flex', gap: '8px' }}>
+      <div className="raven-page-header">
+        <h1 className="raven-page-title">Raven Network</h1>
+        <div className="raven-page-actions">
           {adminLevel >= 2 && (
             <button className="btn btn-outline btn-sm" onClick={() => setShowCreate(true)}>+ New Rookery</button>
           )}
@@ -230,59 +226,44 @@ export default function RavenNetwork() {
         </div>
       </div>
 
-      {error && <div className="alert alert-error" style={{ marginBottom: '12px' }}>{error}</div>}
+      {error && <div className="alert alert-danger" style={{ marginBottom: '12px' }}>{error}</div>}
 
-      <div style={{ display: 'flex', gap: '0', height: 'calc(100vh - 220px)', minHeight: '400px', border: '1px solid var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
+      <div className="raven-layout">
         {/* Left pane — Channel list */}
-        <div style={{ width: '240px', minWidth: '240px', borderRight: '1px solid var(--border)', overflowY: 'auto', background: 'var(--bg-card)' }}>
-          <div style={{ padding: '12px', borderBottom: '1px solid var(--border)', fontWeight: 'bold', fontFamily: 'var(--font-serif)', fontSize: '1.1rem' }}>
-            Rookeries
-          </div>
+        <div className="raven-sidebar">
+          <div className="raven-sidebar-header">Rookeries</div>
           {channels?.map(ch => (
             <div
               key={ch.id}
+              className={`raven-channel ${activeChannel?.id === ch.id ? 'active' : ''}`}
               onClick={() => setActiveChannel(ch)}
-              style={{
-                padding: '10px 12px',
-                cursor: 'pointer',
-                borderBottom: '1px solid var(--border-faint)',
-                background: activeChannel?.id === ch.id ? 'var(--bg-hover)' : 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
             >
-              <span style={{ fontSize: '1.2rem', color: CHANNEL_TYPE_COLORS[ch.channel_type] || '#888' }}>
+              <span className="raven-channel-icon" style={{ color: CHANNEL_TYPE_COLORS[ch.channel_type] || '#888' }}>
                 {CHANNEL_TYPE_ICONS[ch.channel_type] || '\u2709'}
               </span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {ch.name}
-                </div>
-                <div style={{ fontSize: '0.7rem', opacity: '0.6' }}>
+              <div className="raven-channel-info">
+                <div className="raven-channel-name">{ch.name}</div>
+                <div className="raven-channel-meta">
                   {ch.member_count || 0} members
                   {ch.my_role && ch.my_role !== 'member' && ` \u00B7 ${ROLE_LABELS[ch.my_role]}`}
                 </div>
               </div>
               {ch.unread_count > 0 && (
-                <span style={{
-                  background: '#702618', color: '#fff', fontSize: '0.7rem',
-                  borderRadius: '10px', padding: '2px 6px', minWidth: '18px', textAlign: 'center',
-                }}>
+                <span className="raven-unread-badge">
                   {ch.unread_count > 99 ? '99+' : ch.unread_count}
                 </span>
               )}
             </div>
           ))}
           {allChannels && allChannels.length > 0 && (
-            <div style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
-              <div style={{ fontSize: '0.75rem', opacity: '0.6', marginBottom: '6px' }}>Available to join:</div>
+            <div className="raven-available">
+              <div className="raven-available-label">Available to join:</div>
               {allChannels.map(ch => (
-                <div key={ch.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '1rem', color: CHANNEL_TYPE_COLORS[ch.channel_type] || '#888' }}>
+                <div key={ch.id} className="raven-available-item">
+                  <span className="raven-channel-icon" style={{ fontSize: '1rem', color: CHANNEL_TYPE_COLORS[ch.channel_type] || '#888' }}>
                     {CHANNEL_TYPE_ICONS[ch.channel_type] || '\u2709'}
                   </span>
-                  <span style={{ fontSize: '0.8rem', flex: 1 }}>{ch.name}</span>
+                  <span>{ch.name}</span>
                   <button
                     className="btn btn-outline btn-sm"
                     style={{ fontSize: '0.7rem', padding: '2px 8px' }}
@@ -303,29 +284,21 @@ export default function RavenNetwork() {
         </div>
 
         {/* Right pane — Message feed */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <div className="raven-main">
           {activeChannel ? (
             <>
               {/* Channel header */}
-              <div style={{
-                padding: '10px 16px', borderBottom: '1px solid var(--border)',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                background: 'var(--bg-card)',
-              }}>
-                <div>
-                  <span style={{ fontSize: '1.3rem', marginRight: '8px', color: CHANNEL_TYPE_COLORS[activeChannel.channel_type] }}>
+              <div className="raven-channel-header">
+                <div className="raven-channel-title">
+                  <span className="raven-channel-title-icon" style={{ color: CHANNEL_TYPE_COLORS[activeChannel.channel_type] }}>
                     {CHANNEL_TYPE_ICONS[activeChannel.channel_type]}
                   </span>
-                  <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 'bold' }}>
-                    {activeChannel.name}
-                  </span>
+                  <span className="raven-channel-title-name">{activeChannel.name}</span>
                   {activeChannel.description && (
-                    <span style={{ marginLeft: '8px', fontSize: '0.8rem', opacity: '0.6' }}>
-                      {activeChannel.description}
-                    </span>
+                    <span className="raven-channel-title-desc">{activeChannel.description}</span>
                   )}
                 </div>
-                <div style={{ display: 'flex', gap: '6px' }}>
+                <div className="raven-channel-actions">
                   <button
                     className="btn btn-outline btn-sm"
                     style={{ fontSize: '0.75rem' }}
@@ -353,43 +326,23 @@ export default function RavenNetwork() {
               </div>
 
               {/* Messages */}
-              <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+              <div className="raven-feed">
                 {messages.length === 0 ? (
-                  <div style={{ textAlign: 'center', opacity: '0.5', marginTop: '40px', fontFamily: 'var(--font-serif)' }}>
-                    No ravens have arrived at this rookery.
-                  </div>
+                  <div className="raven-empty">No ravens have arrived at this rookery.</div>
                 ) : (
                   messages.map(msg => (
-                    <div
-                      key={msg.id}
-                      style={{
-                        marginBottom: '12px',
-                        padding: '8px 12px',
-                        background: 'var(--bg-faint)',
-                        borderRadius: '4px',
-                        borderLeft: `3px solid ${msg.sender_key === activeChannel?.id ? 'var(--gold)' : 'transparent'}`,
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
-                        <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--gold)' }}>
-                          {msg.sender_name || 'Unknown'}
-                        </span>
-                        <span style={{ fontSize: '0.7rem', opacity: '0.5' }}>
-                          {formatTime(msg.created_at)}
-                        </span>
+                    <div key={msg.id} className={`raven-message ${msg.is_own ? 'own' : ''}`}>
+                      <div className="raven-message-header">
+                        <span className="raven-message-sender">{msg.sender_name || 'Unknown'}</span>
+                        <span className="raven-message-time">{formatTime(msg.created_at)}</span>
                       </div>
-                      <div style={{ fontSize: '0.9rem', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                        {msg.body}
-                      </div>
+                      <div className="raven-message-body">{msg.body}</div>
                       {msg.mentions && (
-                        <div style={{ fontSize: '0.7rem', marginTop: '4px', opacity: '0.5' }}>
-                          Mentioned: {msg.mentions}
-                        </div>
+                        <div className="raven-message-mentions">Mentioned: {msg.mentions}</div>
                       )}
                       {adminLevel >= 1 && (
                         <button
-                          className="btn btn-outline btn-sm"
-                          style={{ fontSize: '0.65rem', padding: '1px 6px', marginTop: '4px', color: '#702618' }}
+                          className="btn btn-outline btn-sm raven-message-strike"
                           onClick={() => handleDeleteMessage(msg.id)}
                         >
                           Strike
@@ -402,8 +355,8 @@ export default function RavenNetwork() {
               </div>
 
               {/* Send bar */}
-              <div style={{ padding: '12px', borderTop: '1px solid var(--border)', background: 'var(--bg-card)' }}>
-                <div style={{ display: 'flex', gap: '8px' }}>
+              <div className="raven-send-bar">
+                <div className="raven-send-row">
                   <input
                     type="text"
                     className="form-input"
@@ -422,37 +375,30 @@ export default function RavenNetwork() {
                     {sending ? '...' : 'Send'}
                   </button>
                 </div>
-                <div style={{ fontSize: '0.7rem', opacity: '0.4', marginTop: '4px' }}>
+                <div className="raven-send-charcount">
                   {msgInput.length}/500 {msgInput.length >= 450 && '\u26A0'}
                 </div>
               </div>
             </>
           ) : (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: '0.5', fontFamily: 'var(--font-serif)' }}>
-              Select a rookery to read its ravens.
-            </div>
+            <div className="raven-no-channel">Select a rookery to read its ravens.</div>
           )}
         </div>
       </div>
 
       {/* Members modal */}
       {showMembers && members && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(20,18,12,0.45)', zIndex: 1400,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
-        }}>
-          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--gold)', borderRadius: '4px', padding: '24px', maxWidth: '400px', width: '100%', maxHeight: '70vh', overflow: 'auto' }}>
-            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', marginBottom: '16px' }}>
-              {activeChannel?.name} — Members
+        <div className="raven-modal-overlay">
+          <div className="raven-modal">
+            <h3 className="raven-modal-title">
+              {activeChannel?.name} &mdash; Members
             </h3>
             {members.map(m => (
-              <div key={m.avatar_key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid var(--border-faint)' }}>
+              <div key={m.avatar_key} className="raven-member-row">
                 <div>
-                  <span style={{ fontWeight: 'bold', fontSize: '0.85rem' }}>{m.avatar_name || 'Unknown'}</span>
-                  <span style={{ marginLeft: '6px', fontSize: '0.7rem', color: 'var(--gold)' }}>
-                    {ROLE_LABELS[m.role] || 'Member'}
-                  </span>
-                  {m.is_muted == 1 && <span style={{ marginLeft: '4px', fontSize: '0.7rem', opacity: '0.5' }}>(muted)</span>}
+                  <span className="raven-member-name">{m.avatar_name || 'Unknown'}</span>
+                  <span className="raven-member-role">{ROLE_LABELS[m.role] || 'Member'}</span>
+                  {m.is_muted == 1 && <span className="raven-member-muted">(muted)</span>}
                 </div>
                 {adminLevel >= 2 && (
                   <select
@@ -470,7 +416,7 @@ export default function RavenNetwork() {
                 )}
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+            <div className="raven-modal-close">
               <button className="btn btn-outline btn-sm" onClick={() => setShowMembers(false)}>Close</button>
             </div>
           </div>
@@ -504,12 +450,9 @@ function CreateChannelModal({ onCreate, onCancel }) {
   }
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(20,18,12,0.45)', zIndex: 1400,
-      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
-    }}>
-      <div style={{ background: 'var(--bg-card)', border: '1px solid var(--gold)', borderRadius: '4px', padding: '24px', maxWidth: '420px', width: '100%' }}>
-        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', marginBottom: '16px' }}>Establish New Rookery</h3>
+    <div className="raven-modal-overlay">
+      <div className="raven-modal raven-modal-wide">
+        <h3 className="raven-modal-title">Establish New Rookery</h3>
         <div className="form-group">
           <label className="form-label">Rookery Name</label>
           <input type="text" className="form-input" value={name} onChange={(e) => setName(e.target.value)} maxLength={64} placeholder="e.g. The Whispering Wood" />

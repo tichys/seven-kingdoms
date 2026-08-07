@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { api } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
-import Loading from '../components/Loading.jsx'
+import { SkeletonCard } from '../components/Skeleton.jsx'
 
 export default function PvE() {
   const { user } = useAuth()
@@ -332,7 +332,14 @@ export default function PvE() {
             ))}
           </div>
           <div className="tab-panel active">
-            {loading && <Loading />}
+            {loading && (
+              <div className="grid grid-2">
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+              </div>
+            )}
             {!loading && tab === 'dungeons' && renderDungeons()}
             {!loading && tab === 'bounties' && renderBounties()}
             {!loading && tab === 'bestiary' && renderBestiary()}

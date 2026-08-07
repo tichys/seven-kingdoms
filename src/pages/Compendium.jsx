@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api/client.js'
-import Loading from '../components/Loading.jsx'
+import { SkeletonGrid, SkeletonTable } from '../components/Skeleton.jsx'
 
 export default function Compendium() {
   const [tab, setTab] = useState('factions')
@@ -86,7 +86,7 @@ export default function Compendium() {
           ))}
         </div>
 
-        {isLoading && <Loading />}
+        {isLoading && <SkeletonGrid cols={3} count={6} />}
         {tabError && <div className="alert alert-danger">{tabError}</div>}
         {!isLoading && !tabError && tabData && (
           <div className="compendium-content">
@@ -461,7 +461,7 @@ function ItemsTab({ data }) {
         </select>
         <button className="btn btn-primary btn-sm" onClick={doSearch}>Search</button>
       </div>
-      {loading && <Loading />}
+      {loading && <SkeletonTable rows={8} />}
       {!loading && (
         <table style={{ width: '100%', fontSize: '.8rem' }}>
           <thead>

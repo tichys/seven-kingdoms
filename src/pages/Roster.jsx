@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { api } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
-import Loading from '../components/Loading.jsx'
+import { SkeletonCard } from '../components/Skeleton.jsx'
 import HouseCrest from '../components/house/HouseCrest.jsx'
 
 export default function Roster() {
@@ -47,7 +47,13 @@ export default function Roster() {
     setSyncing(false)
   }
 
-  if (loading) return <div className="page-content"><Loading /></div>
+  if (loading) return (
+    <div className="page-content">
+      <SkeletonCard />
+      <div style={{ height: '16px' }} />
+      <SkeletonCard />
+    </div>
+  )
   if (!user?.house_id) return (
     <div className="page-content">
       <p className="text-muted">You are not a member of any house.</p>
