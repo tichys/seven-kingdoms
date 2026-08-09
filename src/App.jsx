@@ -51,6 +51,7 @@ const Forms = lazy(() => import('./pages/Forms.jsx'))
 const Health = lazy(() => import('./pages/Health.jsx'))
 const SettlementExpansion = lazy(() => import('./pages/SettlementExpansion.jsx'))
 const Blotter = lazy(() => import('./pages/Blotter.jsx'))
+const SettlementExpansion3 = lazy(() => import('./pages/SettlementExpansion3.jsx'))
 const CommandPalette = lazy(() => import('./components/CommandPalette.jsx'))
 
 const PageFallback = () => <div className="page-content"><Loading /></div>
@@ -85,6 +86,7 @@ export default function App() {
               <Route path="/forms" element={<ProtectedRoute><Forms /></ProtectedRoute>} />
               <Route path="/health" element={<ProtectedRoute><Health /></ProtectedRoute>} />
               <Route path="/blotter" element={<ProtectedRoute><Blotter /></ProtectedRoute>} />
+              <Route path="/realm" element={<ProtectedRoute><SettlementExpansion3 /></ProtectedRoute>} />
               <Route path="/houses" element={<Houses />} />
               <Route path="/houses/:id" element={<HouseDetail />} />
               <Route path="/wiki" element={<Wiki />} />

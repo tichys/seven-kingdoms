@@ -1105,4 +1105,70 @@ export const api = {
   blotterListSanctions: (activeOnly) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'list_sanctions', active_only: activeOnly ? 1 : 0 }) }),
   blotterLiftSanction: (id) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'lift_sanction', sanction_id: id }) }),
   blotterStats: () => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'stats' }) }),
+
+  // Settlement Expansion 3 — Justice & Crime
+  criminalFile: (data) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'criminal_file', ...data }) }),
+  criminalList: (territoryId, status) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'criminal_list', territory_id: territoryId, status }) }),
+  criminalGet: (recordId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'criminal_get', record_id: recordId }) }),
+  criminalUpdateStatus: (recordId, newStatus) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'criminal_update_status', record_id: recordId, new_status: newStatus }) }),
+  trialSchedule: (recordId, trialType, scheduledAt) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'trial_schedule', record_id: recordId, trial_type: trialType, scheduled_at: scheduledAt }) }),
+  trialConclude: (trialId, verdict, notes) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'trial_conclude', trial_id: trialId, verdict, verdict_notes: notes }) }),
+  punishmentApply: (recordId, data) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'punishment_apply', record_id: recordId, ...data }) }),
+
+  // Tournaments
+  tournamentList: (status, eventType) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'tournament_list', status, event_type: eventType }) }),
+  tournamentCreate: (data) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'tournament_create', ...data }) }),
+  tournamentRegister: (tournamentId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'tournament_register', tournament_id: tournamentId }) }),
+  tournamentParticipants: (tournamentId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'tournament_participants', tournament_id: tournamentId }) }),
+  tournamentBracket: (tournamentId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'tournament_bracket', tournament_id: tournamentId }) }),
+  tournamentRecordResult: (roundId, winnerKey, score1, score2, notes) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'tournament_record_result', round_id: roundId, winner_key: winnerKey, score1, score2, notes }) }),
+  tournamentComplete: (tournamentId, winnerKey, winnerName) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'tournament_complete', tournament_id: tournamentId, winner_key: winnerKey, winner_name: winnerName }) }),
+
+  // Weather & Season Effects
+  weatherGet: (territoryId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'weather_get', territory_id: territoryId }) }),
+  weatherSet: (data) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'weather_set', ...data }) }),
+  weatherList: () => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'weather_list' }) }),
+  weatherClear: (territoryId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'weather_clear', territory_id: territoryId }) }),
+
+  // Production Chains
+  chainList: () => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'chain_list' }) }),
+  chainStart: (chainId, territoryId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'chain_start', chain_id: chainId, territory_id: territoryId }) }),
+  chainStatus: () => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'chain_status' }) }),
+  chainAdvance: (productionId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'chain_advance', production_id: productionId }) }),
+  chainCreate: (data) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'chain_create', ...data }) }),
+
+  // Roads & Infrastructure
+  roadList: () => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'road_list' }) }),
+  roadCreate: (data) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'road_create', ...data }) }),
+  roadRepair: (roadId, cost) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'road_repair', road_id: roadId, cost }) }),
+
+  // Vassalage Management
+  vassalageList: (houseId, activeOnly) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'vassalage_list', house_id: houseId, active_only: activeOnly ? 1 : 0 }) }),
+  vassalageSwear: (data) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'vassalage_swear', ...data }) }),
+  vassalageBreak: (vassalageId, reason) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'vassalage_break', vassalage_id: vassalageId, reason }) }),
+  tributePay: (vassalageId, amount) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'tribute_pay', vassalage_id: vassalageId, amount }) }),
+  tributeHistory: (vassalageId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'tribute_history', vassalage_id: vassalageId }) }),
+
+  // Census & Demographics
+  censusGet: (territoryId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'census_get', territory_id: territoryId }) }),
+  censusHistory: (territoryId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'census_history', territory_id: territoryId }) }),
+  censusRecord: (territoryId, census) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'census_record', territory_id: territoryId, census }) }),
+
+  // Religious Sites
+  religiousSiteList: (territoryId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'religious_site_list', territory_id: territoryId }) }),
+  religiousSiteCreate: (data) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'religious_site_create', ...data }) }),
+  religiousSitePray: (siteId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'religious_site_pray', site_id: siteId }) }),
+
+  // Disease Outbreaks
+  outbreakList: (status) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'outbreak_list', status }) }),
+  outbreakTrigger: (data) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'outbreak_trigger', ...data }) }),
+  outbreakContain: (outbreakId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'outbreak_contain', outbreak_id: outbreakId }) }),
+  outbreakResolve: (outbreakId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'outbreak_resolve', outbreak_id: outbreakId }) }),
+  outbreakUpdate: (outbreakId, infected, deaths) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'outbreak_update', outbreak_id: outbreakId, infected_count: infected, deaths_count: deaths }) }),
+
+  // Heraldry Registry
+  heraldryList: (historicalOnly) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'heraldry_list', historical_only: historicalOnly ? 1 : 0 }) }),
+  heraldryGet: (houseId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'heraldry_get', house_id: houseId }) }),
+  heraldryRegister: (data) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'heraldry_register', ...data }) }),
+  heraldryApprove: (heraldryId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'heraldry_approve', heraldry_id: heraldryId }) }),
 }

@@ -60,6 +60,7 @@ export default function Navbar() {
       id: 'adventure', label: 'Adventure', items: [
         { path: '/war', label: 'War Council' },
         { path: '/settlement', label: 'Settlements' },
+        { path: '/realm', label: 'Realm Management' },
         { path: '/pve', label: 'Dungeons & Bounties' },
         { path: '/quests', label: 'Quests' },
         { path: '/crafting', label: 'Crafting' },
