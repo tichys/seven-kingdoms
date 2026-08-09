@@ -7,6 +7,7 @@ const ALL_PAGES = [
   { path: '/character-creator', label: 'Character Creation' },
   { path: '/houses', label: 'Houses' },
   { path: '/house', label: 'House Management' },
+  { path: '/lineage', label: 'Lineage & Bloodlines' },
   { path: '/war', label: 'War Council' },
   { path: '/settlement', label: 'Settlements' },
   { path: '/realm', label: 'Realm Management' },

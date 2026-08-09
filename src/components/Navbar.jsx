@@ -51,6 +51,7 @@ export default function Navbar() {
         { path: '/profile', label: 'Character Sheet' },
         { path: '/character-creator', label: 'Character Creation' },
         { path: '/house', label: 'House Management' },
+        { path: '/lineage', label: 'Lineage & Bloodlines' },
         { path: '/factions', label: 'Factions' },
         { path: '/religion', label: 'Religion' },
         { path: '/health', label: 'Health Record' },

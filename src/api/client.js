@@ -1171,4 +1171,16 @@ export const api = {
   heraldryGet: (houseId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'heraldry_get', house_id: houseId }) }),
   heraldryRegister: (data) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'heraldry_register', ...data }) }),
   heraldryApprove: (heraldryId) => request('web_settlement3.php', { method: 'POST', body: JSON.stringify({ action: 'heraldry_approve', heraldry_id: heraldryId }) }),
+
+  // Lineage / Family Tree
+  lineageTree: (houseId) => request('web_lineage.php', { method: 'POST', body: JSON.stringify({ action: 'tree', house_id: houseId }) }),
+  lineageHouseList: () => request('web_lineage.php', { method: 'POST', body: JSON.stringify({ action: 'house_list' }) }),
+  lineageCharacterAdd: (data) => request('web_lineage.php', { method: 'POST', body: JSON.stringify({ action: 'character_add', ...data }) }),
+  lineageCharacterUpdate: (charId, data) => request('web_lineage.php', { method: 'POST', body: JSON.stringify({ action: 'character_update', character_id: charId, ...data }) }),
+  lineageCharacterDelete: (charId) => request('web_lineage.php', { method: 'POST', body: JSON.stringify({ action: 'character_delete', character_id: charId }) }),
+  lineageCharacterGet: (charId) => request('web_lineage.php', { method: 'POST', body: JSON.stringify({ action: 'character_get', character_id: charId }) }),
+  lineageCharacterLink: (charId, avatarKey) => request('web_lineage.php', { method: 'POST', body: JSON.stringify({ action: 'character_link', character_id: charId, avatar_key: avatarKey }) }),
+  lineageSuccessionSet: (houseId, succession) => request('web_lineage.php', { method: 'POST', body: JSON.stringify({ action: 'succession_set', house_id: houseId, succession }) }),
+  lineageEventAdd: (data) => request('web_lineage.php', { method: 'POST', body: JSON.stringify({ action: 'event_add', ...data }) }),
+  lineageBastardRegister: (data) => request('web_lineage.php', { method: 'POST', body: JSON.stringify({ action: 'bastard_register', ...data }) }),
 }
