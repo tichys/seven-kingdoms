@@ -9,6 +9,8 @@ const ALL_PAGES = [
   { path: '/house', label: 'House Management' },
   { path: '/war', label: 'War Council' },
   { path: '/settlement', label: 'Settlements' },
+  { path: '/realm', label: 'Realm Management' },
+  { path: '/blotter', label: 'Blotter & Moderation' },
   { path: '/pve', label: 'Dungeons & Bounties' },
   { path: '/quests', label: 'Quests' },
   { path: '/crafting', label: 'Crafting' },

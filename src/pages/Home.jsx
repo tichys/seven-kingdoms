@@ -74,6 +74,31 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Quick links for authenticated users */}
+      {isAuthenticated && (
+        <section className="container" style={{ paddingTop: '2rem' }}>
+          <h2 className="section-title">Quick Links</h2>
+          <div className="grid grid-4">
+            <Link to="/realm" className="card" style={{ textDecoration: 'none' }}>
+              <div className="card-header"><h3>Realm Management</h3></div>
+              <div className="card-body"><p className="text-muted">Justice, tournaments, weather, roads, vassalage, and heraldry</p></div>
+            </Link>
+            <Link to="/blotter" className="card" style={{ textDecoration: 'none' }}>
+              <div className="card-header"><h3>Blotter</h3></div>
+              <div className="card-body"><p className="text-muted">File incident reports and view moderation records</p></div>
+            </Link>
+            <Link to="/settlement" className="card" style={{ textDecoration: 'none' }}>
+              <div className="card-header"><h3>Settlements</h3></div>
+              <div className="card-body"><p className="text-muted">Population, trade, construction, sieges, and diplomacy</p></div>
+            </Link>
+            <Link to="/raven" className="card" style={{ textDecoration: 'none' }}>
+              <div className="card-header"><h3>Raven Network</h3></div>
+              <div className="card-body"><p className="text-muted">Send and receive raven messages across the realm</p></div>
+            </Link>
+          </div>
+        </section>
+      )}
+
       {/* Server status */}
       <section className="container" style={{ paddingBottom: '3rem' }}>
         <h2 className="section-title">Server Status</h2>
