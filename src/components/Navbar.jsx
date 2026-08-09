@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { sounds } from '../utils/sounds.js'
+import NotificationBell from './NotificationBell.jsx'
 
 export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth()
@@ -111,6 +112,7 @@ export default function Navbar() {
               {user?.house_name && <span className="nav-user-house"> | {user.house_name}</span>}
             </span>
           )}
+          {isAuthenticated && <NotificationBell />}
           {isAuthenticated ? (
             <button className="btn btn-outline btn-sm" onClick={handleLogout}>Logout</button>
           ) : (

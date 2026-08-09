@@ -1223,4 +1223,17 @@ export const api = {
   caravanDispatch: (caravanId) => request('web_marketplace.php', { method: 'POST', body: JSON.stringify({ action: 'caravan_dispatch', caravan_id: caravanId }) }),
   stallList: () => request('web_marketplace.php', { method: 'POST', body: JSON.stringify({ action: 'stall_list' }) }),
   stallCreate: (data) => request('web_marketplace.php', { method: 'POST', body: JSON.stringify({ action: 'stall_create', ...data }) }),
+
+  // Notifications
+  notificationList: (unreadOnly) => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'list', unread_only: unreadOnly ? 1 : 0 }) }),
+  notificationUnreadCount: () => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'unread_count' }) }),
+  notificationMarkRead: (id) => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'mark_read', notification_id: id || 0 }) }),
+  notificationMarkAllRead: () => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'mark_all_read' }) }),
+  notificationDelete: (id) => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'delete', notification_id: id }) }),
+  notificationDeleteRead: () => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'delete_read' }) }),
+  notificationClearAll: () => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'clear_all' }) }),
+  notificationGetPrefs: () => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'get_prefs' }) }),
+  notificationSetPref: (type, enabled) => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'set_pref', notification_type: type, enabled: enabled ? 1 : 0 }) }),
+  notificationCreate: (data) => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'create', ...data }) }),
+  notificationBroadcast: (title, body) => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'broadcast', title, body }) }),
 }
