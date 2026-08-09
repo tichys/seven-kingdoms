@@ -537,3 +537,33 @@ textarea.form-input{resize:vertical;font-family:var(--font-body)}
 .badge-green{background:rgba(77,124,91,.15);color:var(--success);border:1px solid var(--green)}
 .badge-red{background:rgba(139,26,26,.15);color:#e8a0a0;border:1px solid var(--red)}
 .badge-blue{background:rgba(91,125,177,.15);color:#a8c0e0;border:1px solid var(--blue)}
+
+/* ---- Modal overlay (shared) ---- */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1000;display:flex;align-items:flex-start;justify-content:center;padding:2rem;overflow:auto}
+.modal-card{max-width:500px;width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 16px 48px rgba(0,0,0,.5)}
+.modal-card-lg{max-width:800px}
+
+/* ---- Scrollable table wrapper ---- */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ---- Tab nav wrap (for many tabs) ---- */
+.tab-nav-wrap{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:0}
+.tab-nav-wrap::-webkit-scrollbar{height:4px}
+.tab-nav-wrap::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
+
+/* ---- Badge count (notification dots) ---- */
+.badge-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:9px;background:var(--red);color:#fff;font-size:.65rem;font-weight:700;padding:0 .3rem;margin-left:.25rem}
+
+/* ---- Hover lift utility ---- */
+.hover-lift{transition:transform .2s,box-shadow .2s}
+.hover-lift:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+
+/* ---- Quick link cards (Home page) ---- */
+.quick-link{display:block;text-decoration:none;color:inherit;transition:transform .2s,border-color .2s}
+.quick-link:hover{transform:translateY(-3px);border-color:var(--gold-dim)}
+
+/* ---- Responsive modals ---- */
+@media(max-width:600px){
+  .modal-overlay{padding:1rem .5rem}
+  .modal-card{max-width:100%}
+}
