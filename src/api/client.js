@@ -1236,4 +1236,20 @@ export const api = {
   notificationSetPref: (type, enabled) => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'set_pref', notification_type: type, enabled: enabled ? 1 : 0 }) }),
   notificationCreate: (data) => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'create', ...data }) }),
   notificationBroadcast: (title, body) => request('web_notifications.php', { method: 'POST', body: JSON.stringify({ action: 'broadcast', title, body }) }),
+
+  // Dynamic Story Events
+  storyCheckEvents: (region, territoryId) => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'check_events', region, territory_id: territoryId }) }),
+  storyResolveEvent: (instanceId, result, choiceText) => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'resolve_event', instance_id: instanceId, result, choice_text: choiceText }) }),
+  storyMyEvents: () => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'my_events' }) }),
+  storyEventHistory: () => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'event_history' }) }),
+  storyEventList: () => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'event_list' }) }),
+  storyEventCreate: (data) => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'event_create', ...data }) }),
+  storyEventToggle: (eventId, isActive) => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'event_toggle', event_id: eventId, is_active: isActive ? 1 : 0 }) }),
+  storyNpcEncounter: (region) => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'npc_encounter', region }) }),
+  storyNpcList: () => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'npc_list' }) }),
+  storyNpcCreate: (data) => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'npc_create', ...data }) }),
+  storyStorylineList: (region, status) => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'storyline_list', region, status }) }),
+  storyStorylineCreate: (data) => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'storyline_create', ...data }) }),
+  storyStorylineActivate: (storylineId) => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'storyline_activate', storyline_id: storylineId }) }),
+  storyStorylineAdvance: (storylineId, chapterNumber) => request('web_story.php', { method: 'POST', body: JSON.stringify({ action: 'storyline_advance', storyline_id: storylineId, chapter_number: chapterNumber }) }),
 }
