@@ -1087,4 +1087,22 @@ export const api = {
   treatyBreak: (treatyId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'treaty_break', treaty_id: treatyId }) }),
   treatyViolations: (treatyId) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'treaty_violations', treaty_id: treatyId }) }),
   treatyViolationReport: (data) => request('web_settlement2.php', { method: 'POST', body: JSON.stringify({ action: 'treaty_violation_report', ...data }) }),
+
+  // Blotter / Moderation
+  blotterFile: (data) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'file', ...data }) }),
+  blotterMyIncidents: () => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'my_incidents' }) }),
+  blotterAgainstMe: () => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'against_me' }) }),
+  blotterGet: (id) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'get', incident_id: id }) }),
+  blotterList: (filters) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'list', ...filters }) }),
+  blotterUpdateStatus: (id, status) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'update_status', incident_id: id, new_status: status }) }),
+  blotterAssign: (id) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'assign', incident_id: id }) }),
+  blotterResolve: (id, notes) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'resolve', incident_id: id, resolution_notes: notes }) }),
+  blotterReopen: (id, reason) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'reopen', incident_id: id, reason }) }),
+  blotterWithdraw: (id) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'withdraw', incident_id: id }) }),
+  blotterAddNote: (id, note, isInternal) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'add_note', incident_id: id, note, is_internal: isInternal ? 1 : 0 }) }),
+  blotterAddEvidence: (id, url, description) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'add_evidence', incident_id: id, url, description }) }),
+  blotterApplySanction: (data) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'apply_sanction', ...data }) }),
+  blotterListSanctions: (activeOnly) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'list_sanctions', active_only: activeOnly ? 1 : 0 }) }),
+  blotterLiftSanction: (id) => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'lift_sanction', sanction_id: id }) }),
+  blotterStats: () => request('web_blotter.php', { method: 'POST', body: JSON.stringify({ action: 'stats' }) }),
 }

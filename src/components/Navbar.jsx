@@ -78,6 +78,7 @@ export default function Navbar() {
         { path: '/events', label: 'Events' },
         { path: '/housing', label: 'Housing' },
         { path: '/ledger', label: 'Castle Ledger' },
+        { path: '/blotter', label: 'Blotter' },
       ]
     })
   }
