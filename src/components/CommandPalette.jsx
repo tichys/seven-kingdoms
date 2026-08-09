@@ -8,6 +8,8 @@ const ALL_PAGES = [
   { path: '/houses', label: 'Houses' },
   { path: '/house', label: 'House Management' },
   { path: '/lineage', label: 'Lineage & Bloodlines' },
+  { path: '/politics', label: 'Politics & Decrees' },
+  { path: '/marketplace', label: 'Marketplace' },
   { path: '/war', label: 'War Council' },
   { path: '/settlement', label: 'Settlements' },
   { path: '/realm', label: 'Realm Management' },
