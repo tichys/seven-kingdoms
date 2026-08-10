@@ -54,6 +54,7 @@ export default function Navbar() {
         { path: '/house', label: 'House Management' },
         { path: '/lineage', label: 'Lineage & Bloodlines' },
         { path: '/politics', label: 'Politics & Decrees' },
+        { path: '/diplomacy', label: 'Diplomacy & Treaties' },
         { path: '/factions', label: 'Factions' },
         { path: '/religion', label: 'Religion' },
         { path: '/health', label: 'Health Record' },
@@ -70,6 +71,8 @@ export default function Navbar() {
         { path: '/activities', label: 'Activities' },
         { path: '/world', label: 'World Events' },
         { path: '/chronicles', label: 'Chronicles & Encounters' },
+        { path: '/magic', label: 'Ancient Powers' },
+        { path: '/travel', label: 'Travel & Roads' },
       ]
     })
     dropdowns.push({
@@ -79,6 +82,8 @@ export default function Navbar() {
         { path: '/forms', label: 'Forms & Petitions' },
         { path: '/trade', label: 'Trade & Goods' },
         { path: '/marketplace', label: 'Marketplace' },
+        { path: '/economy', label: 'Economy & Banking' },
+        { path: '/calendar', label: 'Event Calendar' },
         { path: '/raven', label: 'Raven Network' },
         { path: '/maester', label: 'The Citadel' },
         { path: '/events', label: 'Events' },

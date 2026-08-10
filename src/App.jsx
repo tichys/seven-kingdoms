@@ -55,6 +55,11 @@ const SettlementExpansion3 = lazy(() => import('./pages/SettlementExpansion3.jsx
 const Lineage = lazy(() => import('./pages/Lineage.jsx'))
 const Politics = lazy(() => import('./pages/Politics.jsx'))
 const Marketplace = lazy(() => import('./pages/Marketplace.jsx'))
+const Calendar = lazy(() => import('./pages/Calendar.jsx'))
+const Diplomacy = lazy(() => import('./pages/Diplomacy.jsx'))
+const Economy = lazy(() => import('./pages/Economy.jsx'))
+const Magic = lazy(() => import('./pages/Magic.jsx'))
+const Travel = lazy(() => import('./pages/Travel.jsx'))
 const StoryEvents = lazy(() => import('./pages/StoryEvents.jsx'))
 const CommandPalette = lazy(() => import('./components/CommandPalette.jsx'))
 
@@ -94,6 +99,11 @@ export default function App() {
               <Route path="/lineage" element={<ProtectedRoute><Lineage /></ProtectedRoute>} />
               <Route path="/politics" element={<ProtectedRoute><Politics /></ProtectedRoute>} />
               <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
+              <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+              <Route path="/diplomacy" element={<ProtectedRoute><Diplomacy /></ProtectedRoute>} />
+              <Route path="/economy" element={<ProtectedRoute><Economy /></ProtectedRoute>} />
+              <Route path="/magic" element={<ProtectedRoute><Magic /></ProtectedRoute>} />
+              <Route path="/travel" element={<ProtectedRoute><Travel /></ProtectedRoute>} />
               <Route path="/chronicles" element={<ProtectedRoute><StoryEvents /></ProtectedRoute>} />
               <Route path="/houses" element={<Houses />} />
               <Route path="/houses/:id" element={<HouseDetail />} />
