@@ -620,8 +620,51 @@
  .not-found p{color:var(--text-muted);max-width:400px;margin:0 auto 2rem}
 
  /* =====================================================
-    ANIMATIONS (Phase 8)
+    ATMOSPHERIC EFFECTS (Phase 5)
     ===================================================== */
+ /* Site-wide ambient fog at page bottom */
+ .ambient-fog{
+   position:fixed;bottom:0;left:0;right:0;height:200px;pointer-events:none;z-index:1;
+   background:linear-gradient(180deg,transparent 0%,rgba(197,160,89,.015) 30%,rgba(197,160,89,.03) 100%);
+   opacity:.5;
+ }
+
+ /* Ember particles container */
+ .ember-container{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+ .ember{
+   position:absolute;bottom:0;width:3px;height:3px;border-radius:50%;
+   background:radial-gradient(circle,#ff6b1a 0%,rgba(255,107,26,.3) 50%,transparent 100%);
+   box-shadow:0 0 6px rgba(255,107,26,.4);
+   animation:emberRise 4s ease-out infinite;
+ }
+
+ /* Snow particles */
+ .snow-container{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+ .snow{
+   position:absolute;top:-10px;width:4px;height:4px;border-radius:50%;
+   background:rgba(255,255,255,.6);
+   animation:snowFall 8s linear infinite;
+ }
+ @keyframes snowFall{0%{transform:translateY(-10px) translateX(0);opacity:.8}100%{transform:translateY(110vh) translateX(20px);opacity:.2}}
+
+ /* Gold particle shimmer */
+ .gold-shimmer-particle{
+   position:absolute;width:2px;height:2px;border-radius:50%;
+   background:var(--gold);box-shadow:0 0 4px var(--gold-glow);
+   animation:goldFloat 6s ease-in-out infinite;
+ }
+ @keyframes goldFloat{0%,100%{transform:translateY(0) translateX(0);opacity:.3}50%{transform:translateY(-30px) translateX(10px);opacity:.6}}
+
+ /* Castle silhouette for hero */
+ .castle-silhouette{
+   position:absolute;bottom:0;left:0;right:0;height:120px;pointer-events:none;z-index:1;
+   background:
+     linear-gradient(180deg,transparent 0%,rgba(0,0,0,.3) 100%),
+     url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 120' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'%3E%3Cpath d='M0,120 L0,80 L40,80 L40,60 L60,60 L60,40 L80,40 L80,60 L100,60 L100,80 L140,80 L140,50 L160,50 L160,30 L180,30 L180,50 L200,50 L200,80 L260,80 L260,60 L280,60 L280,40 L300,40 L300,60 L320,60 L320,80 L380,80 L380,50 L400,50 L400,20 L420,20 L420,50 L440,50 L440,80 L500,80 L500,60 L520,60 L520,40 L540,40 L540,60 L560,60 L560,80 L620,80 L620,50 L640,50 L640,30 L660,30 L660,50 L680,50 L680,80 L740,80 L740,60 L760,60 L760,40 L780,40 L780,60 L800,60 L800,80 L860,80 L860,50 L880,50 L880,20 L900,20 L900,50 L920,50 L920,80 L980,80 L980,60 L1000,60 L1000,40 L1020,40 L1020,60 L1040,60 L1040,80 L1100,80 L1100,50 L1120,50 L1120,30 L1140,30 L1140,50 L1160,50 L1160,80 L1200,80 L1200,120 Z' fill='%23000000' opacity='0.6'/%3E%3C/svg%3E");
+   background-size:cover;background-position:bottom center;background-repeat:no-repeat;
+ }
+
+ /* =====================================================
  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
  .page-fade{animation:pageFadeIn .4s ease forwards}
  @keyframes pageFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}

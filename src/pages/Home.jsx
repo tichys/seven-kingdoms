@@ -34,6 +34,16 @@ export default function Home() {
       <section className="hero">
         <div className="hero-bg" />
         <div className="fog-overlay" />
+        <div className="ember-container">
+          {[...Array(12)].map((_, i) => (
+            <span key={i} className="ember" style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 4}s`,
+              animationDuration: `${3 + Math.random() * 3}s`,
+            }} />
+          ))}
+        </div>
+        <div className="castle-silhouette" />
         <div className="hero-content">
           <div className="hero-crest">
             <svg viewBox="0 0 100 120" className="crest-svg crest-animated">
