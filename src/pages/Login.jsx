@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { api } from '../api/client.js'
+import Icon from '../components/Icon.jsx'
 
 export default function Login() {
   const { login } = useAuth()
@@ -71,6 +72,25 @@ export default function Login() {
   return (
     <div className="login-wrap">
       <div className="login-card">
+        <div aria-hidden="true" style={{
+          height: '7px',
+          background: 'repeating-linear-gradient(90deg, #2a2a2a 0px, #161616 3px, #050505 6px, #161616 9px)',
+          boxShadow: 'inset 0 -1px 2px rgba(0,0,0,.6), 0 1px 0 rgba(197,160,89,.12)',
+          borderRadius: '3px',
+          marginBottom: '1.5rem',
+        }} />
+        <span className="ember" style={{ left: '20%', animationDelay: '0s', animationDuration: '4s', pointerEvents: 'none' }} />
+        <span className="ember" style={{ left: '55%', animationDelay: '1.5s', animationDuration: '5s', pointerEvents: 'none' }} />
+        <span className="ember" style={{ left: '80%', animationDelay: '3s', animationDuration: '4.5s', pointerEvents: 'none' }} />
+        <div style={{ textAlign: 'center' }}>
+          <svg viewBox="0 0 100 120" className="crest-svg" style={{ width: '48px', height: '58px', opacity: '.8' }}>
+            <path d="M50 5 L90 25 L90 70 Q90 110 50 115 Q10 110 10 70 L10 25 Z" fill="none" stroke="var(--gold)" strokeWidth="1.5" opacity="0.6" />
+            <path d="M50 15 L80 30 L80 65 Q80 100 50 105 Q20 100 20 65 L20 30 Z" fill="none" stroke="var(--gold)" strokeWidth="0.5" opacity="0.3" />
+          </svg>
+        </div>
+        <div style={{ textAlign: 'center', marginTop: '.75rem', marginBottom: '1rem' }}>
+          <Icon name="gate" size={32} color="var(--gold)" />
+        </div>
         <h1 className="login-title">Login to Your Character</h1>
         <p className="text-muted text-center mb-4" style={{ fontSize: '.9rem' }}>
           Enter your avatar key and a one-time login code generated from the HUD in-world.
@@ -111,16 +131,19 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="login-divider">
-          <span>or</span>
-        </div>
+        <div className="divider-ornate"><span>or</span></div>
 
         <button
           className="btn btn-discord btn-block"
           onClick={handleDiscordLogin}
           disabled={discordLoading}
         >
-          {discordLoading ? 'Redirecting...' : 'Login with Discord'}
+          {discordLoading ? 'Redirecting...' : (
+            <>
+              <Icon name="raven" size={18} color="currentColor" style={{ verticalAlign: 'middle', marginRight: '.5rem' }} />
+              Send a Raven
+            </>
+          )}
         </button>
         <small className="text-muted" style={{ fontSize: '.8rem', display: 'block', textAlign: 'center', marginTop: '.5rem' }}>
           Login with your linked Discord account. First time? Login with HUD code above, then link Discord in Character settings.

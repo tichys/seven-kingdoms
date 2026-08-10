@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { sounds } from '../utils/sounds.js'
 import NotificationBell from './NotificationBell.jsx'
+import Icon from './Icon.jsx'
 
 export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth()
@@ -48,7 +49,7 @@ export default function Navbar() {
   const dropdowns = []
   if (isAuthenticated) {
     dropdowns.push({
-      id: 'character', label: 'Character', items: [
+      id: 'character', label: 'Character', icon: 'shield', items: [
         { path: '/profile', label: 'Character Sheet' },
         { path: '/character-creator', label: 'Character Creation' },
         { path: '/house', label: 'House Management' },
@@ -61,7 +62,7 @@ export default function Navbar() {
       ]
     })
     dropdowns.push({
-      id: 'adventure', label: 'Adventure', items: [
+      id: 'adventure', label: 'Adventure', icon: 'sword', items: [
         { path: '/war', label: 'War Council' },
         { path: '/settlement', label: 'Settlements' },
         { path: '/realm', label: 'Realm Management' },
@@ -76,7 +77,7 @@ export default function Navbar() {
       ]
     })
     dropdowns.push({
-      id: 'community', label: 'Community', items: [
+      id: 'community', label: 'Community', icon: 'scroll', items: [
         { path: '/community', label: 'Leaderboards & Marketplace' },
         { path: '/directory', label: 'Citizen Directory' },
         { path: '/forms', label: 'Forms & Petitions' },
@@ -95,7 +96,7 @@ export default function Navbar() {
   }
   if (isAdmin) {
     dropdowns.push({
-      id: 'admin', label: 'Admin', items: [
+      id: 'admin', label: 'Admin', icon: 'crown', items: [
         { path: '/admin', label: 'Dashboard' },
       ]
     })
@@ -110,7 +111,7 @@ export default function Navbar() {
   return (
     <nav className="nav">
       <div className="nav-inner">
-        <Link to="/" className="nav-brand" onClick={closeMenu}>The Seven Kingdoms</Link>
+        <Link to="/" className="nav-brand" onClick={closeMenu}><Icon name="castle" size={20} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '0.3rem' }} />The Seven Kingdoms</Link>
         <div className="nav-actions">
           {isAuthenticated && (
             <span className="nav-user">
@@ -149,6 +150,7 @@ export default function Navbar() {
                 onClick={() => handleDropdownClick(d.id)}
                 aria-expanded={openDropdown === d.id}
               >
+                <Icon name={d.icon} size={16} />
                 {d.label}
                 <span className="nav-dropdown-arrow">{openDropdown === d.id ? '\u25B2' : '\u25BC'}</span>
               </button>
