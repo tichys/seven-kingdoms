@@ -55,6 +55,7 @@ const SettlementExpansion3 = lazy(() => import('./pages/SettlementExpansion3.jsx
 const Lineage = lazy(() => import('./pages/Lineage.jsx'))
 const Politics = lazy(() => import('./pages/Politics.jsx'))
 const Marketplace = lazy(() => import('./pages/Marketplace.jsx'))
+const StoryEvents = lazy(() => import('./pages/StoryEvents.jsx'))
 const CommandPalette = lazy(() => import('./components/CommandPalette.jsx'))
 
 const PageFallback = () => <div className="page-content"><Loading /></div>
@@ -93,6 +94,7 @@ export default function App() {
               <Route path="/lineage" element={<ProtectedRoute><Lineage /></ProtectedRoute>} />
               <Route path="/politics" element={<ProtectedRoute><Politics /></ProtectedRoute>} />
               <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
+              <Route path="/chronicles" element={<ProtectedRoute><StoryEvents /></ProtectedRoute>} />
               <Route path="/houses" element={<Houses />} />
               <Route path="/houses/:id" element={<HouseDetail />} />
               <Route path="/wiki" element={<Wiki />} />

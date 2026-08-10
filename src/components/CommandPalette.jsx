@@ -10,6 +10,7 @@ const ALL_PAGES = [
   { path: '/lineage', label: 'Lineage & Bloodlines' },
   { path: '/politics', label: 'Politics & Decrees' },
   { path: '/marketplace', label: 'Marketplace' },
+  { path: '/chronicles', label: 'Chronicles & Encounters' },
   { path: '/war', label: 'War Council' },
   { path: '/settlement', label: 'Settlements' },
   { path: '/realm', label: 'Realm Management' },

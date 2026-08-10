@@ -69,6 +69,7 @@ export default function Navbar() {
         { path: '/crafting', label: 'Crafting' },
         { path: '/activities', label: 'Activities' },
         { path: '/world', label: 'World Events' },
+        { path: '/chronicles', label: 'Chronicles & Encounters' },
       ]
     })
     dropdowns.push({
