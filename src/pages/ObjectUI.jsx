@@ -58,7 +58,38 @@ export default function ObjectUI() {
     arena: <ArenaUI />,
     census: <CensusUI />,
     crafting: <CraftingUI />,
-    resurrection: <ResurrectionUI />
+    resurrection: <ResurrectionUI />,
+    messages: <MessagesObjUI />,
+    production: <ProductionObjUI />,
+    roads: <RoadsObjUI />,
+    scriptorium: <ScriptoriumObjUI />,
+    shipyard: <ShipyardObjUI />,
+    siege: <SiegeObjUI />,
+    tax: <TaxObjUI />,
+    throne: <ThroneObjUI />,
+    weather: <WeatherObjUI />,
+    stall: <StallObjUI />,
+    religious: <ReligiousObjUI />,
+    dragon: <DragonObjUI />,
+    ears: <EarsObjUI />,
+    links: <LinksObjUI />,
+    calendar: <CalendarObjUI />,
+    diplomacy: <DiplomacyObjUI />,
+    dragonglass: <DragonglassObjUI />,
+    valyrian: <ValyrianObjUI />,
+    rhllor: <RhllorObjUI />,
+    weirwood: <WeirwoodObjUI />,
+    ironbank: <IronBankObjUI />,
+    travel: <TravelObjUI />,
+    tournament: <TournamentObjUI />,
+    justice: <JusticeObjUI />,
+    council: <CouncilObjUI />,
+    gallows: <GallowsObjUI />,
+    guard: <GuardObjUI />,
+    harbor: <HarborObjUI />,
+    heraldry: <HeraldryObjUI />,
+    marriage: <MarriageObjUI />,
+    dungeon: <DungeonObjUI />
   }
 
   return (
@@ -872,6 +903,651 @@ function ResurrectionUI() {
         style={{ width: '100%', padding: '.5rem', background: '#ff6600', color: '#1a1a2e', border: 'none', borderRadius: '3px', fontWeight: 'bold', cursor: 'pointer' }}>
         {submitting ? 'Petitioning...' : 'Petition Resurrection'}
       </button>
+    </div>
+  )
+}
+
+// =====================================================
+function MessagesObjUI() {
+  const [events, setEvents] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    api.recentEvents().then(d => setEvents(d.events || [])).catch(() => {}).finally(() => setLoading(false))
+  }, [])
+
+  if (loading) return <div>Loading messages...</div>
+  return (
+    <div>
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', marginBottom: '.3rem' }}>Recent Messages</h4>
+      {events.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No recent messages.</div> : (
+        events.map((e, i) => (
+          <div key={i} style={{ background: '#2a2a4e', padding: '.4rem', borderRadius: '3px', marginBottom: '.3rem' }}>
+            <span style={{ fontSize: '.65rem', color: '#b08d57', textTransform: 'uppercase' }}>[{e.type}]</span>
+            <span style={{ fontSize: '.8rem', marginLeft: '.3rem' }}>{e.text}</span>
+            <div style={{ fontSize: '.6rem', color: '#666' }}>{e.date}</div>
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+function RoadsObjUI() {
+  const [connections, setConnections] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    api.travelConnectionsAll().then(d => setConnections(d.connections || [])).catch(() => {}).finally(() => setLoading(false))
+  }, [])
+
+  if (loading) return <div>Loading roads...</div>
+  return (
+    <div>
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', marginBottom: '.3rem' }}>Territory Connections</h4>
+      {connections.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No connections found.</div> : (
+        connections.map((c, i) => (
+          <div key={i} style={{ background: '#2a2a4e', padding: '.4rem', borderRadius: '3px', marginBottom: '.3rem' }}>
+            <div style={{ fontSize: '.85rem' }}>{c.origin_name} → {c.destination_name}</div>
+            <div style={{ fontSize: '.7rem', color: '#888' }}>{c.road_name} · {c.travel_type} · {c.travel_hours}h · Danger: {c.danger_level}</div>
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+function ProductionObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Production Workbench</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Visit the website for production chains and crafting schedules.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function ScriptoriumObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Scriptorium</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>The maesters craft scrolls and records here.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function ShipyardObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Shipyard</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Ships are constructed and repaired here. Visit the website for maritime trade.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function SiegeObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Siege Engine</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>War machines are prepared for battle.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function TaxObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Tax Office</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Taxes are collected for the lord of the region.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function ThroneObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Throne Room</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>The Iron Throne sits upon a dais of twisted blades. Visit the website for political proceedings.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function WeatherObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Weather Stone</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>The stone hums with the current weather. Visit the website for weather effects.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function StallObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Market Stall</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Goods are traded here. Visit the marketplace on the website.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function ReligiousObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Sept</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Light a candle to the Seven. Visit the website for religious sites and prayer bonuses.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function DragonObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Dragonpit</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>The ruins of the Dragonpit loom large. Dragons have not been seen in Westeros for centuries.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function EarsObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Ear Collector</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Bring proof of your kills. Bounties are paid for the ears of bandits and outlaws.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function LinksObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Landmark Giver</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Touch to receive landmarks to important locations across the Seven Kingdoms.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function CalendarObjUI() {
+  const [events, setEvents] = useState([])
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  const load = async () => {
+    setLoading(true)
+    try { const d = await api.calendarEventList(false); setEvents(d.events || []) } catch (e) { setResult({ error: e.message }) }
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [])
+
+  const register = async (eventId) => {
+    setResult(null)
+    try { const r = await api.calendarEventRegister(eventId); setResult({ success: r.message || 'Registered!' }) }
+    catch (e) { setResult({ error: e.message }) }
+  }
+
+  if (loading) return <div>Loading events...</div>
+  return (
+    <div>
+      {result?.error && <div style={{ color: '#c44', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.error}</div>}
+      {result?.success && <div style={{ color: '#2ecc71', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.success}</div>}
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', marginBottom: '.3rem' }}>Upcoming Events</h4>
+      {events.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No upcoming events.</div> : (
+        events.map(e => (
+          <div key={e.id} style={{ background: '#2a2a4e', padding: '.5rem', borderRadius: '4px', marginBottom: '.4rem' }}>
+            <div style={{ fontWeight: 'bold', color: '#b08d57', fontSize: '.9rem' }}>{e.title}</div>
+            <div style={{ fontSize: '.75rem', color: '#888', marginBottom: '.2rem' }}>{e.event_type} - {e.region}</div>
+            <div style={{ fontSize: '.75rem', color: '#666', marginBottom: '.3rem' }}>{e.scheduled_at?.slice(0, 16)}</div>
+            <button onClick={() => register(e.id)} style={{ padding: '.3rem .5rem', background: '#b08d57', color: '#1a1a2e', border: 'none', borderRadius: '3px', fontSize: '.75rem', cursor: 'pointer' }}>Register</button>
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+function DiplomacyObjUI() {
+  const [treaties, setTreaties] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const load = async () => {
+    setLoading(true)
+    try { const d = await api.diplomacyTreatyList(); setTreaties(d.treaties || []) } catch (e) {}
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [])
+
+  if (loading) return <div>Loading treaties...</div>
+  return (
+    <div>
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', marginBottom: '.3rem' }}>Treaties</h4>
+      {treaties.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No treaties.</div> : (
+        treaties.map(t => (
+          <div key={t.id} style={{ background: '#2a2a4e', padding: '.5rem', borderRadius: '4px', marginBottom: '.4rem' }}>
+            <div style={{ fontSize: '.85rem', marginBottom: '.2rem' }}><strong style={{ color: '#b08d57' }}>{t.house_a_name}</strong> vs <strong style={{ color: '#b08d57' }}>{t.house_b_name}</strong></div>
+            <div style={{ fontSize: '.75rem', color: '#888', marginBottom: '.3rem' }}>{t.treaty_type}</div>
+            <span style={{ fontSize: '.7rem', padding: '.1rem .3rem', borderRadius: '3px', background: t.status === 'active' ? '#1a3a1a' : '#3a3a1a', color: t.status === 'active' ? '#2ecc71' : '#f39c12' }}>{t.status}</span>
+          </div>
+        ))
+      )}
+      <p style={{ fontSize: '.75rem', color: '#888', marginTop: '.5rem' }}><a href="#/diplomacy" style={{ color: '#b08d57' }}>View full diplomacy page</a></p>
+    </div>
+  )
+}
+
+// =====================================================
+function DragonglassObjUI() {
+  const [recipes, setRecipes] = useState([])
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  const load = async () => {
+    setLoading(true)
+    try { const d = await api.magicDragonglassRecipes(); setRecipes(d.recipes || []) } catch (e) {}
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [])
+
+  const craft = async (recipeId) => {
+    setResult(null)
+    try { const r = await api.magicDragonglassCraft(recipeId); setResult({ success: r.message || 'Crafted!' }); load() }
+    catch (e) { setResult({ error: e.message }) }
+  }
+
+  if (loading) return <div>Loading recipes...</div>
+  return (
+    <div>
+      {result?.error && <div style={{ color: '#c44', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.error}</div>}
+      {result?.success && <div style={{ color: '#2ecc71', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.success}</div>}
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', marginBottom: '.3rem' }}>Dragonglass Recipes</h4>
+      {recipes.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No recipes available.</div> : (
+        recipes.map(r => (
+          <div key={r.id} style={{ background: '#2a2a4e', padding: '.5rem', borderRadius: '4px', marginBottom: '.4rem' }}>
+            <div style={{ fontWeight: 'bold', color: '#b08d57', fontSize: '.85rem' }}>{r.recipe_name}</div>
+            <div style={{ fontSize: '.75rem', color: '#888' }}>Result: {r.result_item_name}</div>
+            <div style={{ fontSize: '.75rem', color: '#888' }}>Dragonglass: {r.dragonglass_needed} | Min Lvl: {r.min_level}</div>
+            <button onClick={() => craft(r.id)} style={{ marginTop: '.2rem', padding: '.2rem .4rem', background: '#b08d57', color: '#1a1a2e', border: 'none', borderRadius: '2px', fontSize: '.7rem', cursor: 'pointer' }}>Craft</button>
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+function ValyrianObjUI() {
+  const [recipes, setRecipes] = useState([])
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  const load = async () => {
+    setLoading(true)
+    try { const d = await api.magicValyrianRecipes(); setRecipes(d.recipes || []) } catch (e) {}
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [])
+
+  const reforge = async (recipeId, goldCost, chance) => {
+    if (!confirm(`Reforge for ${goldCost} gold? Success chance: ${chance}%`)) return
+    setResult(null)
+    try { const r = await api.magicValyrianReforge(recipeId); setResult({ success: r.message || 'Reforged!' }); load() }
+    catch (e) { setResult({ error: e.message }) }
+  }
+
+  if (loading) return <div>Loading recipes...</div>
+  return (
+    <div>
+      {result?.error && <div style={{ color: '#c44', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.error}</div>}
+      {result?.success && <div style={{ color: '#2ecc71', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.success}</div>}
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', marginBottom: '.3rem' }}>Valyrian Reforging</h4>
+      {recipes.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No recipes available.</div> : (
+        recipes.map(r => (
+          <div key={r.id} style={{ background: '#2a2a4e', padding: '.5rem', borderRadius: '4px', marginBottom: '.4rem' }}>
+            <div style={{ fontWeight: 'bold', color: '#b08d57', fontSize: '.85rem' }}>{r.recipe_name}</div>
+            <div style={{ fontSize: '.75rem', color: '#888' }}>{r.source_item_name} → {r.result_item_name}</div>
+            <div style={{ fontSize: '.75rem', color: '#888' }}>Cost: {r.gold_cost}g | Success: {r.success_chance}% | Min Lvl: {r.min_level}</div>
+            <button onClick={() => reforge(r.id, r.gold_cost, r.success_chance)} style={{ marginTop: '.2rem', padding: '.2rem .4rem', background: '#b08d57', color: '#1a1a2e', border: 'none', borderRadius: '2px', fontSize: '.7rem', cursor: 'pointer' }}>Reforge</button>
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+function RhllorObjUI() {
+  const [rituals, setRituals] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const load = async () => {
+    setLoading(true)
+    try { const d = await api.magicRitualList(); setRituals(d.rituals || []) } catch (e) {}
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [])
+
+  if (loading) return <div>Loading rituals...</div>
+  return (
+    <div>
+      <div style={{ background: '#2a2a1a', border: '1px solid #ff6600', padding: '.4rem', borderRadius: '4px', marginBottom: '.5rem' }}>
+        <p style={{ fontSize: '.8rem', color: '#ff6600', marginBottom: '.2rem' }}>R'hllor Rituals</p>
+        <p style={{ fontSize: '.7rem', color: '#888' }}>Resurrection rituals require admin approval and a worthy sacrifice.</p>
+      </div>
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', marginBottom: '.3rem' }}>Rituals</h4>
+      {rituals.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No rituals performed.</div> : (
+        rituals.map(r => (
+          <div key={r.id} style={{ background: '#2a2a4e', padding: '.5rem', borderRadius: '4px', marginBottom: '.4rem' }}>
+            <div style={{ fontSize: '.85rem' }}><strong style={{ color: '#b08d57' }}>{r.priest_name}</strong> → {r.target_name}</div>
+            <div style={{ fontSize: '.75rem', color: '#888' }}>{r.ritual_type} - {r.status}</div>
+            {r.performed_at && <div style={{ fontSize: '.7rem', color: '#666' }}>{r.performed_at.slice(0, 16)}</div>}
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+function WeirwoodObjUI() {
+  const [visions, setVisions] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [result, setResult] = useState(null)
+  const [interp, setInterp] = useState({})
+
+  const load = async () => {
+    setLoading(true)
+    try { const d = await api.magicVisionList(); setVisions(d.visions || []) } catch (e) {}
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [])
+
+  const interpret = async (visionId) => {
+    setResult(null)
+    try { const r = await api.magicVisionInterpret(visionId, interp[visionId] || ''); setResult({ success: r.message || 'Interpreted!' }); load() }
+    catch (e) { setResult({ error: e.message }) }
+  }
+
+  if (loading) return <div>Loading visions...</div>
+  return (
+    <div>
+      {result?.error && <div style={{ color: '#c44', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.error}</div>}
+      {result?.success && <div style={{ color: '#2ecc71', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.success}</div>}
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', marginBottom: '.3rem' }}>Greenseeing Visions</h4>
+      {visions.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No visions received.</div> : (
+        visions.map(v => (
+          <div key={v.id} style={{ background: '#2a2a4e', padding: '.5rem', borderRadius: '4px', marginBottom: '.4rem' }}>
+            <div style={{ fontWeight: 'bold', color: '#b08d57', fontSize: '.85rem' }}>{v.vision_type}</div>
+            {v.region && <div style={{ fontSize: '.7rem', color: '#888' }}>{v.region}</div>}
+            <div style={{ fontSize: '.8rem', color: '#e0d6c2', margin: '.2rem 0' }}>{v.vision_content}</div>
+            <div style={{ fontSize: '.7rem', color: '#666' }}>Seen: {v.seen_at?.slice(0, 16)}</div>
+            {!v.is_interpreted && (
+              <div style={{ marginTop: '.3rem' }}>
+                <textarea placeholder="Interpretation..." value={interp[v.id] || ''} onChange={e => setInterp({ ...interp, [v.id]: e.target.value })}
+                  style={{ width: '100%', padding: '.3rem', background: '#1a1a2e', color: '#e0d6c2', border: '1px solid #b08d57', borderRadius: '3px', fontSize: '.75rem', minHeight: '40px' }} />
+                <button onClick={() => interpret(v.id)} style={{ marginTop: '.2rem', padding: '.2rem .4rem', background: '#b08d57', color: '#1a1a2e', border: 'none', borderRadius: '2px', fontSize: '.7rem', cursor: 'pointer' }}>Interpret</button>
+              </div>
+            )}
+            {v.is_interpreted && <div style={{ fontSize: '.75rem', color: '#2ecc71', marginTop: '.2rem' }}>✓ Interpreted</div>}
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+function IronBankObjUI() {
+  const [banks, setBanks] = useState([])
+  const [loans, setLoans] = useState([])
+  const [result, setResult] = useState(null)
+  const [repay, setRepay] = useState({})
+
+  const load = async () => {
+    try {
+      const [b, l] = await Promise.all([api.economyBanksList(), api.economyMyLoans()])
+      setBanks(b.banks || [])
+      setLoans(l.loans || [])
+    } catch (e) {}
+  }
+  useEffect(() => { load() }, [])
+
+  const doRepay = async (loanId) => {
+    const amt = parseInt(repay[loanId]) || 0
+    if (amt <= 0) return
+    setResult(null)
+    try { const r = await api.economyLoanRepay(loanId, amt); setResult({ success: r.message || 'Repaid!' }); load() }
+    catch (e) { setResult({ error: e.message }) }
+  }
+
+  return (
+    <div>
+      {result?.error && <div style={{ color: '#c44', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.error}</div>}
+      {result?.success && <div style={{ color: '#2ecc71', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.success}</div>}
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', marginBottom: '.3rem' }}>Banks</h4>
+      {banks.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No banks established.</div> : (
+        banks.map(b => (
+          <div key={b.id} style={{ background: '#2a2a4e', padding: '.5rem', borderRadius: '4px', marginBottom: '.4rem' }}>
+            <div style={{ fontWeight: 'bold', color: '#b08d57', fontSize: '.85rem' }}>{b.name}</div>
+            <div style={{ fontSize: '.75rem', color: '#888' }}>Interest: {b.interest_rate}% | Reserve: {b.gold_reserve?.toLocaleString()}g</div>
+          </div>
+        ))
+      )}
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', margin: '.5rem 0 .3rem' }}>Your Loans</h4>
+      {loans.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No outstanding loans.</div> : (
+        loans.map(l => (
+          <div key={l.id} style={{ background: '#2a2a4e', padding: '.5rem', borderRadius: '4px', marginBottom: '.4rem' }}>
+            <div style={{ fontSize: '.85rem' }}>{l.bank_name}</div>
+            <div style={{ fontSize: '.75rem', color: '#888' }}>Due: {l.total_due}g | Repaid: {l.amount_repaid}g</div>
+            <div style={{ fontSize: '.75rem', color: l.status === 'active' ? '#b08d57' : '#888' }}>{l.status}</div>
+            {l.status === 'active' && (
+              <div style={{ display: 'flex', gap: '.3rem', marginTop: '.2rem' }}>
+                <input type="number" placeholder="Amount" value={repay[l.id] || ''} onChange={e => setRepay({ ...repay, [l.id]: e.target.value })}
+                  style={{ width: '80px', padding: '.2rem', background: '#1a1a2e', color: '#e0d6c2', border: '1px solid #b08d57', borderRadius: '2px', fontSize: '.7rem' }} />
+                <button onClick={() => doRepay(l.id)} style={{ padding: '.2rem .4rem', background: '#b08d57', color: '#1a1a2e', border: 'none', borderRadius: '2px', fontSize: '.7rem', cursor: 'pointer' }}>Repay</button>
+              </div>
+            )}
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+function TravelObjUI() {
+  const [territoryId, setTerritoryId] = useState('')
+  const [connections, setConnections] = useState([])
+  const [result, setResult] = useState(null)
+  const [searched, setSearched] = useState(null)
+
+  const find = async () => {
+    if (!territoryId) return
+    setResult(null)
+    try { const d = await api.travelConnectionsFrom(territoryId); setConnections(d.connections || []); setSearched(territoryId) }
+    catch (e) { setResult({ error: e.message }) }
+  }
+
+  const start = async (toId) => {
+    setResult(null)
+    try { const r = await api.travelJourneyStart(searched, toId, 0); setResult({ success: r.message || 'Journey started!' }) }
+    catch (e) { setResult({ error: e.message }) }
+  }
+
+  return (
+    <div>
+      {result?.error && <div style={{ color: '#c44', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.error}</div>}
+      {result?.success && <div style={{ color: '#2ecc71', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.success}</div>}
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', marginBottom: '.3rem' }}>Travel Routes</h4>
+      <div style={{ display: 'flex', gap: '.3rem', marginBottom: '.5rem' }}>
+        <input type="text" placeholder="Territory ID..." value={territoryId} onChange={e => setTerritoryId(e.target.value)}
+          style={{ flex: 1, padding: '.3rem', background: '#2a2a4e', color: '#e0d6c2', border: '1px solid #b08d57', borderRadius: '3px', fontSize: '.75rem' }} />
+        <button onClick={find} style={{ padding: '.3rem .5rem', background: '#b08d57', color: '#1a1a2e', border: 'none', borderRadius: '3px', fontSize: '.75rem', cursor: 'pointer' }}>Find</button>
+      </div>
+      {searched && connections.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No routes found.</div> : (
+        connections.map(c => (
+          <div key={c.to_territory_id} style={{ background: '#2a2a4e', padding: '.5rem', borderRadius: '4px', marginBottom: '.4rem' }}>
+            <div style={{ fontWeight: 'bold', color: '#b08d57', fontSize: '.85rem' }}>{c.destination_name}</div>
+            <div style={{ fontSize: '.75rem', color: '#888' }}>{c.road_name || 'Unnamed'} - {c.travel_type}</div>
+            <div style={{ fontSize: '.75rem', color: '#888' }}>{c.travel_hours}h | Danger: {c.danger_level}</div>
+            {c.is_passable == 1 ? (
+              <button onClick={() => start(c.to_territory_id)} style={{ marginTop: '.2rem', padding: '.2rem .4rem', background: '#b08d57', color: '#1a1a2e', border: 'none', borderRadius: '2px', fontSize: '.7rem', cursor: 'pointer' }}>Start Journey</button>
+            ) : <div style={{ fontSize: '.7rem', color: '#c44', marginTop: '.2rem' }}>Impassable</div>}
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+function TournamentObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Tournament Board</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Visit the website for tournament registration and brackets.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function JusticeObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Court of Justice</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Visit the website for criminal records and trials.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function CouncilObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Council Chamber</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Visit the website for Small Council proceedings.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function GallowsObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>The Gallows</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Justice comes for all men eventually.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function GuardObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Guard Post</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Stand watch. Report disturbances to the captain.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function HarborObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Harbor</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>Ships dock at the harbor. Visit the website for maritime trade.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function HeraldryObjUI() {
+  return (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <h4 style={{ color: '#b08d57', fontSize: '.9rem', marginBottom: '.5rem' }}>Heraldry Display</h4>
+      <p style={{ fontSize: '.85rem', color: '#888' }}>The sigils of the great houses are displayed here.</p>
+    </div>
+  )
+}
+
+// =====================================================
+function MarriageObjUI() {
+  const [marriages, setMarriages] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const load = async () => {
+    setLoading(true)
+    try { const d = await api.diplomacyMarriageList(); setMarriages(d.marriages || []) } catch (e) {}
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [])
+
+  if (loading) return <div>Loading pacts...</div>
+  return (
+    <div>
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', marginBottom: '.3rem' }}>Marriage Pacts</h4>
+      {marriages.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No marriage pacts.</div> : (
+        marriages.map(m => (
+          <div key={m.id} style={{ background: '#2a2a4e', padding: '.5rem', borderRadius: '4px', marginBottom: '.4rem' }}>
+            <div style={{ fontSize: '.85rem' }}><strong style={{ color: '#b08d57' }}>{m.house_a_name}</strong> & <strong style={{ color: '#b08d57' }}>{m.house_b_name}</strong></div>
+            <div style={{ fontSize: '.75rem', color: '#888' }}>Groom: {m.groom_name || 'TBD'} | Bride: {m.bride_name || 'TBD'}</div>
+            <div style={{ fontSize: '.75rem', color: '#888' }}>Dowry: {m.dowry_gold}g</div>
+            <span style={{ fontSize: '.7rem', padding: '.1rem .3rem', borderRadius: '3px', background: m.status === 'married' ? '#1a3a1a' : '#3a3a1a', color: m.status === 'married' ? '#2ecc71' : '#f39c12' }}>{m.status}</span>
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+// =====================================================
+function DungeonObjUI() {
+  const [bounties, setBounties] = useState([])
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  const load = async () => {
+    setLoading(true)
+    try { const d = await api.bountyList(); setBounties(d.bounties || []) } catch (e) {}
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [])
+
+  const accept = async (id) => {
+    setResult(null)
+    try { const r = await api.bountyAccept(id); setResult({ success: r.message || 'Accepted!' }); load() }
+    catch (e) { setResult({ error: e.message }) }
+  }
+
+  if (loading) return <div>Loading bounties...</div>
+  return (
+    <div>
+      {result?.error && <div style={{ color: '#c44', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.error}</div>}
+      {result?.success && <div style={{ color: '#2ecc71', fontSize: '.85rem', marginBottom: '.3rem' }}>{result.success}</div>}
+      <h4 style={{ color: '#b08d57', fontSize: '.85rem', marginBottom: '.3rem' }}>Bounties</h4>
+      {bounties.length === 0 ? <div style={{ color: '#888', fontSize: '.85rem' }}>No bounties.</div> : (
+        bounties.map(b => (
+          <div key={b.id} style={{ background: '#2a2a4e', padding: '.5rem', borderRadius: '4px', marginBottom: '.4rem' }}>
+            <div style={{ fontWeight: 'bold', color: '#b08d57', fontSize: '.85rem' }}>{b.title || b.creature_name}</div>
+            <div style={{ fontSize: '.75rem', color: '#888', marginBottom: '.2rem' }}>{b.description || b.region}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '.75rem', color: '#b08d57' }}>{b.reward_gold > 0 && `${b.reward_gold}g `}{b.reward_xp > 0 && `${b.reward_xp}xp`}</span>
+              <button onClick={() => accept(b.id)} style={{ padding: '.2rem .4rem', background: '#b08d57', color: '#1a1a2e', border: 'none', borderRadius: '2px', fontSize: '.7rem', cursor: 'pointer' }}>Accept</button>
+            </div>
+          </div>
+        ))
+      )}
     </div>
   )
 }
